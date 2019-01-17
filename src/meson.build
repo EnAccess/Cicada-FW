@@ -1,3 +1,3 @@
-cpp_files = ['escheduler.cpp']
+cpp_files = ['escheduler.cpp', 'etermios.cpp']
 
 src_files = files(cpp_files)
