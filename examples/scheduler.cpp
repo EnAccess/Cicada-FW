@@ -5,7 +5,7 @@
 class Task1 : public ETask
 {
 public:
-    Task1() : m_wakeup(false)
+    Task1() : ETask(this), m_wakeup(false)
     { }
 
     void wakeup()
@@ -13,24 +13,22 @@ public:
         m_wakeup = true;
     }
 
-    virtual void run()
+    void start()
     {
-    E_BEGIN_TASK
-
         printf("Task 1 - step 1\n");
-        E_REENTER_DELAY(2000);
+        next(&Task1::stepTwo, 3000);
+    }
 
+    void stepTwo()
+    {
         printf("Task 1 - step 2\n");
-        E_REENTER_COND(m_wakeup);
+        next(&Task1::stepThree, m_wakeup);
+    }
 
-        printf("Task 1 - step 3\n");
-
-        while(true) {
-            printf("Task 1 - in loop\n");
-            E_REENTER_DELAY(1500);
-        }
-
-    E_END_TASK
+    void stepThree()
+    {
+        printf("Task 1 - in loop\n");
+        next(&Task1::stepThree, 1000);
     }
 
 private:
@@ -40,29 +38,34 @@ private:
 class Task2 : public ETask
 {
 public:
-    Task2(Task1& task1) : m_task1(task1)
+    Task2(Task1& task1) : ETask(this), m_task1(task1)
     { }
 
-    virtual void run()
+    void start ()
     {
-    E_BEGIN_TASK
-
         printf("Task 2 - step 1\n");
-        E_REENTER_DELAY(3000);
+        next(&Task2::stepTwo, 5000);
+    }
 
+    void stepTwo ()
+    {
         printf("Task 2 - step 2\n");
-        E_REENTER_DELAY(2000);
-
         printf("Waking up task 1\n");
         m_task1.wakeup();
-        E_REENTER_DELAY(3000);
 
-        while(true) {
-            printf("Task 2 - in loop\n");
-            E_REENTER_DELAY(1000);
-        }
+        next(&Task2::stepThree, 10000);
+    }
 
-    E_END_TASK
+    void stepThree ()
+    {
+        printf("Task 2 - step 3\n");
+        next(&Task2::stepFour, 1000);
+    }
+
+    void stepFour ()
+    {
+        printf("Task 2 - in loop\n");
+        next(&Task2::stepFour, 1000);
     }
 
 private:

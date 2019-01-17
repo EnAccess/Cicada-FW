@@ -32,12 +32,13 @@ EScheduler::EScheduler(E_TICK_TYPE (*tickFunction)(), ETask** taskList) :
 
 void EScheduler::runTask()
 {
+    ETask* task = (*m_currentTask);
+    
     E_TICK_TYPE tick = m_tickFunction();
-    if ((*m_currentTask)->delay() == 0 ||
-        tick >= (*m_currentTask)->lastRun() + (*m_currentTask)->delay())
+    if (task->delay() == 0 || tick >= task->lastRun() + task->delay())
     {
-        (*m_currentTask)->setLastRun(tick);
-        (*m_currentTask)->run();
+        task->setLastRun(tick);
+        task->run();
     }
 
     if (*++m_currentTask == NULL)

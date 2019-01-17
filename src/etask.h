@@ -26,6 +26,8 @@
 
 #include <stdint.h>
 #include "edefines.h"
+#include "FP.h"
+
 
 /*!
  * \def E_BEGIN_TASK
@@ -111,7 +113,10 @@
 class ETask
 {
 public:
-    ETask(uint16_t initialDelay = 0) :
+    template<class T>
+    ETask(T derivedInstance, uint16_t initialDelay = 0) :
+        _callback(derivedInstance),
+        _nextCondition(NULL),
         m_delay(initialDelay),
         m_lastRun(0)
     { }
@@ -151,7 +156,35 @@ public:
      * directly at the beginneing of run(), and E_END_TASK at
      * the end respectively.
      */
-    virtual void run() = 0;
+    virtual void start() = 0;
+
+    template<class T>
+    void next(void (T::*handlerMethod)(void), uint16_t delay_sec)
+    {
+        setDelay(delay_sec);
+        _callback.attach(handlerMethod);
+    }
+
+    template<class T>
+    void next(void (T::*handlerMethod)(void), bool& condition)
+    {
+        _nextCondition = &condition;
+        next(handlerMethod, 0);
+    }
+
+    void run()
+    {
+        if (!_callback.attached()) {
+            start();
+        } else if (_nextCondition != NULL) {
+            if (*_nextCondition) {
+                _nextCondition = NULL;
+                _callback.run();
+            }
+        } else {
+            _callback.run();
+        }
+    }
 
 private:
     /*
@@ -159,6 +192,8 @@ private:
      */
     ETask(const ETask&);
 
+    FP<void> _callback;
+    bool* _nextCondition;
     uint16_t m_delay; /**< Time before the task will run again */
     E_TICK_TYPE m_lastRun; /**< Stores the tick when the task last ran */
 };
