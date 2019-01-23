@@ -9,11 +9,13 @@
 #include "escheduler.h"
 #include "etermios.h"
 
+#include "ecircularbuffer.h"
+
 class SerialTask : public ETask
 {
 public:
-    SerialTask() :
-        m_serial("/dev/ttyUSB0")
+    SerialTask(ETermios& termios) :
+        m_serial(termios)
     { }
 
     virtual void run()
@@ -60,7 +62,7 @@ public:
     }
 
 private:
-    ETermios m_serial;
+    ETermios& m_serial;
 };
 
 uint64_t tickFunction()
@@ -78,9 +80,10 @@ uint64_t tickFunction()
 
 int main(int argc, char * argv[])
 {
-    SerialTask task;
+    ETermios serial("/dev/ttyUSB0");
+    SerialTask task(serial);
 
-    ETask* taskList[] = {&task, NULL};
+    ETask* taskList[] = {&task, &serial, NULL};
 
     EScheduler s(&tickFunction, taskList);
     s.start();

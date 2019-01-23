@@ -208,7 +208,7 @@ void ETermios::close()
     m_fd = -1;
 }
 
-uint16_t ETermios::bytesAvailable() const
+uint16_t ETermios::rawBytesAvailable() const
 {
     if (m_fd < 0)
         return 0;
@@ -219,7 +219,7 @@ uint16_t ETermios::bytesAvailable() const
     return bytes > UINT16_MAX ? UINT16_MAX : bytes;
 }
 
-uint16_t ETermios::read(uint8_t* data, uint16_t maxSize)
+uint16_t ETermios::rawRead(uint8_t* data, uint16_t maxSize)
 {
     ssize_t nBytes = ::read(m_fd, data, maxSize);
     if (nBytes < 0)
@@ -228,7 +228,7 @@ uint16_t ETermios::read(uint8_t* data, uint16_t maxSize)
     return nBytes;
 }
 
-uint16_t ETermios::write(const uint8_t* data, uint16_t size)
+uint16_t ETermios::rawWrite(const uint8_t* data, uint16_t size)
 {
     return ::write(m_fd, data, size);
 }

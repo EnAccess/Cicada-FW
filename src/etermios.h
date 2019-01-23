@@ -25,9 +25,20 @@
 #define ETERMIOS_H
 
 #include <stdint.h>
-#include "eiserial.h"
+#include "ebufferedserial.h"
 
-class ETermios : public EISerial
+#define TERMIOS_BUFFER_SIZE 120
+
+/*!
+ * \class ETermios
+ *
+ * Serial driver for Linux/Unix tty serial devices.
+ * This class is meant for testing porpose only, since
+ * it's implementation is very slow (reading/writing
+ * one byte at a time).
+ */
+
+class ETermios : public EBufferedSerial<TERMIOS_BUFFER_SIZE>
 {
 public:
     /*!
@@ -46,17 +57,18 @@ public:
 
     virtual void close();
 
-    virtual uint16_t bytesAvailable() const;
-
-    virtual uint16_t read(uint8_t* data, uint16_t maxSize);
-
-    virtual uint16_t write(const uint8_t* data, uint16_t size);
-
     /*!
      * Name of the serial port used.
      * \return Pointer to the string given to the constructor
      */
     inline const char* portName() const { return m_port; }
+
+protected:
+    virtual uint16_t rawBytesAvailable() const;
+
+    virtual uint16_t rawRead(uint8_t* data, uint16_t maxSize);
+
+    virtual uint16_t rawWrite(const uint8_t* data, uint16_t size);
 
 private:
     bool m_isOpen;

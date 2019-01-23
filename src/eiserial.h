@@ -62,11 +62,12 @@ public:
      */
     virtual void close() = 0;
 
+protected:
     /*!
      * Number of bytes available for reading.
      * \return Number of bytes available for reading
      */
-    virtual uint16_t bytesAvailable() const = 0;
+    virtual uint16_t rawBytesAvailable() const = 0;
 
     /*!
      * Reads data from the device.
@@ -76,7 +77,7 @@ public:
      * number of bytes stored can be smaller than maxSize.
      * \return Number of bytes actually copied to data
      */
-    virtual uint16_t read(uint8_t* data, uint16_t maxSize) = 0;
+    virtual uint16_t rawRead(uint8_t* data, uint16_t maxSize) = 0;
 
     /*!
      * Writes data to the device.
@@ -84,7 +85,7 @@ public:
      * \param size Number of bytes to write
      * \return Actual number of bytes written
      */
-    virtual uint16_t write(const uint8_t* data, uint16_t size) = 0;
+    virtual uint16_t rawWrite(const uint8_t* data, uint16_t size) = 0;
 };
 
 #endif
