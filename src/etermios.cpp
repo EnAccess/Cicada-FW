@@ -28,6 +28,7 @@
 #include "etermios.h"
 
 ETermios::ETermios(const char* port) :
+    m_isOpen(false),
     m_port(port),
     m_fd(-1)
 {
@@ -47,6 +48,7 @@ bool ETermios::open()
         return false;
     }
 
+    m_isOpen = true;
     return true;
 }
 
@@ -198,6 +200,8 @@ bool ETermios::setSerialConfig(uint32_t baudRate, uint8_t dataBits)
 
 void ETermios::close()
 {
+    m_isOpen = false;
+
     if (m_fd >= 0)
         ::close(m_fd);
 

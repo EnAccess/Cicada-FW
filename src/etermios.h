@@ -27,7 +27,7 @@
 #include <stdint.h>
 #include "eiserial.h"
 
-class ETermios : EISerial
+class ETermios : public EISerial
 {
 public:
     /*!
@@ -39,6 +39,8 @@ public:
     ETermios(const char* port);
 
     virtual bool open();
+
+    inline virtual bool isOpen() {return m_isOpen;}
 
     virtual bool setSerialConfig(uint32_t baudRate, uint8_t dataBits);
 
@@ -57,6 +59,7 @@ public:
     inline const char* portName() const { return m_port; }
 
 private:
+    bool m_isOpen;
     const char* m_port;
     int m_fd;
 };

@@ -44,6 +44,12 @@ public:
     virtual bool open() = 0;
 
     /*!
+     * Returns the opening state of the device.
+     * \return true if the device is open, false otherwise.
+     */
+    virtual bool isOpen() = 0;
+
+    /*!
      * Sets the serial device parameters.
      * \param baudRate One of the valid serial baud rates
      * \param dataBits Bit depth, usually 5, 6, 7, or 8
