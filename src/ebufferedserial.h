@@ -24,9 +24,13 @@
 #ifndef EBUFFEREDSERIAL_H
 #define EBUFFEREDSERIAL_H
 
+#define E_DEFAULT_SERIAL_BUFFERSIZE 120
+
 #include "eiserial.h"
 #include "etask.h"
 #include "ecircularbuffer.h"
+
+#include <cstdio>
 
 template <uint8_t BUFFER_SIZE>
 class EBufferedSerial : public EISerial, public ETask
@@ -61,9 +65,25 @@ public:
      * \param size Number of bytes to write
      * \return Actual number of bytes written
      */
-    virtual uint8_t write(uint8_t* data, uint8_t size)
+    virtual uint8_t write(const uint8_t* data, uint8_t size)
     {
         return m_writeBuffer.push(data, size);
+    }
+
+    /*!
+     * \return true if a whole line is in the buffer, false otherwise
+     */
+    virtual bool canReadLine()
+    {
+        return m_readBuffer.numBufferedLines() > 0;
+    }
+
+    /*!
+     * Reads a line.
+     */
+    virtual uint8_t readLine(uint8_t* data, uint8_t size)
+    {
+        return m_readBuffer.readLine(data, size);
     }
 
     virtual void run()
@@ -88,8 +108,10 @@ public:
     }
 
 private:
-    ECircularBuffer<uint8_t, BUFFER_SIZE> m_readBuffer;
-    ECircularBuffer<uint8_t, BUFFER_SIZE> m_writeBuffer;
+    ELineCircularBuffer<BUFFER_SIZE> m_readBuffer;
+    ELineCircularBuffer<BUFFER_SIZE> m_writeBuffer;
 };
+
+typedef EBufferedSerial<120> EDefaultBufferedSerial;
 
 #endif

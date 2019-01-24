@@ -9,8 +9,6 @@
 #include "escheduler.h"
 #include "etermios.h"
 
-#include "ecircularbuffer.h"
-
 class SerialTask : public ETask
 {
 public:

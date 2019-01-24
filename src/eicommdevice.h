@@ -42,6 +42,11 @@ public:
     virtual bool disconnect() = 0;
 
     /*!
+     * \return true if the device is connected, false otherwise
+     */
+    virtual bool isConnected() = 0;
+
+    /*!
      * Number of bytes available for reading.
      * \return Number of bytes available for reading
      */

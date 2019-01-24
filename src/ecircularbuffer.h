@@ -40,7 +40,7 @@ public:
      * \param pointer to the data to be copied into the buffer
      * \param size number of elements in data
      */
-    uint8_t push(T* data, uint8_t size)
+    uint8_t push(const T* data, uint8_t size)
     {
         if (size > BUFFER_SIZE)
             size = BUFFER_SIZE;
@@ -96,6 +96,7 @@ public:
         T data = m_buffer[m_readHead];
         incrementOrResetHead(m_readHead);
         decreaseAvailableDataCount();
+
         return data;
     }
 
@@ -183,6 +184,64 @@ private:
             m_availableData = 0;
         }
     }
+};
+
+template <uint8_t BUFFER_SIZE>
+class ELineCircularBuffer : public ECircularBuffer<uint8_t, BUFFER_SIZE>
+{
+public:
+    ELineCircularBuffer() :
+        m_bufferedLines(0)
+        { }
+
+    using ECircularBuffer<uint8_t, BUFFER_SIZE>::push;
+
+    void push(uint8_t data)
+    {
+        ECircularBuffer<uint8_t, BUFFER_SIZE>::push(data);
+
+        if (data == '\n')
+        {
+            m_bufferedLines++;
+        }
+    }
+
+    using ECircularBuffer<uint8_t, BUFFER_SIZE>::pull;
+
+    uint8_t pull()
+    {
+        uint8_t data = ECircularBuffer<uint8_t, BUFFER_SIZE>::pull();
+
+        if (data == '\n')
+            m_bufferedLines--;
+
+        return data;
+        return 0;
+    }
+
+    inline uint8_t numBufferedLines()
+    {
+        return m_bufferedLines;
+    }
+
+    uint8_t readLine(uint8_t* data, uint8_t size)
+    {
+        uint8_t readCount = 0;
+        uint8_t c = '\0';
+
+        while (!ECircularBuffer<uint8_t, BUFFER_SIZE>::isEmpty() && c != '\n') {
+            c = pull();
+            if (readCount < size)
+            {
+                data[readCount++] = c;
+            }
+        }
+
+        return readCount;
+    }
+
+private:
+    uint8_t m_bufferedLines;
 };
 
 #endif

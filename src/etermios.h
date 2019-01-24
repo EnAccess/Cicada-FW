@@ -27,8 +27,6 @@
 #include <stdint.h>
 #include "ebufferedserial.h"
 
-#define TERMIOS_BUFFER_SIZE 120
-
 /*!
  * \class ETermios
  *
@@ -38,7 +36,7 @@
  * one byte at a time).
  */
 
-class ETermios : public EBufferedSerial<TERMIOS_BUFFER_SIZE>
+class ETermios : public EDefaultBufferedSerial
 {
 public:
     /*!
