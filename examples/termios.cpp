@@ -38,7 +38,7 @@ public:
             const char* send_str = "AT\r\n";
             printf("Sending command: %s", send_str);
             int bytesWritten =
-                m_serial.write((uint8_t*)send_str, strlen(send_str));
+                m_serial.write(send_str, strlen(send_str));
             printf("%d bytes written\n", bytesWritten);
         }
 
@@ -47,7 +47,7 @@ public:
         {
             char buf[32];
             int bytesReceived;
-            bytesReceived = m_serial.read((uint8_t*)buf, 31);
+            bytesReceived = m_serial.read(buf, 31);
             printf("%d bytes received\n", bytesReceived);
 
             buf[bytesReceived] = '\0';

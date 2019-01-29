@@ -24,7 +24,7 @@
 #ifndef ECIRCULARBUFFER_H
 #define ECIRCULARBUFFER_H
 
-template <typename T, uint8_t BUFFER_SIZE>
+template <typename T, uint16_t BUFFER_SIZE>
 class ECircularBuffer
 {
 public:
@@ -35,17 +35,21 @@ public:
         m_buffer()
     { }
 
+    virtual ~ECircularBuffer()
+    { }
+
     /*!
      * Push data into the buffer. Data is copied.
      * \param pointer to the data to be copied into the buffer
      * \param size number of elements in data
      */
-    uint8_t push(const T* data, uint8_t size)
+    //TODO: Check if virtual is appropriate
+    virtual uint16_t push(const T* data, uint16_t size)
     {
         if (size > BUFFER_SIZE)
             size = BUFFER_SIZE;
 
-        uint8_t writeCount = 0;
+        uint16_t writeCount = 0;
 
         while (!isFull() && writeCount < size) {
             push(data[writeCount++]);
@@ -61,7 +65,7 @@ public:
      * will be overwritten.
      * \param data Element to push into the buffer
      */
-    void push(T data)
+    virtual void push(T data)
     {
         m_buffer[m_writeHead] = data;
         incrementOrResetHead(m_writeHead);
@@ -74,9 +78,9 @@ public:
      * \param size Maximum size to pull
      * \return Actual number of elements pulled from the buffer
      */
-    uint8_t pull(T* data, uint8_t size)
+    virtual uint16_t pull(T* data, uint16_t size)
     {
-        uint8_t readCount = 0;
+        uint16_t readCount = 0;
 
         while (!isEmpty() && readCount < size) {
             data[readCount++] = pull();
@@ -91,7 +95,7 @@ public:
      * be returned.
      * \return The element pulled from the buffer
      */
-    T pull()
+    virtual T pull()
     {
         T data = m_buffer[m_readHead];
         incrementOrResetHead(m_readHead);
@@ -106,7 +110,7 @@ public:
      * in which case old data will be returned.
      * \return The element read from the buffer
      */
-    T read()
+    virtual T read()
     {
         return m_buffer[m_readHead];
     }
@@ -114,7 +118,7 @@ public:
     /*!
      * Empties the buffer by resetting all counters to zero.
      */
-    void flush()
+    virtual void flush()
     {
         m_writeHead = 0;
         m_readHead = 0;
@@ -124,7 +128,7 @@ public:
     /*!
      * \return true if the buffer is empty, false if there is data in it
      */
-    bool isEmpty()
+    virtual bool isEmpty()
     {
         return m_availableData == 0;
     }
@@ -132,7 +136,7 @@ public:
     /*!
      * \return true if the buffer is full, false if there is still space
      */
-    bool isFull()
+    virtual bool isFull()
     {
         return m_availableData == BUFFER_SIZE;
     }
@@ -140,7 +144,7 @@ public:
     /*!
      * \return Number of available elements in the buffer
      */
-    uint8_t availableData()
+    virtual uint16_t availableData()
     {
         return m_availableData;
     }
@@ -148,18 +152,18 @@ public:
     /*!
      * \return size of the buffer, which was specified at compile time
      */
-    uint8_t size()
+    virtual uint16_t size()
     {
         return BUFFER_SIZE;
     }
 
 private:
-    uint8_t m_writeHead;
-    uint8_t m_readHead;
-    uint8_t m_availableData;
+    uint16_t m_writeHead;
+    uint16_t m_readHead;
+    uint16_t m_availableData;
     T m_buffer[BUFFER_SIZE];
 
-    void incrementOrResetHead(uint8_t& head)
+    void incrementOrResetHead(uint16_t& head)
     {
         head++;
         if (head >= BUFFER_SIZE)
@@ -180,25 +184,24 @@ private:
     void decreaseAvailableDataCount()
     {
         m_availableData--;
-        if (m_availableData <= 0) {
-            m_availableData = 0;
-        }
     }
 };
 
-template <uint8_t BUFFER_SIZE>
-class ELineCircularBuffer : public ECircularBuffer<uint8_t, BUFFER_SIZE>
+#include <cstdio>
+
+template <uint16_t BUFFER_SIZE>
+class ELineCircularBuffer : public ECircularBuffer<char, BUFFER_SIZE>
 {
 public:
     ELineCircularBuffer() :
         m_bufferedLines(0)
         { }
 
-    using ECircularBuffer<uint8_t, BUFFER_SIZE>::push;
+    using ECircularBuffer<char, BUFFER_SIZE>::push;
 
-    void push(uint8_t data)
+    void push(char data)
     {
-        ECircularBuffer<uint8_t, BUFFER_SIZE>::push(data);
+        ECircularBuffer<char, BUFFER_SIZE>::push(data);
 
         if (data == '\n')
         {
@@ -206,30 +209,31 @@ public:
         }
     }
 
-    using ECircularBuffer<uint8_t, BUFFER_SIZE>::pull;
+    using ECircularBuffer<char, BUFFER_SIZE>::pull;
 
-    uint8_t pull()
+    char pull()
     {
-        uint8_t data = ECircularBuffer<uint8_t, BUFFER_SIZE>::pull();
+        char data = ECircularBuffer<char, BUFFER_SIZE>::pull();
 
         if (data == '\n')
+        {
             m_bufferedLines--;
+        }
 
         return data;
-        return 0;
     }
 
-    inline uint8_t numBufferedLines()
+    inline uint16_t numBufferedLines()
     {
         return m_bufferedLines;
     }
 
-    uint8_t readLine(uint8_t* data, uint8_t size)
+    uint16_t readLine(char* data, uint16_t size)
     {
-        uint8_t readCount = 0;
-        uint8_t c = '\0';
+        uint16_t readCount = 0;
+        char c = '\0';
 
-        while (!ECircularBuffer<uint8_t, BUFFER_SIZE>::isEmpty() && c != '\n') {
+        while (!ECircularBuffer<char, BUFFER_SIZE>::isEmpty() && c != '\n') {
             c = pull();
             if (readCount < size)
             {
@@ -241,7 +245,7 @@ public:
     }
 
 private:
-    uint8_t m_bufferedLines;
+    uint16_t m_bufferedLines;
 };
 
 #endif

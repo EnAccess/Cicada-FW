@@ -24,25 +24,33 @@
 #ifndef EBUFFEREDSERIAL_H
 #define EBUFFEREDSERIAL_H
 
-#define E_DEFAULT_SERIAL_BUFFERSIZE 120
+#define E_DEFAULT_SERIAL_BUFFERSIZE 1504
 
 #include "eiserial.h"
 #include "etask.h"
 #include "ecircularbuffer.h"
 
-#include <cstdio>
-
-template <uint8_t BUFFER_SIZE>
+template <uint16_t BUFFER_SIZE>
 class EBufferedSerial : public EISerial, public ETask
 {
 public:
+    EBufferedSerial() :
+        m_writeBarrier(false),
+        m_bytesToWrite(0)
+    { }
+
     /*!
      * Number of bytes available in the reading buffer.
      * \return Number of bytes available for reading
      */
-    virtual uint8_t bytesAvailable()
+    virtual uint16_t bytesAvailable()
     {
         return m_readBuffer.availableData();
+    }
+
+    virtual uint16_t spaceAvailable()
+    {
+        return m_writeBuffer.size() - m_writeBuffer.availableData();
     }
 
     /*!
@@ -52,7 +60,7 @@ public:
      * \param maxSize Maximum number of bytes to store into data.
      * \return Number of bytes actually copied to data
      */
-    virtual uint8_t read(uint8_t* data, uint8_t size)
+    virtual uint16_t read(char* data, uint16_t size)
     {
         return m_readBuffer.pull(data, size);
     }
@@ -65,7 +73,7 @@ public:
      * \param size Number of bytes to write
      * \return Actual number of bytes written
      */
-    virtual uint8_t write(const uint8_t* data, uint8_t size)
+    virtual uint16_t write(const char* data, uint16_t size)
     {
         return m_writeBuffer.push(data, size);
     }
@@ -81,26 +89,40 @@ public:
     /*!
      * Reads a line.
      */
-    virtual uint8_t readLine(uint8_t* data, uint8_t size)
+    virtual uint16_t readLine(char* data, uint16_t size)
     {
         return m_readBuffer.readLine(data, size);
     }
 
+    virtual void setWriteBarrier()
+    {
+        m_bytesToWrite = m_writeBuffer.availableData();
+        m_writeBarrier = true;
+    }
+
+    virtual void clearWriteBarrier()
+    {
+        m_bytesToWrite = 0;
+        m_writeBarrier = false;
+    }
+
     virtual void run()
     {
-        if (m_writeBuffer.availableData())
+        if (m_writeBuffer.availableData() &&
+            (!m_writeBarrier || m_bytesToWrite))
         {
-            uint8_t data = m_writeBuffer.read();
-            if (rawWrite(&data, 1) == 1)
+            char data = m_writeBuffer.read();
+            if (rawWrite((const uint8_t*)&data, 1) == 1)
             {
                 m_writeBuffer.pull();
+                m_bytesToWrite--;
             }
         }
 
         if (rawBytesAvailable() && !m_readBuffer.isFull())
         {
-            uint8_t data;
-            if (rawRead(&data, 1) == 1)
+            char data;
+            if (rawRead((uint8_t*)&data, 1) == 1)
             {
                 m_readBuffer.push(data);
             }
@@ -110,8 +132,10 @@ public:
 private:
     ELineCircularBuffer<BUFFER_SIZE> m_readBuffer;
     ELineCircularBuffer<BUFFER_SIZE> m_writeBuffer;
+    bool m_writeBarrier;
+    uint16_t m_bytesToWrite;
 };
 
-typedef EBufferedSerial<120> EDefaultBufferedSerial;
+typedef EBufferedSerial<E_DEFAULT_SERIAL_BUFFERSIZE> EDefaultBufferedSerial;
 
 #endif
