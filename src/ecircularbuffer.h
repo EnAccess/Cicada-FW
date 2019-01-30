@@ -24,6 +24,12 @@
 #ifndef ECIRCULARBUFFER_H
 #define ECIRCULARBUFFER_H
 
+/*!
+ * \class ECircularBuffer
+ *
+ * Implementation of a circular buffer.
+ */
+
 template <typename T, uint16_t BUFFER_SIZE>
 class ECircularBuffer
 {
@@ -187,7 +193,11 @@ private:
     }
 };
 
-#include <cstdio>
+/*!
+ * \class ELineCircularBuffer
+ *
+ * Extends the circular buffer for handling lines.
+ */
 
 template <uint16_t BUFFER_SIZE>
 class ELineCircularBuffer : public ECircularBuffer<char, BUFFER_SIZE>
@@ -223,11 +233,20 @@ public:
         return data;
     }
 
+    /*!
+     * \return Number of lines currently in the buffer
+     */
     inline uint16_t numBufferedLines()
     {
         return m_bufferedLines;
     }
 
+    /*!
+     * Reads a full line from the buffer.
+     * \param data Pointer where pulled data will be stored
+     * \param size Available space in data
+     * \return Actual number of characters pulled from the buffer
+     */
     uint16_t readLine(char* data, uint16_t size)
     {
         uint16_t readCount = 0;

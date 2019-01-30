@@ -24,6 +24,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
+#include <cstdio>
 #include "esim7x00.h"
 
 #define LINE_MAX_LENGTH 60

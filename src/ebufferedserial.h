@@ -48,6 +48,10 @@ public:
         return m_readBuffer.availableData();
     }
 
+    /*!
+     * Number of bytes available for writing in this buffer.
+     * \return Number of bytes available for writing
+     */
     virtual uint16_t spaceAvailable()
     {
         return m_writeBuffer.size() - m_writeBuffer.availableData();
@@ -65,6 +69,10 @@ public:
         return m_readBuffer.pull(data, size);
     }
 
+    /*!
+     * Reads a single char from the buffer
+     * \return The character read
+     */
     virtual char read()
     {
         return m_readBuffer.pull();
@@ -83,6 +91,10 @@ public:
         return m_writeBuffer.push(data, size);
     }
 
+    /*!
+     * Writes a singla char to the buffer.
+     * \param data Character to write
+     */
     virtual void write(char data)
     {
         m_writeBuffer.push(data);
@@ -104,18 +116,31 @@ public:
         return m_readBuffer.readLine(data, size);
     }
 
+    /*!
+     * Sets the write barrier. A write barrier means, the BufferdSerial's
+     * run function will not send further than up to the number of bytes
+     * when the barrier was set. This is useful if there is data
+     * to be buffered, but those should not yet be sent to the device.
+     */
     virtual void setWriteBarrier()
     {
         m_bytesToWrite = m_writeBuffer.availableData();
         m_writeBarrier = true;
     }
 
+    /*!
+     * Clears the write barrier. Data after the write barrier is now
+     * allowed to be sent to the device.
+     */
     virtual void clearWriteBarrier()
     {
         m_bytesToWrite = 0;
         m_writeBarrier = false;
     }
 
+    /*!
+     * Clears the read buffer, discarding all available data.
+     */
     virtual void flushReceiveBuffers()
     {
         m_readBuffer.flush();
