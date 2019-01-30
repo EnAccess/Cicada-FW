@@ -14,7 +14,8 @@ class IPCommTask : public ETask
 {
 public:
     IPCommTask(ESim7x00CommDevice& commDev) :
-        m_commDev(commDev)
+        m_commDev(commDev),
+        m_i(0)
     { }
 
     virtual void run()
@@ -35,39 +36,37 @@ public:
                 "Host: wttr.in\r\n"
                 "User-Agent: curl\r\n"
                 "Connection: close\r\n\r\n";
-            m_commDev.write((uint8_t*)str, sizeof(str));
+            m_commDev.write((uint8_t*)str, sizeof(str) - 1);
         }
 
-        E_REENTER_DELAY(250);
+        E_REENTER_COND(m_commDev.bytesAvailable());
 
-        for(;;)
+        for(m_i = 0; m_i < 400; m_i++)
         {
             if (m_commDev.bytesAvailable())
             {
                 char buf[41];
                 uint16_t bytesRead = m_commDev.read((uint8_t*)buf, 40);
-                if (bytesRead == 0)
-                {
-                    printf("Error!!!\n");
-                    exit(1);
-                }
-                if (bytesRead)
-                {
-                    buf[bytesRead] = '\0';
-                    printf("%s", buf);
-                }
+                buf[bytesRead] = '\0';
+                printf("%s", buf);
             }
             else
             {
-                E_REENTER_DELAY(100);
+                E_REENTER_DELAY(10);
             }
         }
+
+        m_commDev.disconnect();
+        E_REENTER_COND(m_commDev.isIdle());
+
+        printf("*** Disconnected ***\n");
 
     E_END_TASK
     }
 
 private:
     ESim7x00CommDevice& m_commDev;
+    int m_i;
 };
 
 uint64_t tickFunction()

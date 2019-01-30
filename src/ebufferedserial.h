@@ -65,6 +65,11 @@ public:
         return m_readBuffer.pull(data, size);
     }
 
+    virtual char read()
+    {
+        return m_readBuffer.pull();
+    }
+
     /*!
      * Writes data to the write buffer.
      * \param data Buffer with data copied to the write buffer.
@@ -76,6 +81,11 @@ public:
     virtual uint16_t write(const char* data, uint16_t size)
     {
         return m_writeBuffer.push(data, size);
+    }
+
+    virtual void write(char data)
+    {
+        m_writeBuffer.push(data);
     }
 
     /*!
@@ -104,6 +114,11 @@ public:
     {
         m_bytesToWrite = 0;
         m_writeBarrier = false;
+    }
+
+    virtual void flushReceiveBuffers()
+    {
+        m_readBuffer.flush();
     }
 
     virtual void run()

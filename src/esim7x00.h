@@ -40,6 +40,8 @@ public:
 
     virtual bool isConnected();
 
+    virtual bool isIdle();
+
     virtual uint16_t bytesAvailable() const;
 
     virtual uint16_t read(uint8_t* data, uint16_t maxSize);
@@ -81,7 +83,10 @@ private:
         sendCiprxget4,
         sendCiprxget2,
         waitReceive,
-        receiving
+        receiving,
+        sendNetclose,
+        sendAth,
+        finalizeDisconnect
     };
 
     EDefaultBufferedSerial& m_serial;
@@ -93,6 +98,7 @@ private:
     uint16_t m_port;
     const char* m_waitForReply;
     bool m_lineRead;
+    bool m_ipConnected;
     uint16_t m_bytesToReceive;
     uint16_t m_bytesToRead;
 

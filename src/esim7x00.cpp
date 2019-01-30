@@ -44,6 +44,7 @@ ESim7x00CommDevice::ESim7x00CommDevice(EDefaultBufferedSerial& serial) :
     m_port(0),
     m_waitForReply(NULL),
     m_lineRead(true),
+    m_ipConnected(false),
     m_bytesToReceive(0),
     m_bytesToRead(0)
 { }
@@ -74,12 +75,22 @@ bool ESim7x00CommDevice::connect()
 
 bool ESim7x00CommDevice::disconnect()
 {
-    return false;
+    if (m_connectState < connected)
+        return false;
+
+    m_connectState = sendNetclose;
+    return true;
 }
 
 bool ESim7x00CommDevice::isConnected()
 {
-    return m_connectState >= connected;
+    return m_connectState >= connected &&
+        m_connectState < sendNetclose && m_ipConnected;
+}
+
+bool ESim7x00CommDevice::isIdle()
+{
+    return m_connectState == notConnected;
 }
 
 uint16_t ESim7x00CommDevice::bytesAvailable() const
@@ -92,9 +103,6 @@ uint16_t ESim7x00CommDevice::bytesAvailable() const
     else
         return m_bytesToRead;
 }
-
-#include <stdlib.h>
-
 
 uint16_t ESim7x00CommDevice::read(uint8_t* data, uint16_t maxSize)
 {
@@ -165,9 +173,6 @@ uint16_t ESim7x00CommDevice::write(const uint8_t* data, uint16_t size)
 
 void ESim7x00CommDevice::run()
 {
-    // Note: This function assumes that the write buffer is large
-    // enough to store the commands.
-
     // If the serial device is net yet open, try to open it
     if (!m_serial.isOpen())
     {
@@ -185,7 +190,7 @@ void ESim7x00CommDevice::run()
         uint8_t size = m_serial.readLine(data, LINE_MAX_LENGTH);
         data[size] = '\0';
 
-        if (m_connectState < connected)
+        if (m_connectState < connected || m_connectState > receiving)
         {
             if (m_waitForReply)
                 printf("m_connectState=%d, m_replyState=%d, "
@@ -218,6 +223,7 @@ void ESim7x00CommDevice::run()
             if (strncmp(data, "+NETOPEN: 1", 11) == 0)
             {
                 // Send netopen again in case it didn't work
+                setDelay(2000);
                 m_connectState = sendNetopen;
                 m_waitForReply = NULL;
             }
@@ -283,10 +289,15 @@ void ESim7x00CommDevice::run()
                     m_replyState = normalReply;
                     m_connectState = sendCiprxget2;
                 }
-                else
+                else if (m_ipConnected)
                 {
                     m_replyState = waitForData;
                     m_connectState = connected;
+                }
+                else
+                {
+                    m_replyState = noReply;
+                    m_connectState = sendCipopen;
                 }
             }
             break;
@@ -307,10 +318,37 @@ void ESim7x00CommDevice::run()
         default:
             break;
         }
+
+        // In connected state, check for connection close
+        if (m_connectState >= connected)
+        {
+            if (strncmp(data, "+IPCLOSE: 0,", 12) == 0)
+            {
+                m_ipConnected = false;
+            }
+        }
+    }
+
+    // When disconnecting was requested, flush read buffer first
+    else if (m_connectState == sendNetclose)
+    {
+        while (m_bytesToRead && m_serial.bytesAvailable())
+        {
+            m_serial.read();
+            m_bytesToRead--;
+        }
+        m_bytesToReceive = 0;
+
+        if (m_bytesToRead == 0)
+            m_lineRead = true;
     }
 
     // Don't go on if we are in wait state
     if (m_waitForReply)
+        return;
+
+    // Don't go on if space in write buffer is low
+    if (m_serial.spaceAvailable() < 20)
         return;
 
     // Connection state machine
@@ -359,10 +397,13 @@ void ESim7x00CommDevice::run()
         SEND_COMMAND("AT+NETOPEN", "+NETOPEN: 0", sendCiprxget);
 
     case sendCiprxget:
+        setDelay(10);
         SEND_COMMAND("AT+CIPRXGET=1", m_okStr, sendDnsQuery);
 
     case sendDnsQuery:
     {
+        if (m_serial.spaceAvailable() < strlen(m_host) + 20)
+            break;
         m_replyState = cdnsgip;
         const char str[] = "AT+CDNSGIP=\"";
         m_serial.write(str, sizeof(str) - 1);
@@ -397,6 +438,7 @@ void ESim7x00CommDevice::run()
         setDelay(0);
         m_replyState = waitForData;
         m_connectState = connected;
+        m_ipConnected = true;
         break;
 
     // States after connecting
@@ -436,6 +478,16 @@ void ESim7x00CommDevice::run()
             m_waitForReply = m_okStr;
             m_connectState = waitReceive;
         }
+        break;
+
+    case sendNetclose:
+        SEND_COMMAND("AT+NETCLOSE", "+NETCLOSE: 0", sendAth);
+
+    case sendAth:
+        SEND_COMMAND("ATH", m_okStr, finalizeDisconnect);
+
+    case finalizeDisconnect:
+        m_connectState = notConnected;
         break;
 
     default:

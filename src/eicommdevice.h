@@ -42,9 +42,17 @@ public:
     virtual bool disconnect() = 0;
 
     /*!
-     * \return true if the device is connected, false otherwise
+     * \return true if the device is fully connected, false otherwise.
+     * Fully connected means it's able to perform read/write operations
+     * to it's connected host.
      */
     virtual bool isConnected() = 0;
+
+    /*!
+     * \return true if the device is in idle state, false otherwise.
+     * Idle means it's able to establish a new connection.
+     */
+    virtual bool isIdle() = 0;
 
     /*!
      * Number of bytes available for reading.
