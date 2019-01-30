@@ -75,10 +75,19 @@ bool ESim7x00CommDevice::connect()
 
 bool ESim7x00CommDevice::disconnect()
 {
-    if (m_connectState < connected)
+    if (m_connectState <= sendPpp || m_connectState > receiving)
         return false;
 
-    m_connectState = sendNetclose;
+    if (m_connectState == finalizeConnect)
+        m_waitForReply = NULL;
+
+    if (m_connectState > sendNetopen)
+        m_connectState = sendNetclose;
+    else if (m_connectState > sendPpp)
+        m_connectState = sendAth;
+    else
+        m_connectState = notConnected;
+
     return true;
 }
 
@@ -212,7 +221,10 @@ void ESim7x00CommDevice::run()
             }
             else if (strncmp(data, "ERROR", 5) == 0)
             {
-                m_connectState = modemError;
+                disconnect();
+
+                m_replyState = noReply;
+                m_waitForReply = NULL;
                 return;
             }
         }
@@ -263,11 +275,6 @@ void ESim7x00CommDevice::run()
                     i++;
                 }
                 strcpy(m_ip, tmpStr);
-            }
-            else if (strncmp(data, "+CDNSGIP: 0", 11) == 0)
-            {
-                m_connectState = dnsError;
-                return;
             }
             break;
 
@@ -372,10 +379,11 @@ void ESim7x00CommDevice::run()
     }
 
     case sendAtd:
-        setDelay(1000);
+        setDelay(500);
         SEND_COMMAND("ATD*99#", "CONNECT", sendPpp);
 
     case sendPpp:
+        setDelay(1000);
     {
         const char str[] = "+++";
         m_serial.write(str, sizeof(str) - 1);

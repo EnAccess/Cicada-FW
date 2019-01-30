@@ -55,6 +55,7 @@ private:
     {
         noReply,
         normalReply,
+        expectConnect,
         netopen,
         cdnsgip,
         waitForData,
@@ -65,7 +66,6 @@ private:
     {
         notConnected,
         serialError,
-        modemError,
         dnsError,
         connecting,
         sendCgdcont,
