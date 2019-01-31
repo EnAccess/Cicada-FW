@@ -35,10 +35,10 @@ class ECircularBuffer
 {
 public:
     ECircularBuffer() :
-        m_writeHead(0),
-        m_readHead(0),
-        m_availableData(0),
-        m_buffer()
+        _writeHead(0),
+        _readHead(0),
+        _availableData(0),
+        _buffer()
     { }
 
     virtual ~ECircularBuffer()
@@ -73,8 +73,8 @@ public:
      */
     virtual void push(T data)
     {
-        m_buffer[m_writeHead] = data;
-        incrementOrResetHead(m_writeHead);
+        _buffer[_writeHead] = data;
+        incrementOrResetHead(_writeHead);
         increaseAvailableDataCount();
     }
 
@@ -103,8 +103,8 @@ public:
      */
     virtual T pull()
     {
-        T data = m_buffer[m_readHead];
-        incrementOrResetHead(m_readHead);
+        T data = _buffer[_readHead];
+        incrementOrResetHead(_readHead);
         decreaseAvailableDataCount();
 
         return data;
@@ -118,7 +118,7 @@ public:
      */
     virtual T read()
     {
-        return m_buffer[m_readHead];
+        return _buffer[_readHead];
     }
 
     /*!
@@ -126,9 +126,9 @@ public:
      */
     virtual void flush()
     {
-        m_writeHead = 0;
-        m_readHead = 0;
-        m_availableData = 0;
+        _writeHead = 0;
+        _readHead = 0;
+        _availableData = 0;
     }
 
     /*!
@@ -136,7 +136,7 @@ public:
      */
     virtual bool isEmpty()
     {
-        return m_availableData == 0;
+        return _availableData == 0;
     }
 
     /*!
@@ -144,7 +144,7 @@ public:
      */
     virtual bool isFull()
     {
-        return m_availableData == BUFFER_SIZE;
+        return _availableData == BUFFER_SIZE;
     }
 
     /*!
@@ -152,7 +152,7 @@ public:
      */
     virtual uint16_t availableData()
     {
-        return m_availableData;
+        return _availableData;
     }
 
     /*!
@@ -164,10 +164,10 @@ public:
     }
 
 private:
-    uint16_t m_writeHead;
-    uint16_t m_readHead;
-    uint16_t m_availableData;
-    T m_buffer[BUFFER_SIZE];
+    uint16_t _writeHead;
+    uint16_t _readHead;
+    uint16_t _availableData;
+    T _buffer[BUFFER_SIZE];
 
     void incrementOrResetHead(uint16_t& head)
     {
@@ -179,17 +179,17 @@ private:
     void increaseAvailableDataCount()
     {
         // If we hit max data available,
-        // make sure we keep bumping up the m_readHead to ensure FIFO
-        m_availableData++;
-        if (m_availableData > BUFFER_SIZE) {
-            m_availableData = BUFFER_SIZE;
-            m_readHead++;
+        // make sure we keep bumping up the _readHead to ensure FIFO
+        _availableData++;
+        if (_availableData > BUFFER_SIZE) {
+            _availableData = BUFFER_SIZE;
+            _readHead++;
         }
     }
 
     void decreaseAvailableDataCount()
     {
-        m_availableData--;
+        _availableData--;
     }
 };
 
@@ -204,7 +204,7 @@ class ELineCircularBuffer : public ECircularBuffer<char, BUFFER_SIZE>
 {
 public:
     ELineCircularBuffer() :
-        m_bufferedLines(0)
+        _bufferedLines(0)
         { }
 
     using ECircularBuffer<char, BUFFER_SIZE>::push;
@@ -215,7 +215,7 @@ public:
 
         if (data == '\n')
         {
-            m_bufferedLines++;
+            _bufferedLines++;
         }
     }
 
@@ -227,7 +227,7 @@ public:
 
         if (data == '\n')
         {
-            m_bufferedLines--;
+            _bufferedLines--;
         }
 
         return data;
@@ -238,7 +238,7 @@ public:
      */
     inline uint16_t numBufferedLines()
     {
-        return m_bufferedLines;
+        return _bufferedLines;
     }
 
     /*!
@@ -264,7 +264,7 @@ public:
     }
 
 private:
-    uint16_t m_bufferedLines;
+    uint16_t _bufferedLines;
 };
 
 #endif

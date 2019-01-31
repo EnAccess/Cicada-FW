@@ -49,7 +49,7 @@ public:
 
     virtual bool open();
 
-    inline virtual bool isOpen() {return m_isOpen;}
+    inline virtual bool isOpen() {return _isOpen;}
 
     virtual bool setSerialConfig(uint32_t baudRate, uint8_t dataBits);
 
@@ -59,7 +59,7 @@ public:
      * Name of the serial port used.
      * \return Pointer to the string given to the constructor
      */
-    inline const char* portName() const { return m_port; }
+    inline const char* portName() const { return _port; }
 
 protected:
     virtual uint16_t rawBytesAvailable() const;
@@ -69,9 +69,9 @@ protected:
     virtual uint16_t rawWrite(const uint8_t* data, uint16_t size);
 
 private:
-    bool m_isOpen;
-    const char* m_port;
-    int m_fd;
+    bool _isOpen;
+    const char* _port;
+    int _fd;
 };
 
 #endif

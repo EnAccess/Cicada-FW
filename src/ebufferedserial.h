@@ -35,8 +35,8 @@ class EBufferedSerial : public EISerial, public ETask
 {
 public:
     EBufferedSerial() :
-        m_writeBarrier(false),
-        m_bytesToWrite(0)
+        _writeBarrier(false),
+        _bytesToWrite(0)
     { }
 
     /*!
@@ -45,7 +45,7 @@ public:
      */
     virtual uint16_t bytesAvailable()
     {
-        return m_readBuffer.availableData();
+        return _readBuffer.availableData();
     }
 
     /*!
@@ -54,7 +54,7 @@ public:
      */
     virtual uint16_t spaceAvailable()
     {
-        return m_writeBuffer.size() - m_writeBuffer.availableData();
+        return _writeBuffer.size() - _writeBuffer.availableData();
     }
 
     /*!
@@ -66,7 +66,7 @@ public:
      */
     virtual uint16_t read(char* data, uint16_t size)
     {
-        return m_readBuffer.pull(data, size);
+        return _readBuffer.pull(data, size);
     }
 
     /*!
@@ -75,7 +75,7 @@ public:
      */
     virtual char read()
     {
-        return m_readBuffer.pull();
+        return _readBuffer.pull();
     }
 
     /*!
@@ -88,7 +88,7 @@ public:
      */
     virtual uint16_t write(const char* data, uint16_t size)
     {
-        return m_writeBuffer.push(data, size);
+        return _writeBuffer.push(data, size);
     }
 
     /*!
@@ -97,7 +97,7 @@ public:
      */
     virtual void write(char data)
     {
-        m_writeBuffer.push(data);
+        _writeBuffer.push(data);
     }
 
     /*!
@@ -105,7 +105,7 @@ public:
      */
     virtual bool canReadLine()
     {
-        return m_readBuffer.numBufferedLines() > 0;
+        return _readBuffer.numBufferedLines() > 0;
     }
 
     /*!
@@ -113,7 +113,7 @@ public:
      */
     virtual uint16_t readLine(char* data, uint16_t size)
     {
-        return m_readBuffer.readLine(data, size);
+        return _readBuffer.readLine(data, size);
     }
 
     /*!
@@ -124,8 +124,8 @@ public:
      */
     virtual void setWriteBarrier()
     {
-        m_bytesToWrite = m_writeBuffer.availableData();
-        m_writeBarrier = true;
+        _bytesToWrite = _writeBuffer.availableData();
+        _writeBarrier = true;
     }
 
     /*!
@@ -134,8 +134,8 @@ public:
      */
     virtual void clearWriteBarrier()
     {
-        m_bytesToWrite = 0;
-        m_writeBarrier = false;
+        _bytesToWrite = 0;
+        _writeBarrier = false;
     }
 
     /*!
@@ -143,37 +143,37 @@ public:
      */
     virtual void flushReceiveBuffers()
     {
-        m_readBuffer.flush();
+        _readBuffer.flush();
     }
 
     virtual void run()
     {
-        if (m_writeBuffer.availableData() &&
-            (!m_writeBarrier || m_bytesToWrite))
+        if (_writeBuffer.availableData() &&
+            (!_writeBarrier || _bytesToWrite))
         {
-            char data = m_writeBuffer.read();
+            char data = _writeBuffer.read();
             if (rawWrite((const uint8_t*)&data, 1) == 1)
             {
-                m_writeBuffer.pull();
-                m_bytesToWrite--;
+                _writeBuffer.pull();
+                _bytesToWrite--;
             }
         }
 
-        if (rawBytesAvailable() && !m_readBuffer.isFull())
+        if (rawBytesAvailable() && !_readBuffer.isFull())
         {
             char data;
             if (rawRead((uint8_t*)&data, 1) == 1)
             {
-                m_readBuffer.push(data);
+                _readBuffer.push(data);
             }
         }
     }
 
 private:
-    ELineCircularBuffer<BUFFER_SIZE> m_readBuffer;
-    ELineCircularBuffer<BUFFER_SIZE> m_writeBuffer;
-    bool m_writeBarrier;
-    uint16_t m_bytesToWrite;
+    ELineCircularBuffer<BUFFER_SIZE> _readBuffer;
+    ELineCircularBuffer<BUFFER_SIZE> _writeBuffer;
+    bool _writeBarrier;
+    uint16_t _bytesToWrite;
 };
 
 typedef EBufferedSerial<E_DEFAULT_SERIAL_BUFFERSIZE> EDefaultBufferedSerial;

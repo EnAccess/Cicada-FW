@@ -50,9 +50,9 @@ public:
     void start();
 
 private:
-    E_TICK_TYPE (*m_tickFunction)();
-    ETask** m_taskList;
-    ETask** m_currentTask;
+    E_TICK_TYPE (*_tickFunction)();
+    ETask** _taskList;
+    ETask** _currentTask;
 };
 
 #endif

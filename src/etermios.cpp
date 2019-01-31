@@ -28,27 +28,27 @@
 #include "etermios.h"
 
 ETermios::ETermios(const char* port) :
-    m_isOpen(false),
-    m_port(port),
-    m_fd(-1)
+    _isOpen(false),
+    _port(port),
+    _fd(-1)
 {
 }
 
 bool ETermios::open()
 {
-    m_fd = ::open(m_port, O_RDWR | O_NOCTTY | O_NDELAY);
-    if (m_fd == -1)
+    _fd = ::open(_port, O_RDWR | O_NOCTTY | O_NDELAY);
+    if (_fd == -1)
     {
         return false;
     }
 
-    if (!isatty(m_fd))
+    if (!isatty(_fd))
     {
         close();
         return false;
     }
 
-    m_isOpen = true;
+    _isOpen = true;
     return true;
 }
 
@@ -169,7 +169,7 @@ bool ETermios::setSerialConfig(uint32_t baudRate, uint8_t dataBits)
         return false;
     }
 
-    if(tcgetattr(m_fd, &config) < 0)
+    if(tcgetattr(_fd, &config) < 0)
     {
         return false;
     }
@@ -190,7 +190,7 @@ bool ETermios::setSerialConfig(uint32_t baudRate, uint8_t dataBits)
         return false;
     }
 
-    if(tcsetattr(m_fd, TCSAFLUSH, &config) < 0)
+    if(tcsetattr(_fd, TCSAFLUSH, &config) < 0)
     {
         return false;
     }
@@ -200,28 +200,28 @@ bool ETermios::setSerialConfig(uint32_t baudRate, uint8_t dataBits)
 
 void ETermios::close()
 {
-    m_isOpen = false;
+    _isOpen = false;
 
-    if (m_fd >= 0)
-        ::close(m_fd);
+    if (_fd >= 0)
+        ::close(_fd);
 
-    m_fd = -1;
+    _fd = -1;
 }
 
 uint16_t ETermios::rawBytesAvailable() const
 {
-    if (m_fd < 0)
+    if (_fd < 0)
         return 0;
 
     int bytes;
-    ioctl(m_fd, FIONREAD, &bytes);
+    ioctl(_fd, FIONREAD, &bytes);
 
     return bytes > UINT16_MAX ? UINT16_MAX : bytes;
 }
 
 uint16_t ETermios::rawRead(uint8_t* data, uint16_t maxSize)
 {
-    ssize_t nBytes = ::read(m_fd, data, maxSize);
+    ssize_t nBytes = ::read(_fd, data, maxSize);
     if (nBytes < 0)
         return 0;
 
@@ -230,5 +230,5 @@ uint16_t ETermios::rawRead(uint8_t* data, uint16_t maxSize)
 
 uint16_t ETermios::rawWrite(const uint8_t* data, uint16_t size)
 {
-    return ::write(m_fd, data, size);
+    return ::write(_fd, data, size);
 }

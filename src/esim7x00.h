@@ -89,20 +89,20 @@ private:
         finalizeDisconnect
     };
 
-    EDefaultBufferedSerial& m_serial;
-    SendState m_connectState;
-    ReplyState m_replyState;
-    const char* m_apn;
-    const char* m_host;
-    char m_ip[16];
-    uint16_t m_port;
-    const char* m_waitForReply;
-    bool m_lineRead;
-    bool m_ipConnected;
-    uint16_t m_bytesToReceive;
-    uint16_t m_bytesToRead;
+    EDefaultBufferedSerial& _serial;
+    SendState _connectState;
+    ReplyState _replyState;
+    const char* _apn;
+    const char* _host;
+    char _ip[16];
+    uint16_t _port;
+    const char* _waitForReply;
+    bool _lineRead;
+    bool _ipConnected;
+    uint16_t _bytesToReceive;
+    uint16_t _bytesToRead;
 
-    static const char* m_okStr;
-    static const char* m_lineEndStr;
-    static const char* m_quoteEndStr;
+    static const char* _okStr;
+    static const char* _lineEndStr;
+    static const char* _quoteEndStr;
 };

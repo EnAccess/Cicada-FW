@@ -25,24 +25,24 @@
 #include "escheduler.h"
 
 EScheduler::EScheduler(E_TICK_TYPE (*tickFunction)(), ETask** taskList) :
-    m_tickFunction(tickFunction),
-    m_taskList(taskList),
-    m_currentTask(taskList)
+    _tickFunction(tickFunction),
+    _taskList(taskList),
+    _currentTask(taskList)
 { }
 
 void EScheduler::runTask()
 {
-    E_TICK_TYPE tick = m_tickFunction();
-    if ((*m_currentTask)->delay() == 0 ||
-        tick >= (*m_currentTask)->lastRun() + (*m_currentTask)->delay())
+    E_TICK_TYPE tick = _tickFunction();
+    if ((*_currentTask)->delay() == 0 ||
+        tick >= (*_currentTask)->lastRun() + (*_currentTask)->delay())
     {
-        (*m_currentTask)->setLastRun(tick);
-        (*m_currentTask)->run();
+        (*_currentTask)->setLastRun(tick);
+        (*_currentTask)->run();
     }
 
-    if (*++m_currentTask == NULL)
+    if (*++_currentTask == NULL)
     {
-        m_currentTask = m_taskList;
+        _currentTask = _taskList;
     }
 }
 

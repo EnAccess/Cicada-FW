@@ -112,8 +112,8 @@ class ETask
 {
 public:
     ETask(uint16_t initialDelay = 0) :
-        m_delay(initialDelay),
-        m_lastRun(0)
+        _delay(initialDelay),
+        _lastRun(0)
     { }
 
     virtual ~ETask() {}
@@ -121,25 +121,25 @@ public:
     /*!
      * Minimum delay before the task will run again.
      */
-    inline uint16_t delay() const {return m_delay;}
+    inline uint16_t delay() const {return _delay;}
 
     /*!
      * Set the minimum delay before the task will run again.
      * \param delay New delay
      */
-    inline void setDelay(uint16_t delay) {m_delay = delay;}
+    inline void setDelay(uint16_t delay) {_delay = delay;}
 
     /*!
      * Returns the time when this task was last executed
      * \return Time when this task was last executed
      */
 
-    inline E_TICK_TYPE lastRun() {return m_lastRun;}
+    inline E_TICK_TYPE lastRun() {return _lastRun;}
 
     /*!
      * Update tick of last run with the global tick timer 
      */
-    inline void setLastRun(E_TICK_TYPE time) {m_lastRun = time;}
+    inline void setLastRun(E_TICK_TYPE time) {_lastRun = time;}
 
     /*!
      * The starting point for the task. The scheduler will call
@@ -159,8 +159,8 @@ private:
      */
     ETask(const ETask&);
 
-    uint16_t m_delay; /**< Time before the task will run again */
-    E_TICK_TYPE m_lastRun; /**< Stores the tick when the task last ran */
+    uint16_t _delay; /**< Time before the task will run again */
+    E_TICK_TYPE _lastRun; /**< Stores the tick when the task last ran */
 };
 
 #endif
