@@ -61,6 +61,14 @@ public:
     virtual uint16_t bytesAvailable() const = 0;
 
     /*!
+     * Number of bytes which can be written immediately,
+     * with out blocking. This is usually the size of space
+     * available in ther underlying buffer.
+     * \return Number of bytes available for writing
+     */
+    virtual uint16_t spaceAvailable() const = 0;
+
+    /*!
      * Reads data from the device.
      * \param data Buffer to store data. Must be large enough to store
      * maxSize bytes.

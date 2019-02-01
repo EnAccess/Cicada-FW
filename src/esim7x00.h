@@ -44,6 +44,8 @@ public:
 
     virtual uint16_t bytesAvailable() const;
 
+    virtual uint16_t spaceAvailable() const;
+
     virtual uint16_t read(uint8_t* data, uint16_t maxSize);
 
     virtual uint16_t write(const uint8_t* data, uint16_t size);

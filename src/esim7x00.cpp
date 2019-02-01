@@ -114,6 +114,14 @@ uint16_t ESim7x00CommDevice::bytesAvailable() const
         return _bytesToRead;
 }
 
+uint16_t ESim7x00CommDevice::spaceAvailable() const
+{
+    if (_connectState < connected || _connectState > receiving)
+        return 0;
+
+    return _serial.bytesAvailable() - 4;
+}
+
 uint16_t ESim7x00CommDevice::read(uint8_t* data, uint16_t maxSize)
 {
     if (_connectState != receiving)
