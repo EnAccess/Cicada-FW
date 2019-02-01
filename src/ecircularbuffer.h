@@ -134,7 +134,7 @@ public:
     /*!
      * \return true if the buffer is empty, false if there is data in it
      */
-    virtual bool isEmpty()
+    virtual bool isEmpty() const
     {
         return _availableData == 0;
     }
@@ -142,7 +142,7 @@ public:
     /*!
      * \return true if the buffer is full, false if there is still space
      */
-    virtual bool isFull()
+    virtual bool isFull() const
     {
         return _availableData == BUFFER_SIZE;
     }
@@ -150,7 +150,7 @@ public:
     /*!
      * \return Number of available elements in the buffer
      */
-    virtual uint16_t availableData()
+    virtual uint16_t availableData() const
     {
         return _availableData;
     }
@@ -158,7 +158,7 @@ public:
     /*!
      * \return size of the buffer, which was specified at compile time
      */
-    virtual uint16_t size()
+    virtual uint16_t size() const
     {
         return BUFFER_SIZE;
     }
@@ -236,7 +236,7 @@ public:
     /*!
      * \return Number of lines currently in the buffer
      */
-    inline uint16_t numBufferedLines()
+    inline uint16_t numBufferedLines() const
     {
         return _bufferedLines;
     }

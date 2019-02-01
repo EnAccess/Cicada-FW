@@ -43,7 +43,7 @@ public:
      * Number of bytes available in the reading buffer.
      * \return Number of bytes available for reading
      */
-    virtual uint16_t bytesAvailable()
+    virtual uint16_t bytesAvailable() const
     {
         return _readBuffer.availableData();
     }
@@ -52,7 +52,7 @@ public:
      * Number of bytes available for writing in this buffer.
      * \return Number of bytes available for writing
      */
-    virtual uint16_t spaceAvailable()
+    virtual uint16_t spaceAvailable() const
     {
         return _writeBuffer.size() - _writeBuffer.availableData();
     }
@@ -103,7 +103,7 @@ public:
     /*!
      * \return true if a whole line is in the buffer, false otherwise
      */
-    virtual bool canReadLine()
+    virtual bool canReadLine() const
     {
         return _readBuffer.numBufferedLines() > 0;
     }
