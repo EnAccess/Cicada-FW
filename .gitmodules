@@ -1,0 +1,3 @@
+[submodule "dep/paho.mqtt.embedded-c"]
+	path = dep/paho.mqtt.embedded-c
+	url = https://github.com/eclipse/paho.mqtt.embedded-c.git
