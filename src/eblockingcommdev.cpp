@@ -26,9 +26,12 @@
 
 EBlockingCommDevice::EBlockingCommDevice(EICommDevice& dev,
                                          E_TICK_TYPE (*tickFunction)(void),
-                                         void (*_yieldFunction)(void)) :
+                                         void (*yieldFunction)(void*),
+                                         void* yieldUserData) :
     _commDev(dev),
-    _tickFunction(tickFunction)
+    _tickFunction(tickFunction),
+    _yieldFunction(yieldFunction),
+    _yieldUserData(yieldUserData)
 { }
 
 int EBlockingCommDevice::read(unsigned char* buffer, int len, int timeout)
@@ -40,7 +43,7 @@ int EBlockingCommDevice::read(unsigned char* buffer, int len, int timeout)
         if (_tickFunction() - startTime > (E_TICK_TYPE)timeout)
             return 0;
 
-        _yieldFunction();
+        _yieldFunction(_yieldUserData);
     }
 
     return _commDev.read(buffer, len);
@@ -55,7 +58,7 @@ int EBlockingCommDevice::write(unsigned char* buffer, int len, int timeout)
         if (_tickFunction() - startTime > (E_TICK_TYPE)timeout)
             return 0;
 
-        _yieldFunction();
+        _yieldFunction(_yieldUserData);
     }
 
     return _commDev.write(buffer, len);

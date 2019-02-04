@@ -24,6 +24,7 @@
 #ifndef EBLOCKINGCOMMDEV_H
 #define EBLOCKINGCOMMDEV_H
 
+#include <cstddef>
 #include "edefines.h"
 #include "eicommdevice.h"
 
@@ -41,13 +42,15 @@ public:
     /*!
      * \param dev CommDevice to be used in blocking mode
      * \param tickFunction function which delivers system tick time
-     * \param yieldFunction function to be called in reguler intrvals
+     * \param yieldFunction function to be called in reguler intrvals 
+     * \param yieldUserData data which can be passed to the yield function
      * while waiting for buffers. This is usually the operating system's
      * yield() or a user defined function to process other tasks.
      */
     EBlockingCommDevice(EICommDevice& dev,
                         E_TICK_TYPE (*tickFunction)(void),
-                        void (*yieldFunction)(void));
+                        void (*yieldFunction)(void*),
+                        void* yieldUserData = NULL);
 
     /*!
      * Blocking read.
@@ -62,7 +65,8 @@ public:
 private:
     EICommDevice& _commDev;
     E_TICK_TYPE (*_tickFunction)(void);
-    void (*_yieldFunction)(void);
+    void (*_yieldFunction)(void*);
+    void * _yieldUserData;
 };
 
 #endif
