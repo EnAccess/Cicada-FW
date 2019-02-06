@@ -39,7 +39,7 @@ public:
     /*!
      * Disconnects the device
      */
-    virtual bool disconnect() = 0;
+    virtual void disconnect() = 0;
 
     /*!
      * \return true if the device is fully connected, false otherwise.
@@ -50,7 +50,8 @@ public:
 
     /*!
      * \return true if the device is in idle state, false otherwise.
-     * Idle means it's able to establish a new connection.
+     * Idle means all services are disconnected and it's able to
+     * establish a new connection.
      */
     virtual bool isIdle() = 0;
 
