@@ -38,15 +38,20 @@ int EBlockingCommDevice::read(unsigned char* buffer, int len, int timeout)
 {
     E_TICK_TYPE startTime = _tickFunction();
 
-    while (_commDev.bytesAvailable() < len)
+    int totalBytes = 0;
+    while (len)
     {
         if (_tickFunction() - startTime > (E_TICK_TYPE)timeout)
-            return 0;
+            break;
+
+        int bytesRead = _commDev.read(buffer + totalBytes, len);
+        len -= bytesRead;
+        totalBytes += bytesRead;
 
         _yieldFunction(_yieldUserData);
     }
 
-    return _commDev.read(buffer, len);
+    return totalBytes;
 }
 
 int EBlockingCommDevice::write(unsigned char* buffer, int len, int timeout)

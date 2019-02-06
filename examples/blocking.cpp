@@ -8,6 +8,7 @@
 
 #include "escheduler.h"
 #include "etermios.h"
+#include "eblockingcommdev.h"
 #include "esim7x00.h"
 
 uint64_t tickFunction()
@@ -23,6 +24,10 @@ uint64_t tickFunction()
     return ms;
 }
 
+void yieldFunction(void *sched) {
+    ((EScheduler*)sched)->runTask();
+}
+
 int main(int argc, char * argv[])
 {
     ETermios serial("/dev/ttyUSB0");
@@ -32,12 +37,14 @@ int main(int argc, char * argv[])
 
     EScheduler s(&tickFunction, taskList);
 
+    EBlockingCommDevice bld(commDev, tickFunction, yieldFunction, &s);
+
     commDev.setApn("internet");
     commDev.setHostPort("wttr.in", 80);
     commDev.connect();
 
     while (!commDev.isConnected())
-        s.runTask();
+        yieldFunction(&s);
 
     printf("*** Connected! ***\n");
 
@@ -46,29 +53,19 @@ int main(int argc, char * argv[])
         "Host: wttr.in\r\n"
         "User-Agent: curl\r\n"
         "Connection: close\r\n\r\n";
-    commDev.write((uint8_t*)str, sizeof(str) - 1);
+    bld.write((uint8_t*)str, sizeof(str) - 1, 200);
 
-    while(!commDev.bytesAvailable())
-        s.runTask();
-
-    uint64_t idleTime = tickFunction();
-    while(tickFunction() - idleTime < 200)
-    {
-        if (commDev.bytesAvailable())
-        {
-            idleTime = tickFunction();
-            char buf[41];
-            uint16_t bytesRead = commDev.read((uint8_t*)buf, 40);
-            buf[bytesRead] = '\0';
-            printf("%s", buf);
-        }
-
-        s.runTask();
-    }
+    int bytesRead;
+    do {
+        char buf[41];
+        bytesRead = bld.read((uint8_t*)buf, 40, 200);
+        buf[bytesRead] = '\0';
+        printf("%s", buf);
+    } while(bytesRead);
 
     commDev.disconnect();
     while (!commDev.isIdle())
-        s.runTask();
+        yieldFunction(&s);
 
     return 0;
 }
