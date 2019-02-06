@@ -146,6 +146,14 @@ public:
         _readBuffer.flush();
     }
 
+    /*!
+     * \return Buffer size of read/write buffer
+     */
+    virtual uint16_t bufferSize()
+    {
+        return _writeBuffer.size();
+    }
+
     virtual void run()
     {
         if (_writeBuffer.availableData() &&
