@@ -36,7 +36,7 @@ public:
 
     virtual bool connect();
 
-    virtual bool disconnect();
+    virtual void disconnect();
 
     virtual bool isConnected();
 
@@ -60,7 +60,6 @@ private:
         expectConnect,
         netopen,
         cdnsgip,
-        waitForData,
         ciprxget4,
         ciprxget2
     };
@@ -69,6 +68,7 @@ private:
         notConnected,
         serialError,
         dnsError,
+        netopenError,
         connecting,
         sendCgdcont,
         sendAtd,
@@ -82,29 +82,32 @@ private:
         finalizeConnect,
         connected,
         sendCipsend,
+        afterCipsend,
         sendCiprxget4,
         sendCiprxget2,
-        waitReceive,
         receiving,
+        ipUnconnected,
         sendNetclose,
         sendAth,
         finalizeDisconnect
     };
 
     EDefaultBufferedSerial& _serial;
-    SendState _connectState;
+    SendState _sendState;
     ReplyState _replyState;
     const char* _apn;
     const char* _host;
     char _ip[16];
     uint16_t _port;
     const char* _waitForReply;
-    bool _lineRead;
-    bool _ipConnected;
+    uint8_t _stateBooleans;
     uint16_t _bytesToReceive;
     uint16_t _bytesToRead;
 
     static const char* _okStr;
     static const char* _lineEndStr;
     static const char* _quoteEndStr;
+
+    bool handleDisconnect(SendState nextState);
+    bool handleConnect(SendState nextState);
 };

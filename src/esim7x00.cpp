@@ -27,25 +27,33 @@
 #include <cstdio>
 #include "esim7x00.h"
 
-#define LINE_MAX_LENGTH 60
+#define LINE_MAX_LENGTH     60
+#define MIN_SPACE_AVAILABLE 22
 
 #define OK_STR_LENGTH        2
 #define LINE_END_STR_LENGTH  2
 #define QUOTE_END_STR_LENGTH 3
+
+#define CONNECT_PENDING    (1 << 0)
+#define WRITE_PENDING      (1 << 1)
+#define DATA_PENDING       (1 << 2)
+#define DISCONNECT_PENDING (1 << 3)
+#define IP_CONNECTED       (1 << 4)
+#define LINE_READ          (1 << 5)
+
 const char* ESim7x00CommDevice::_okStr = "OK";
 const char* ESim7x00CommDevice::_lineEndStr = "\r\n";
 const char* ESim7x00CommDevice::_quoteEndStr = "\"\r\n";
 
 ESim7x00CommDevice::ESim7x00CommDevice(EDefaultBufferedSerial& serial) :
     _serial(serial),
-    _connectState(notConnected),
+    _sendState(notConnected),
     _replyState(normalReply),
     _apn(NULL),
     _host(NULL),
     _port(0),
     _waitForReply(NULL),
-    _lineRead(true),
-    _ipConnected(false),
+    _stateBooleans(0),
     _bytesToReceive(0),
     _bytesToRead(0)
 { }
@@ -63,49 +71,33 @@ void ESim7x00CommDevice::setApn(const char* apn)
 
 bool ESim7x00CommDevice::connect()
 {
-    if (_connectState != notConnected || _apn == NULL ||
-        _host == NULL || _port == 0)
-    {
+    if (_apn == NULL || _host == NULL || _port == 0)
         return false;
-    }
 
-    _connectState = connecting;
+    _stateBooleans |= CONNECT_PENDING;
 
     return true;
 }
 
-bool ESim7x00CommDevice::disconnect()
+void ESim7x00CommDevice::disconnect()
 {
-    if (_connectState <= sendPpp || _connectState > receiving)
-        return false;
-
-    if (_connectState == finalizeConnect)
-        _waitForReply = NULL;
-
-    if (_connectState > sendNetopen)
-        _connectState = sendNetclose;
-    else if (_connectState > sendPpp)
-        _connectState = sendAth;
-    else
-        _connectState = notConnected;
-
-    return true;
+    _stateBooleans |= DISCONNECT_PENDING;
 }
 
 bool ESim7x00CommDevice::isConnected()
 {
-    return _connectState >= connected &&
-        _connectState < sendNetclose && _ipConnected;
+    return _sendState >= connected &&
+        _sendState < ipUnconnected && (_stateBooleans & IP_CONNECTED);
 }
 
 bool ESim7x00CommDevice::isIdle()
 {
-    return _connectState == notConnected;
+    return _sendState == notConnected;
 }
 
 uint16_t ESim7x00CommDevice::bytesAvailable() const
 {
-    if (_connectState != receiving)
+    if (_sendState != receiving)
         return 0;
 
     if (_bytesToRead > _serial.bytesAvailable())
@@ -116,15 +108,18 @@ uint16_t ESim7x00CommDevice::bytesAvailable() const
 
 uint16_t ESim7x00CommDevice::spaceAvailable() const
 {
-    if (_connectState < connected || _connectState > receiving)
+    if (_sendState != connected || _replyState != normalReply)
         return 0;
 
-    return _serial.bytesAvailable() - 4;
+    if (_serial.spaceAvailable() <= MIN_SPACE_AVAILABLE)
+        return 0;
+
+    return _serial.spaceAvailable() - MIN_SPACE_AVAILABLE;
 }
 
 uint16_t ESim7x00CommDevice::read(uint8_t* data, uint16_t maxSize)
 {
-    if (_connectState != receiving)
+    if (_sendState != receiving)
         return 0;
 
     if (maxSize > _bytesToRead)
@@ -135,16 +130,7 @@ uint16_t ESim7x00CommDevice::read(uint8_t* data, uint16_t maxSize)
 
     if (_bytesToRead == 0)
     {
-        _lineRead = true;
-
-        if (_bytesToReceive == 0)
-        {
-            _connectState = sendCiprxget4;
-        }
-        else
-        {
-            _connectState = sendCiprxget2;
-        }
+        _stateBooleans |= LINE_READ;
     }
 
     return bytesRead;
@@ -152,19 +138,20 @@ uint16_t ESim7x00CommDevice::read(uint8_t* data, uint16_t maxSize)
 
 uint16_t ESim7x00CommDevice::write(const uint8_t* data, uint16_t size)
 {
-    const char minSpace = 22;
-
-    if (_connectState != connected)
+    if (_sendState != connected || _replyState != normalReply)
         return 0;
 
-    if (_serial.spaceAvailable() < minSpace)
+    if ((_stateBooleans & WRITE_PENDING) || !(_stateBooleans & IP_CONNECTED))
         return 0;
 
-    if (size > _serial.spaceAvailable() - minSpace + 1)
-        size = _serial.spaceAvailable() - minSpace + 1;
+    if (_serial.spaceAvailable() < MIN_SPACE_AVAILABLE)
+        return 0;
 
-    _connectState = sendCipsend;
-    _lineRead = false;
+    if (size > _serial.spaceAvailable() - MIN_SPACE_AVAILABLE)
+        size = _serial.spaceAvailable() - MIN_SPACE_AVAILABLE;
+
+    _stateBooleans |= WRITE_PENDING;
+    _stateBooleans &= ~LINE_READ;
 
     const char str[] = "AT+CIPSEND=0,";
     char sizeStr[6];
@@ -179,13 +166,41 @@ uint16_t ESim7x00CommDevice::write(const uint8_t* data, uint16_t size)
     return _serial.write((char*)data, size);
 }
 
+bool ESim7x00CommDevice::handleDisconnect(SendState nextState)
+{
+    if (_stateBooleans & DISCONNECT_PENDING)
+    {
+        _stateBooleans &= ~DISCONNECT_PENDING;
+        _replyState = noReply;
+        _sendState = nextState;
+
+        return true;
+    }
+
+    return false;
+}
+
+bool ESim7x00CommDevice::handleConnect(SendState nextState)
+{
+    if (_stateBooleans & CONNECT_PENDING)
+    {
+        _stateBooleans &= ~CONNECT_PENDING;
+        _replyState = noReply;
+        _sendState = nextState;
+
+        return true;
+    }
+
+    return false;
+}
+
 #define SEND_COMMAND(cmd, expectedReply, nextState)             \
     {                                                           \
         const char sendStr[] = cmd;                             \
-        _serial.write(sendStr, sizeof(sendStr) - 1);           \
-        _serial.write(_lineEndStr, LINE_END_STR_LENGTH);      \
-        _waitForReply = expectedReply;                         \
-        _connectState = nextState;                             \
+        _serial.write(sendStr, sizeof(sendStr) - 1);            \
+        _serial.write(_lineEndStr, LINE_END_STR_LENGTH);        \
+        _waitForReply = expectedReply;                          \
+        _sendState = nextState;                                 \
         break;                                                  \
     }
 
@@ -196,28 +211,28 @@ void ESim7x00CommDevice::run()
     {
         if (!_serial.open())
         {
-            _connectState = serialError;
+            _sendState = serialError;
         }
         return;
     }
 
     // Check if there is a reply from the modem
-    if (_lineRead && _serial.canReadLine())
+    if ((_stateBooleans & LINE_READ) && _serial.canReadLine())
     {
         char data[LINE_MAX_LENGTH + 1];
         uint8_t size = _serial.readLine(data, LINE_MAX_LENGTH);
         data[size] = '\0';
 
-        if (_connectState < connected || _connectState > receiving)
+        if (_sendState < connected || _sendState > receiving)
         {
             if (_waitForReply)
-                printf("_connectState=%d, _replyState=%d, "
+                printf("_sendState=%d, _replyState=%d, "
                        "_waitForReply=\"%s\", data: %s",
-                       _connectState, _replyState, _waitForReply, data);
+                       _sendState, _replyState, _waitForReply, data);
             else
-                printf("_connectState=%d, _replyState=%d, "
+                printf("_sendState=%d, _replyState=%d, "
                        "_waitForReply=NULL, data: %s",
-                       _connectState, _replyState, data);
+                       _sendState, _replyState, data);
         }
 
         // If we sent a command, we process the reply here
@@ -230,7 +245,7 @@ void ESim7x00CommDevice::run()
             }
             else if (strncmp(data, "ERROR", 5) == 0)
             {
-                disconnect();
+                _stateBooleans |= DISCONNECT_PENDING;
 
                 _replyState = noReply;
                 _waitForReply = NULL;
@@ -238,14 +253,13 @@ void ESim7x00CommDevice::run()
             }
         }
 
+        // Depending on the reply to expect, handle different cases
         switch(_replyState)
         {
         case netopen:
             if (strncmp(data, "+NETOPEN: 1", 11) == 0)
             {
-                // Send netopen again in case it didn't work
-                setDelay(2000);
-                _connectState = sendNetopen;
+                _sendState = netopenError;
                 _waitForReply = NULL;
             }
             break;
@@ -267,7 +281,7 @@ void ESim7x00CommDevice::run()
                 if (q != 4)
                 {
                     // Error in input string
-                    _connectState = dnsError;
+                    _sendState = dnsError;
                     return;
                 }
                 i = 0, q = 0;
@@ -287,34 +301,12 @@ void ESim7x00CommDevice::run()
             }
             break;
 
-        case waitForData:
-            if (strncmp(data, "+CIPRXGET: 1,0", 14) == 0)
-            {
-                _connectState = sendCiprxget4;
-            }
-            break;
-
         case ciprxget4:
             if (strncmp(data, "+CIPRXGET: 4,0,", 15) == 0)
             {
                 int bytesToReceive;
                 sscanf(data + 15, "%d", &bytesToReceive);
                 _bytesToReceive += bytesToReceive;
-                if (_bytesToReceive > 0)
-                {
-                    _replyState = normalReply;
-                    _connectState = sendCiprxget2;
-                }
-                else if (_ipConnected)
-                {
-                    _replyState = waitForData;
-                    _connectState = connected;
-                }
-                else
-                {
-                    _replyState = noReply;
-                    _connectState = sendCipopen;
-                }
             }
             break;
 
@@ -325,9 +317,8 @@ void ESim7x00CommDevice::run()
                 sscanf(data + 15, "%d", &bytesToReceive);
                 _bytesToReceive -= bytesToReceive;
                 _bytesToRead += bytesToReceive;
-                _lineRead = false;
+                _stateBooleans &= ~LINE_READ;
                 _replyState = normalReply;
-                _connectState = receiving;
             }
             break;
 
@@ -335,18 +326,22 @@ void ESim7x00CommDevice::run()
             break;
         }
 
-        // In connected state, check for connection close
-        if (_connectState >= connected)
+        // In connected state, check for new data or IP connection close
+        if (_sendState >= connected)
         {
-            if (strncmp(data, "+IPCLOSE: 0,", 12) == 0)
+            if (strncmp(data, "+CIPRXGET: 1,0", 14) == 0)
             {
-                _ipConnected = false;
+                _stateBooleans |= DATA_PENDING;
+            }
+            else if (strncmp(data, "+IPCLOSE: 0,", 12) == 0)
+            {
+                _stateBooleans &= ~IP_CONNECTED;
             }
         }
     }
 
     // When disconnecting was requested, flush read buffer first
-    else if (_connectState == sendNetclose)
+    else if ((_stateBooleans & DISCONNECT_PENDING) && _sendState == receiving)
     {
         while (_bytesToRead && _serial.bytesAvailable())
         {
@@ -356,10 +351,12 @@ void ESim7x00CommDevice::run()
         _bytesToReceive = 0;
 
         if (_bytesToRead == 0)
-            _lineRead = true;
+        {
+            _stateBooleans |= LINE_READ;
+        }
     }
 
-    // Don't go on if we are in wait state
+    // Don't go on when waiting for a reply
     if (_waitForReply)
         return;
 
@@ -368,11 +365,15 @@ void ESim7x00CommDevice::run()
         return;
 
     // Connection state machine
-    switch(_connectState)
+    switch(_sendState)
     {
+    case notConnected:
+        handleConnect(connecting);
+        break;
 
     case connecting:
         setDelay(10);
+        _stateBooleans |= LINE_READ;
         SEND_COMMAND("ATE1", _okStr, sendCgdcont);
 
     case sendCgdcont:
@@ -383,7 +384,7 @@ void ESim7x00CommDevice::run()
         _serial.write(_quoteEndStr, QUOTE_END_STR_LENGTH);
 
         _waitForReply = _okStr;
-        _connectState = sendAtd;
+        _sendState = sendAtd;
         break;
     }
 
@@ -398,7 +399,7 @@ void ESim7x00CommDevice::run()
         _serial.write(str, sizeof(str) - 1);
 
         _waitForReply = _okStr;
-        _connectState = sendCsocksetpn;
+        _sendState = sendCsocksetpn;
         break;
     }
 
@@ -428,7 +429,7 @@ void ESim7x00CommDevice::run()
         _serial.write(_quoteEndStr, QUOTE_END_STR_LENGTH);
 
         _waitForReply = _okStr;
-        _connectState = sendCipopen;
+        _sendState = sendCipopen;
         break;
     }
 
@@ -447,15 +448,32 @@ void ESim7x00CommDevice::run()
         _serial.write(_lineEndStr, LINE_END_STR_LENGTH);
 
         _waitForReply = "+CIPOPEN: 0,0";
-        _connectState = finalizeConnect;
+        _sendState = finalizeConnect;
         break;
     }
 
     case finalizeConnect:
         setDelay(0);
-        _replyState = waitForData;
-        _connectState = connected;
-        _ipConnected = true;
+        _replyState = normalReply;
+        _sendState = connected;
+        _stateBooleans |= IP_CONNECTED;
+        break;
+
+    case connected:
+        if (_stateBooleans & WRITE_PENDING)
+        {
+            _stateBooleans &= ~WRITE_PENDING;
+            _sendState = sendCipsend;
+        }
+        else if (_stateBooleans & DATA_PENDING)
+        {
+            _stateBooleans &= ~DATA_PENDING;
+            _sendState = sendCiprxget4;
+        }
+        else
+        {
+            handleDisconnect(sendNetclose);
+        }
         break;
 
     // States after connecting
@@ -468,33 +486,75 @@ void ESim7x00CommDevice::run()
             if (data == '>')
             {
                 _serial.clearWriteBarrier();
-                _lineRead = true;
-                _connectState = connected;
+                _stateBooleans |= LINE_READ;
+                _waitForReply = _okStr;
+                _sendState = afterCipsend;
             }
         }
         break;
     }
+
+    case afterCipsend:
+        _sendState = connected;
+        break;
 
     case sendCiprxget4:
         _replyState = ciprxget4;
         SEND_COMMAND("AT+CIPRXGET=4,0", _okStr, sendCiprxget2);
 
     case sendCiprxget2:
-        if (_bytesToReceive > 0 && _serial.spaceAvailable() > 4)
+        if (handleDisconnect(sendNetclose))
+            break;
+
+        if (_bytesToReceive > 0)
         {
-            int bytesToReceive = _serial.spaceAvailable() - 4;
-            if (bytesToReceive > _bytesToReceive)
-                bytesToReceive = _bytesToReceive;
-            const char str[] = "AT+CIPRXGET=2,0,";
-            char sizeStr[6];
-            sprintf(sizeStr, "%d", bytesToReceive);
-            _serial.write(str, sizeof(str) - 1);
-            _serial.write(sizeStr, strlen(sizeStr));
-            _serial.write(_lineEndStr, LINE_END_STR_LENGTH);
-            _replyState = ciprxget2;
-            _waitForReply = _okStr;
-            _connectState = waitReceive;
+            if (_serial.bufferSize() - _serial.bytesAvailable() > 4)
+            {
+                int bytesToReceive =
+                    _serial.bufferSize() - _serial.bytesAvailable() - 4;
+                if (bytesToReceive > _bytesToReceive)
+                    bytesToReceive = _bytesToReceive;
+
+                const char str[] = "AT+CIPRXGET=2,0,";
+                char sizeStr[6];
+                sprintf(sizeStr, "%d", bytesToReceive);
+                _serial.write(str, sizeof(str) - 1);
+                _serial.write(sizeStr, strlen(sizeStr));
+                _serial.write(_lineEndStr, LINE_END_STR_LENGTH);
+                _replyState = ciprxget2;
+                _waitForReply = _okStr;
+                _sendState = receiving;
+            }
         }
+        else if (_stateBooleans & IP_CONNECTED)
+        {
+            _replyState = normalReply;
+            _sendState = connected;
+        }
+        else
+        {
+            _replyState = noReply;
+            _sendState = ipUnconnected;
+        }
+
+        break;
+
+    case receiving:
+        if (_bytesToReceive == 0)
+        {
+            _sendState = sendCiprxget4;
+        }
+        else
+        {
+            _sendState = sendCiprxget2;
+        }
+        break;
+
+    case ipUnconnected:
+        if (handleDisconnect(sendNetclose))
+            break;
+
+        handleConnect(sendCipopen);
         break;
 
     case sendNetclose:
@@ -504,7 +564,7 @@ void ESim7x00CommDevice::run()
         SEND_COMMAND("ATH", _okStr, finalizeDisconnect);
 
     case finalizeDisconnect:
-        _connectState = notConnected;
+        _sendState = notConnected;
         break;
 
     default:
