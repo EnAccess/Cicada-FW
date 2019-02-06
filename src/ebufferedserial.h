@@ -26,12 +26,12 @@
 
 #define E_DEFAULT_SERIAL_BUFFERSIZE 1504
 
-#include "eiserial.h"
+#include "eibufferedserial.h"
 #include "etask.h"
 #include "ecircularbuffer.h"
 
 template <uint16_t BUFFER_SIZE>
-class EBufferedSerial : public EISerial, public ETask
+class EBufferedSerial : public EIBufferedSerial, public ETask
 {
 public:
     EBufferedSerial() :
@@ -39,122 +39,69 @@ public:
         _bytesToWrite(0)
     { }
 
-    /*!
-     * Number of bytes available in the reading buffer.
-     * \return Number of bytes available for reading
-     */
-    virtual uint16_t bytesAvailable() const
+    uint16_t bytesAvailable() const
     {
         return _readBuffer.availableData();
     }
 
-    /*!
-     * Number of bytes available for writing in this buffer.
-     * \return Number of bytes available for writing
-     */
-    virtual uint16_t spaceAvailable() const
+    uint16_t spaceAvailable() const
     {
         return _writeBuffer.size() - _writeBuffer.availableData();
     }
 
-    /*!
-     * Reads data from the read buffer.
-     * \param data Buffer to store data. Must be large enough to store
-     * maxSize bytes.
-     * \param maxSize Maximum number of bytes to store into data.
-     * \return Number of bytes actually copied to data
-     */
-    virtual uint16_t read(char* data, uint16_t size)
+    uint16_t read(char* data, uint16_t size)
     {
         return _readBuffer.pull(data, size);
     }
 
-    /*!
-     * Reads a single char from the buffer
-     * \return The character read
-     */
-    virtual char read()
+    char read()
     {
         return _readBuffer.pull();
     }
 
-    /*!
-     * Writes data to the write buffer.
-     * \param data Buffer with data copied to the write buffer.
-     * If there is not enough space in the write buffer, the actual
-     * number of bytes copied can be smaller than size.
-     * \param size Number of bytes to write
-     * \return Actual number of bytes written
-     */
-    virtual uint16_t write(const char* data, uint16_t size)
+    uint16_t write(const char* data, uint16_t size)
     {
         return _writeBuffer.push(data, size);
     }
 
-    /*!
-     * Writes a singla char to the buffer.
-     * \param data Character to write
-     */
-    virtual void write(char data)
+    void write(char data)
     {
         _writeBuffer.push(data);
     }
 
-    /*!
-     * \return true if a whole line is in the buffer, false otherwise
-     */
-    virtual bool canReadLine() const
+    bool canReadLine() const
     {
         return _readBuffer.numBufferedLines() > 0;
     }
 
-    /*!
-     * Reads a line.
-     */
-    virtual uint16_t readLine(char* data, uint16_t size)
+    uint16_t readLine(char* data, uint16_t size)
     {
         return _readBuffer.readLine(data, size);
     }
 
-    /*!
-     * Sets the write barrier. A write barrier means, the BufferdSerial's
-     * run function will not send further than up to the number of bytes
-     * when the barrier was set. This is useful if there is data
-     * to be buffered, but those should not yet be sent to the device.
-     */
-    virtual void setWriteBarrier()
+    void setWriteBarrier()
     {
         _bytesToWrite = _writeBuffer.availableData();
         _writeBarrier = true;
     }
 
-    /*!
-     * Clears the write barrier. Data after the write barrier is now
-     * allowed to be sent to the device.
-     */
-    virtual void clearWriteBarrier()
+    void clearWriteBarrier()
     {
         _bytesToWrite = 0;
         _writeBarrier = false;
     }
 
-    /*!
-     * Clears the read buffer, discarding all available data.
-     */
-    virtual void flushReceiveBuffers()
+    void flushReceiveBuffers()
     {
         _readBuffer.flush();
     }
 
-    /*!
-     * \return Buffer size of read/write buffer
-     */
-    virtual uint16_t bufferSize()
+    uint16_t bufferSize()
     {
         return _writeBuffer.size();
     }
 
-    virtual void run()
+    void run()
     {
         if (_writeBuffer.availableData() &&
             (!_writeBarrier || _bytesToWrite))

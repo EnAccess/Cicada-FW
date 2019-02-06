@@ -45,7 +45,7 @@ const char* ESim7x00CommDevice::_okStr = "OK";
 const char* ESim7x00CommDevice::_lineEndStr = "\r\n";
 const char* ESim7x00CommDevice::_quoteEndStr = "\"\r\n";
 
-ESim7x00CommDevice::ESim7x00CommDevice(EDefaultBufferedSerial& serial) :
+ESim7x00CommDevice::ESim7x00CommDevice(EIBufferedSerial& serial) :
     _serial(serial),
     _sendState(notConnected),
     _replyState(normalReply),

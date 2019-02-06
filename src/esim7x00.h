@@ -28,7 +28,7 @@
 class ESim7x00CommDevice : public EIIPCommDevice
 {
 public:
-    ESim7x00CommDevice(EDefaultBufferedSerial& serial);
+    ESim7x00CommDevice(EIBufferedSerial& serial);
 
     virtual void setHostPort(const char* host, uint16_t port);
 
@@ -92,7 +92,7 @@ private:
         finalizeDisconnect
     };
 
-    EDefaultBufferedSerial& _serial;
+    EIBufferedSerial& _serial;
     SendState _sendState;
     ReplyState _replyState;
     const char* _apn;
