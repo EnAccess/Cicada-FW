@@ -7,7 +7,7 @@
 #include <time.h>
 #include <stdlib.h>
 #include "escheduler.h"
-#include "etermios.h"
+#include "eserial.h"
 #include "esim7x00.h"
 
 class IPCommTask : public ETask
@@ -84,7 +84,7 @@ uint64_t tickFunction()
 
 int main(int argc, char * argv[])
 {
-    ETermios serial("/dev/ttyUSB0");
+    ESerial serial;
     ESim7x00CommDevice commDev(serial);
     IPCommTask task(commDev);
 

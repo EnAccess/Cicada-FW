@@ -62,6 +62,12 @@ public:
      */
     virtual void close() = 0;
 
+    /*!
+     * Name of the serial port used.
+     * \return Port name or NULL if not available
+     */
+    virtual const char* portName() const = 0;
+
 protected:
     /*!
      * Number of bytes available for reading.

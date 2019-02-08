@@ -1,5 +1,5 @@
 /*
- * Example code for serial communication on Linux / Max OS X / Unix
+ * Example code for serial communication
  */
 
 #include <stdio.h>
@@ -7,13 +7,13 @@
 #include <time.h>
 #include <stdlib.h>
 #include "escheduler.h"
-#include "etermios.h"
+#include "eserial.h"
 
 class SerialTask : public ETask
 {
 public:
-    SerialTask(ETermios& termios) :
-        m_serial(termios)
+    SerialTask(ESerial& serial) :
+        m_serial(serial)
     { }
 
     virtual void run()
@@ -32,7 +32,10 @@ public:
             exit(1);
         }
 
-        printf("Serial port %s open\n", m_serial.portName());
+        if (m_serial.portName())
+            printf("Serial port %s open\n", m_serial.portName());
+        else
+            printf("Serial port open\n");
 
         {
             const char* send_str = "AT\r\n";
@@ -60,7 +63,7 @@ public:
     }
 
 private:
-    ETermios& m_serial;
+    ESerial& m_serial;
 };
 
 uint64_t tickFunction()
@@ -78,7 +81,7 @@ uint64_t tickFunction()
 
 int main(int argc, char * argv[])
 {
-    ETermios serial("/dev/ttyUSB0");
+    ESerial serial;
     SerialTask task(serial);
 
     ETask* taskList[] = {&task, &serial, NULL};

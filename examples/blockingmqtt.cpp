@@ -13,7 +13,7 @@
 #include <sys/time.h>
 #include <MQTTClient.h>
 #include "escheduler.h"
-#include "etermios.h"
+#include "eserial.h"
 #include "esim7x00.h"
 #include "eblockingcommdev.h"
 
@@ -51,7 +51,7 @@ void messageArrived(MQTT::MessageData& md)
 // Most of the code taken from MQTT hello.cpp
 int main(int argc, char * argv[])
 {
-    ETermios serial("/dev/ttyUSB0");
+    ESerial serial;
     ESim7x00CommDevice commDev(serial);
 
     ETask* taskList[] = {&serial, &commDev, NULL};

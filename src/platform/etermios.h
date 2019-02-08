@@ -45,7 +45,7 @@ public:
      * be valid for the object's lifetime.
      * \param port Name of the serial port
      */
-    ETermios(const char* port);
+    ETermios(const char* port = "/dev/ttyUSB0");
 
     virtual bool open();
 
@@ -55,10 +55,6 @@ public:
 
     virtual void close();
 
-    /*!
-     * Name of the serial port used.
-     * \return Pointer to the string given to the constructor
-     */
     inline const char* portName() const { return _port; }
 
 protected:
