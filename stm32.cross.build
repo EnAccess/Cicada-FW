@@ -1,0 +1,20 @@
+[binaries]
+c       = 'arm-none-eabi-gcc'
+cpp     = 'arm-none-eabi-g++'
+ld      = 'arm-none-eabi-ld'
+ar      = 'arm-none-eabi-ar'
+as      = 'arm-none-eabi-as'
+size    = 'arm-none-eabi-size'
+objdump = 'arm-none-eabi-objdump'
+objcopy = 'arm-none-eabi-objcopy'
+strip   = 'arm-none-eabi-strip'
+gdb     = 'arm-none-eabi-gdb'
+
+[properties]
+cpp_args = ['-DTARGET_STM32']
+
+[host_machine]
+system     = 'none'
+cpu_family = 'arm'
+cpu        = 'cortex-m3'
+endian     = 'little'

@@ -1,0 +1,10 @@
+[wrap-file]
+directory = STM32Cube_FW_F1_V1.7.0
+
+source_url = http://www.st.com/resource/en/firmware2/stm32cube_fw_f1_v170.zip
+source_filename = stm32cube_fw_f1_v170.zip
+source_hash = dc58871b048a435af739ac14cea7b4e4bd121bf7760474a78c4fe8f52918d704
+
+patch_url = https://raw.githubusercontent.com/EnAccess/gsm-module/master/subprojects/packagecache/stm32_patch.zip
+patch_filename = stm32_patch.zip
+patch_hash = 07534720cf44cefbb012bb1dc9031ab1ae45e99d873aed14e7fed3c96d7a5430
