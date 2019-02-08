@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <time.h>
+#include "etick.h"
 #include "escheduler.h"
 
 class Task1 : public ETask
@@ -69,19 +69,6 @@ private:
     Task1& m_task1;
 };
 
-uint64_t tickFunction()
-{
-    uint64_t ms;
-    struct timespec spec;
-
-    clock_gettime(CLOCK_REALTIME, &spec);
-    
-    ms  = spec.tv_sec * 1000;
-    ms += spec.tv_nsec / 1.0e6;
-
-    return ms;
-}
-
 int main(int argc, char * argv[])
 {
     Task1 task1;
@@ -89,6 +76,6 @@ int main(int argc, char * argv[])
 
     ETask* taskList[] = {&task1, &task2, NULL};
 
-    EScheduler s(&tickFunction, taskList);
+    EScheduler s(&eTickFunction, taskList);
     s.start();
 }

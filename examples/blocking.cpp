@@ -4,25 +4,11 @@
 
 #include <cstdint>
 #include <cstdio>
-#include <time.h>
-
 #include "escheduler.h"
 #include "eserial.h"
 #include "eblockingcommdev.h"
 #include "esim7x00.h"
-
-uint64_t tickFunction()
-{
-    uint64_t ms;
-    struct timespec spec;
-
-    clock_gettime(CLOCK_REALTIME, &spec);
-    
-    ms  = spec.tv_sec * 1000;
-    ms += spec.tv_nsec / 1.0e6;
-
-    return ms;
-}
+#include "etick.h"
 
 void yieldFunction(void *sched) {
     ((EScheduler*)sched)->runTask();
@@ -35,9 +21,9 @@ int main(int argc, char * argv[])
 
     ETask* taskList[] = {&serial, &commDev, NULL};
 
-    EScheduler s(&tickFunction, taskList);
+    EScheduler s(&eTickFunction, taskList);
 
-    EBlockingCommDevice bld(commDev, tickFunction, yieldFunction, &s);
+    EBlockingCommDevice bld(commDev, eTickFunction, yieldFunction, &s);
 
     commDev.setApn("internet");
     commDev.setHostPort("wttr.in", 80);

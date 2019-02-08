@@ -4,11 +4,11 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <time.h>
 #include <stdlib.h>
 #include "escheduler.h"
 #include "eserial.h"
 #include "esim7x00.h"
+#include "etick.h"
 
 class IPCommTask : public ETask
 {
@@ -28,7 +28,7 @@ public:
 
         E_REENTER_COND(m_commDev.isConnected());
 
-        printf("*** Connected! ***\n");
+        //printf("*** Connected! ***\n");
 
         {
             const char str[] =
@@ -48,7 +48,7 @@ public:
                 char buf[41];
                 uint16_t bytesRead = m_commDev.read((uint8_t*)buf, 40);
                 buf[bytesRead] = '\0';
-                printf("%s", buf);
+                //printf("%s", buf);
             }
             else
             {
@@ -59,7 +59,7 @@ public:
         m_commDev.disconnect();
         E_REENTER_COND(m_commDev.isIdle());
 
-        printf("*** Disconnected ***\n");
+        //printf("*** Disconnected ***\n");
 
     E_END_TASK
     }
@@ -69,19 +69,6 @@ private:
     int m_i;
 };
 
-uint64_t tickFunction()
-{
-    uint64_t ms;
-    struct timespec spec;
-
-    clock_gettime(CLOCK_REALTIME, &spec);
-    
-    ms  = spec.tv_sec * 1000;
-    ms += spec.tv_nsec / 1.0e6;
-
-    return ms;
-}
-
 int main(int argc, char * argv[])
 {
     ESerial serial;
@@ -90,6 +77,6 @@ int main(int argc, char * argv[])
 
     ETask* taskList[] = {&task, &serial, &commDev, NULL};
 
-    EScheduler s(&tickFunction, taskList);
+    EScheduler s(&eTickFunction, taskList);
     s.start();
 }

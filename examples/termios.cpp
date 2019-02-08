@@ -4,10 +4,10 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <time.h>
 #include <stdlib.h>
 #include "escheduler.h"
 #include "eserial.h"
+#include "etick.h"
 
 class SerialTask : public ETask
 {
@@ -66,19 +66,6 @@ private:
     ESerial& m_serial;
 };
 
-uint64_t tickFunction()
-{
-    uint64_t ms;
-    struct timespec spec;
-
-    clock_gettime(CLOCK_REALTIME, &spec);
-    
-    ms  = spec.tv_sec * 1000;
-    ms += spec.tv_nsec / 1.0e6;
-
-    return ms;
-}
-
 int main(int argc, char * argv[])
 {
     ESerial serial;
@@ -86,6 +73,6 @@ int main(int argc, char * argv[])
 
     ETask* taskList[] = {&task, &serial, NULL};
 
-    EScheduler s(&tickFunction, taskList);
+    EScheduler s(&eTickFunction, taskList);
     s.start();
 }

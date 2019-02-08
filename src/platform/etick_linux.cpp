@@ -21,22 +21,18 @@
  *
  */
 
-#ifndef ESERIAL_H
-#define ESERIAL_H
+#include <time.h>
+#include "etick.h"
 
-// Import platform specific serial driver
-#if defined TARGET_STM32
-#include "platform/enoplatform.h"
-typedef ENoplatformSerial ESerial;
+E_TICK_TYPE eTickFunction()
+{
+    uint64_t ms;
+    struct timespec spec;
 
-#elif defined __linux__
-#include "platform/etermios.h"
-typedef ETermios ESerial;
+    clock_gettime(CLOCK_REALTIME, &spec);
+    
+    ms  = spec.tv_sec * 1000;
+    ms += spec.tv_nsec / 1.0e6;
 
-#else
-#include "platform/enoplatform.h"
-typedef ENoplatformSerial ESerial;
-
-#endif
-
-#endif
+    return (E_TICK_TYPE)ms;
+}

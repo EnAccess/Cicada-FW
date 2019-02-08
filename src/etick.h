@@ -21,22 +21,12 @@
  *
  */
 
-#ifndef ESERIAL_H
-#define ESERIAL_H
+#ifndef ETICK_H
+#define ETICK_H
 
-// Import platform specific serial driver
-#if defined TARGET_STM32
-#include "platform/enoplatform.h"
-typedef ENoplatformSerial ESerial;
+#include "stdint.h"
+#include "edefines.h"
 
-#elif defined __linux__
-#include "platform/etermios.h"
-typedef ETermios ESerial;
-
-#else
-#include "platform/enoplatform.h"
-typedef ENoplatformSerial ESerial;
-
-#endif
+E_TICK_TYPE eTickFunction(void);
 
 #endif
