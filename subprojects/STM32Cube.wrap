@@ -7,4 +7,4 @@ source_hash = dc58871b048a435af739ac14cea7b4e4bd121bf7760474a78c4fe8f52918d704
 
 patch_url = https://raw.githubusercontent.com/EnAccess/gsm-module/master/subprojects/packagecache/stm32_patch.zip
 patch_filename = stm32_patch.zip
-patch_hash = 07534720cf44cefbb012bb1dc9031ab1ae45e99d873aed14e7fed3c96d7a5430
+patch_hash = a01c5b3ed6a7afc61e384bc1d28a8123230e7bb4e5e701d644350d0fd837cef2
