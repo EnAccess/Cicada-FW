@@ -34,29 +34,29 @@ class EBufferedSerial : public EIBufferedSerial
 public:
     EBufferedSerial();
 
-    uint16_t bytesAvailable() const;
+    virtual uint16_t bytesAvailable() const;
 
-    uint16_t spaceAvailable() const;
+    virtual uint16_t spaceAvailable() const;
 
-    uint16_t read(char* data, uint16_t size);
+    virtual uint16_t read(char* data, uint16_t size);
 
-    char read();
+    virtual char read();
 
-    uint16_t write(const char* data, uint16_t size);
+    virtual uint16_t write(const char* data, uint16_t size);
 
-    void write(char data);
+    virtual void write(char data);
 
-    bool canReadLine() const;
+    virtual bool canReadLine() const;
 
-    uint16_t readLine(char* data, uint16_t size);
+    virtual uint16_t readLine(char* data, uint16_t size);
 
-    void setWriteBarrier();
+    virtual void setWriteBarrier();
 
-    void clearWriteBarrier();
+    virtual void clearWriteBarrier();
 
-    void flushReceiveBuffers();
+    virtual void flushReceiveBuffers();
 
-    uint16_t bufferSize();
+    virtual uint16_t bufferSize();
 
 protected:
     ELineCircularBuffer<E_SERIAL_BUFFERSIZE> _readBuffer;
