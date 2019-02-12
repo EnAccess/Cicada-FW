@@ -36,7 +36,7 @@
  * one byte at a time).
  */
 
-class ETermios : public EDefaultBufferedSerial
+class ETermios : public EBufferedSerialTask
 {
 public:
     /*!
@@ -60,9 +60,9 @@ public:
 protected:
     virtual uint16_t rawBytesAvailable() const;
 
-    virtual uint16_t rawRead(uint8_t* data, uint16_t maxSize);
+    virtual uint8_t rawRead();
 
-    virtual uint16_t rawWrite(const uint8_t* data, uint16_t size);
+    virtual void rawWrite(uint8_t data);
 
 private:
     bool _isOpen;

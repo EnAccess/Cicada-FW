@@ -219,16 +219,12 @@ uint16_t ETermios::rawBytesAvailable() const
     return bytes > UINT16_MAX ? UINT16_MAX : bytes;
 }
 
-uint16_t ETermios::rawRead(uint8_t* data, uint16_t maxSize)
+bool ETermios::rawRead(uint8_t& data)
 {
-    ssize_t nBytes = ::read(_fd, data, maxSize);
-    if (nBytes < 0)
-        return 0;
-
-    return nBytes;
+    return ::read(_fd, &data, 1) == 1;
 }
 
-uint16_t ETermios::rawWrite(const uint8_t* data, uint16_t size)
+bool ETermios::rawWrite(uint8_t data)
 {
-    return ::write(_fd, data, size);
+    return ::write(_fd, &data, 1) == 1;
 }

@@ -28,4 +28,12 @@
 #define E_TICK_TYPE uint64_t
 #endif
 
+#ifndef E_SERIAL_BUFFERSIZE
+#define E_SERIAL_BUFFERSIZE 1504
+#endif
+
+#ifndef E_INTERRUPT_PRIORITY
+#define E_INTERRUPT_PRIORITY 1
+#endif
+
 #endif

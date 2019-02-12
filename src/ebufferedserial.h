@@ -24,113 +24,50 @@
 #ifndef EBUFFEREDSERIAL_H
 #define EBUFFEREDSERIAL_H
 
-#define E_DEFAULT_SERIAL_BUFFERSIZE 1504
-
 #include "eibufferedserial.h"
 #include "etask.h"
 #include "ecircularbuffer.h"
+#include "edefines.h"
 
-template <uint16_t BUFFER_SIZE>
-class EBufferedSerial : public EIBufferedSerial, public ETask
+class EBufferedSerial : public EIBufferedSerial
 {
 public:
-    EBufferedSerial() :
-        _writeBarrier(false),
-        _bytesToWrite(0)
-    { }
+    EBufferedSerial();
 
-    uint16_t bytesAvailable() const
-    {
-        return _readBuffer.availableData();
-    }
+    uint16_t bytesAvailable() const;
 
-    uint16_t spaceAvailable() const
-    {
-        return _writeBuffer.size() - _writeBuffer.availableData();
-    }
+    uint16_t spaceAvailable() const;
 
-    uint16_t read(char* data, uint16_t size)
-    {
-        return _readBuffer.pull(data, size);
-    }
+    uint16_t read(char* data, uint16_t size);
 
-    char read()
-    {
-        return _readBuffer.pull();
-    }
+    char read();
 
-    uint16_t write(const char* data, uint16_t size)
-    {
-        return _writeBuffer.push(data, size);
-    }
+    uint16_t write(const char* data, uint16_t size);
 
-    void write(char data)
-    {
-        _writeBuffer.push(data);
-    }
+    void write(char data);
 
-    bool canReadLine() const
-    {
-        return _readBuffer.numBufferedLines() > 0;
-    }
+    bool canReadLine() const;
 
-    uint16_t readLine(char* data, uint16_t size)
-    {
-        return _readBuffer.readLine(data, size);
-    }
+    uint16_t readLine(char* data, uint16_t size);
 
-    void setWriteBarrier()
-    {
-        _bytesToWrite = _writeBuffer.availableData();
-        _writeBarrier = true;
-    }
+    void setWriteBarrier();
 
-    void clearWriteBarrier()
-    {
-        _bytesToWrite = 0;
-        _writeBarrier = false;
-    }
+    void clearWriteBarrier();
 
-    void flushReceiveBuffers()
-    {
-        _readBuffer.flush();
-    }
+    void flushReceiveBuffers();
 
-    uint16_t bufferSize()
-    {
-        return _writeBuffer.size();
-    }
+    uint16_t bufferSize();
 
-    void run()
-    {
-        if (_writeBuffer.availableData() &&
-            (!_writeBarrier || _bytesToWrite))
-        {
-            char data = _writeBuffer.read();
-            if (rawWrite((const uint8_t*)&data, 1) == 1)
-            {
-                _writeBuffer.pull();
-                _bytesToWrite--;
-            }
-        }
-
-        if (rawBytesAvailable() && !_readBuffer.isFull())
-        {
-            char data;
-            if (rawRead((uint8_t*)&data, 1) == 1)
-            {
-                _readBuffer.push(data);
-            }
-        }
-    }
-
-private:
-    ELineCircularBuffer<BUFFER_SIZE> _readBuffer;
-    ELineCircularBuffer<BUFFER_SIZE> _writeBuffer;
+protected:
+    ELineCircularBuffer<E_SERIAL_BUFFERSIZE> _readBuffer;
+    ELineCircularBuffer<E_SERIAL_BUFFERSIZE> _writeBuffer;
     bool _writeBarrier;
     uint16_t _bytesToWrite;
 };
 
-typedef EBufferedSerial<E_DEFAULT_SERIAL_BUFFERSIZE> EDefaultBufferedSerial;
+class EBufferedSerialTask : public EBufferedSerial, public ETask
+{
+    void run();
+};
 
 #endif

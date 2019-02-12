@@ -76,22 +76,19 @@ protected:
     virtual uint16_t rawBytesAvailable() const = 0;
 
     /*!
-     * Reads data from the device.
-     * \param data Buffer to store data. Must be large enough to store
-     * maxSize bytes.
-     * \param maxSize Maximum number of bytes to store into data. The actual
-     * number of bytes stored can be smaller than maxSize.
-     * \return Number of bytes actually copied to data
+     * Reads one byte of data from the device. If there is no
+     * data to read, the returned result is undefined.
+     * \param data Place to store data read
+     * \return true if read was successful, false otherwise
      */
-    virtual uint16_t rawRead(uint8_t* data, uint16_t maxSize) = 0;
+    virtual bool rawRead(uint8_t& data) = 0;
 
     /*!
-     * Writes data to the device.
-     * \param data Buffer with data written to the device
-     * \param size Number of bytes to write
-     * \return Actual number of bytes written
+     * Writes one byte of data to the device.
+     * \param data byte to be written
+     * \return true if write was successful, false otherwise
      */
-    virtual uint16_t rawWrite(const uint8_t* data, uint16_t size) = 0;
+    virtual bool rawWrite(uint8_t data) = 0;
 };
 
 #endif
