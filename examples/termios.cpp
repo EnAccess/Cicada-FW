@@ -22,7 +22,7 @@ public:
 
         if (!m_serial.open())
         {
-            printf("Error opening serial port\n");
+            printf("Error opening serial port %s\n", m_serial.portName());
             exit(1);
         }
 
@@ -71,7 +71,7 @@ int main(int argc, char * argv[])
     ESerial serial;
     SerialTask task(serial);
 
-    ETask* taskList[] = {&task, &serial, NULL};
+    ETask* taskList[] = {&task, dynamic_cast<ETask*>(&serial), NULL};
 
     EScheduler s(&eTickFunction, taskList);
     s.start();

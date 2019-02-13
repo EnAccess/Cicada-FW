@@ -30,7 +30,7 @@
 class EStm32Uart : public EBufferedSerial
 {
 public:
-    EStm32Uart(USART_TypeDef* uartInstance,
+    EStm32Uart(USART_TypeDef* uartInstance = UART4,
                GPIO_TypeDef* txPort = GPIOC, uint16_t txPin = GPIO_PIN_10,
                GPIO_TypeDef* rxPort = GPIOC, uint16_t rxPin = GPIO_PIN_11);
 
@@ -40,12 +40,12 @@ public:
     bool isOpen();
     bool setSerialConfig(uint32_t baudRate, uint8_t dataBits);
     void close();
-    const char* portName();
+    const char* portName() const;
     uint16_t write(const char* data, uint16_t size);
     void write(char data);
     bool rawRead(uint8_t& data);
     bool rawWrite(uint8_t data);
-    uint16_t rawBytesAvailable();
+    uint16_t rawBytesAvailable() const;
 
 private:
     // Private constructors to avoid copying

@@ -156,12 +156,12 @@ bool EStm32Uart::isOpen()
     return _flags & FLAG_ISOPEN;
 }
 
-const char* EStm32Uart::portName()
+const char* EStm32Uart::portName() const
 {
     return NULL;
 }
 
-uint16_t EStm32Uart::rawBytesAvailable()
+uint16_t EStm32Uart::rawBytesAvailable() const
 {
     return __HAL_UART_GET_FLAG(&_handle, UART_FLAG_RXNE) ? 1 : 0;
 }

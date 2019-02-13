@@ -60,9 +60,9 @@ public:
 protected:
     virtual uint16_t rawBytesAvailable() const;
 
-    virtual uint8_t rawRead();
+    virtual bool rawRead(uint8_t& data);
 
-    virtual void rawWrite(uint8_t data);
+    virtual bool rawWrite(uint8_t data);
 
 private:
     bool _isOpen;

@@ -19,7 +19,7 @@ int main(int argc, char * argv[])
     ESerial serial;
     ESim7x00CommDevice commDev(serial);
 
-    ETask* taskList[] = {&serial, &commDev, NULL};
+    ETask* taskList[] = {&commDev, dynamic_cast<ETask*>(&serial), NULL};
 
     EScheduler s(&eTickFunction, taskList);
 

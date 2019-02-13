@@ -28,7 +28,7 @@ public:
 
         E_REENTER_COND(m_commDev.isConnected());
 
-        //printf("*** Connected! ***\n");
+        printf("*** Connected! ***\n");
 
         {
             const char str[] =
@@ -48,7 +48,7 @@ public:
                 char buf[41];
                 uint16_t bytesRead = m_commDev.read((uint8_t*)buf, 40);
                 buf[bytesRead] = '\0';
-                //printf("%s", buf);
+                printf("%s", buf);
             }
             else
             {
@@ -59,7 +59,7 @@ public:
         m_commDev.disconnect();
         E_REENTER_COND(m_commDev.isIdle());
 
-        //printf("*** Disconnected ***\n");
+        printf("*** Disconnected ***\n");
 
     E_END_TASK
     }
@@ -75,7 +75,7 @@ int main(int argc, char * argv[])
     ESim7x00CommDevice commDev(serial);
     IPCommTask task(commDev);
 
-    ETask* taskList[] = {&task, &serial, &commDev, NULL};
+    ETask* taskList[] = {&task, &commDev, dynamic_cast<ETask*>(&serial), NULL};
 
     EScheduler s(&eTickFunction, taskList);
     s.start();

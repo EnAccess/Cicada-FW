@@ -26,8 +26,8 @@
 
 // Import platform specific serial driver
 #if defined TARGET_STM32
-#include "platform/enoplatform.h"
-typedef ENoplatformSerial ESerial;
+#include "platform/estm32uart.h"
+typedef EStm32Uart ESerial;
 
 #elif defined __linux__
 #include "platform/etermios.h"

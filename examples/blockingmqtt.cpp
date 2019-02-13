@@ -15,8 +15,7 @@
 #include "esim7x00.h"
 #include "eblockingcommdev.h"
 #include "etick.h"
-
-#include <linux.cpp>
+#include "emqttcountdown.h"
 
 void yieldFunction(void *sched) {
     ((EScheduler*)sched)->runTask();
@@ -40,7 +39,7 @@ int main(int argc, char * argv[])
     ESerial serial;
     ESim7x00CommDevice commDev(serial);
 
-    ETask* taskList[] = {&serial, &commDev, NULL};
+    ETask* taskList[] = {&commDev, dynamic_cast<ETask*>(&serial), NULL};
 
     EScheduler s(&eTickFunction, taskList);
 
@@ -48,8 +47,8 @@ int main(int argc, char * argv[])
 
     const char* topic = "mbed-sample";
 
-    MQTT::Client<EBlockingCommDevice, Countdown> client =
-        MQTT::Client<EBlockingCommDevice, Countdown>(bld);
+    MQTT::Client<EBlockingCommDevice, EMQTTCountdown> client =
+        MQTT::Client<EBlockingCommDevice, EMQTTCountdown>(bld);
 
     const char* hostname = "iot.eclipse.org";
     int port = 1883;
