@@ -13,9 +13,9 @@ executable(
 )
 
 executable(
-    'termios',
+    'serial',
     src_files,
-    'termios.cpp',
+    'serial.cpp',
     include_directories : incdir,
     dependencies        : target_deps,
     name_suffix         : bin_suffix,
