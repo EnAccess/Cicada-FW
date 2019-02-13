@@ -39,12 +39,12 @@ int main(int argc, char * argv[])
         "Host: wttr.in\r\n"
         "User-Agent: curl\r\n"
         "Connection: close\r\n\r\n";
-    bld.write((uint8_t*)str, sizeof(str) - 1, 200);
+    bld.write((uint8_t*)str, sizeof(str) - 1, 2000);
 
     int bytesRead;
     do {
         char buf[41];
-        bytesRead = bld.read((uint8_t*)buf, 40, 200);
+        bytesRead = bld.read((uint8_t*)buf, 40, 2000);
         buf[bytesRead] = '\0';
         printf("%s", buf);
     } while(bytesRead);
