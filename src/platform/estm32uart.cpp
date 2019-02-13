@@ -27,6 +27,8 @@
 
 #define FLAG_ISOPEN (1 << 0)
 
+EStm32Uart* EStm32Uart::instance[E_MULTITON_MAX_INSTANCES] = {NULL};
+
 EStm32Uart::EStm32Uart(USART_TypeDef* uartInstance,
                        GPIO_TypeDef* txPort, uint16_t txPin,
                        GPIO_TypeDef* rxPort, uint16_t rxPin) :
@@ -39,6 +41,29 @@ EStm32Uart::EStm32Uart(USART_TypeDef* uartInstance,
     _uartInterruptInstance()
 {
     _handle.Instance = uartInstance;
+
+    for (int i=0; i<E_MULTITON_MAX_INSTANCES; i++)
+    {
+        if (instance[i] == NULL)
+        {
+            instance[i] = this;
+            break;
+        }
+    }
+}
+
+EStm32Uart* EStm32Uart::getInstance(USART_TypeDef* uartInstance)
+{
+    for (int i=0; i<E_MULTITON_MAX_INSTANCES; i++)
+    {
+        EStm32Uart* uart = instance[i];
+        if (uart != NULL && uart->_handle.Instance == uartInstance)
+        {
+            return instance[i];
+        }
+    }
+
+    return NULL;
 }
 
 bool EStm32Uart::setSerialConfig(uint32_t baudRate, uint8_t dataBits)

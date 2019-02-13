@@ -33,6 +33,9 @@ public:
     EStm32Uart(USART_TypeDef* uartInstance,
                GPIO_TypeDef* txPort = GPIOC, uint16_t txPin = GPIO_PIN_10,
                GPIO_TypeDef* rxPort = GPIOC, uint16_t rxPin = GPIO_PIN_11);
+
+    static EStm32Uart* getInstance(USART_TypeDef* uartInstance);
+
     bool open();
     bool isOpen();
     bool setSerialConfig(uint32_t baudRate, uint8_t dataBits);
@@ -45,7 +48,13 @@ public:
     uint16_t rawBytesAvailable();
 
 private:
+    // Private constructors to avoid copying
+    EStm32Uart(const EStm32Uart&);
+    EStm32Uart& operator=(const EStm32Uart&);
+
     void handleInterrupt();
+
+    static EStm32Uart* instance[E_MULTITON_MAX_INSTANCES];
 
     uint8_t _flags;
     UART_HandleTypeDef _handle;
@@ -55,12 +64,5 @@ private:
     uint16_t _rxPin;
     IRQn_Type _uartInterruptInstance;
 };
-
-#define ESTM32UART_REGISTER_IRQHANDLER(OBJECT, UART)    \
-    static EStm32Uart& UART_object = OBJECT;            \
-    extern "C" void UART_IQRHandler()                   \
-    {                                                   \
-        UART_object.handleInterrupt()                   \
-    }
 
 #endif

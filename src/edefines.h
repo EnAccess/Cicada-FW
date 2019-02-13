@@ -24,6 +24,10 @@
 #ifndef EDEFINES_H
 #define EDEFINES_H
 
+#ifndef E_MULTITON_MAX_INSTANCES
+#define E_MULTITON_MAX_INSTANCES 1
+#endif
+
 #ifndef E_TICK_TYPE
 #define E_TICK_TYPE uint64_t
 #endif
