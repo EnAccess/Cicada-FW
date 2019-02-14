@@ -82,9 +82,9 @@ private:
         finalizeConnect,
         connected,
         sendCipsend,
-        afterCipsend,
         sendCiprxget4,
         sendCiprxget2,
+        waitReceive,
         receiving,
         ipUnconnected,
         sendNetclose,
@@ -93,6 +93,8 @@ private:
     };
 
     EIBufferedSerial& _serial;
+    ECircularBuffer<uint8_t, E_NETWORK_BUFFERSIZE> _readBuffer;
+    ECircularBuffer<uint8_t, E_NETWORK_BUFFERSIZE> _writeBuffer;
     SendState _sendState;
     ReplyState _replyState;
     const char* _apn;
@@ -101,6 +103,7 @@ private:
     uint16_t _port;
     const char* _waitForReply;
     uint8_t _stateBooleans;
+    uint16_t _bytesToWrite;
     uint16_t _bytesToReceive;
     uint16_t _bytesToRead;
 

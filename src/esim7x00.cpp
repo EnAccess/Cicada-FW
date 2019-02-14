@@ -35,7 +35,6 @@
 #define QUOTE_END_STR_LENGTH 3
 
 #define CONNECT_PENDING    (1 << 0)
-#define WRITE_PENDING      (1 << 1)
 #define DATA_PENDING       (1 << 2)
 #define DISCONNECT_PENDING (1 << 3)
 #define IP_CONNECTED       (1 << 4)
@@ -54,6 +53,7 @@ ESim7x00CommDevice::ESim7x00CommDevice(EIBufferedSerial& serial) :
     _port(0),
     _waitForReply(NULL),
     _stateBooleans(0),
+    _bytesToWrite(0),
     _bytesToReceive(0),
     _bytesToRead(0)
 { }
@@ -97,73 +97,28 @@ bool ESim7x00CommDevice::isIdle()
 
 uint16_t ESim7x00CommDevice::bytesAvailable() const
 {
-    if (_sendState != receiving)
-        return 0;
-
-    if (_bytesToRead > _serial.bytesAvailable())
-        return _serial.bytesAvailable();
-    else
-        return _bytesToRead;
+    return _readBuffer.availableData();
 }
 
 uint16_t ESim7x00CommDevice::spaceAvailable() const
 {
-    if (_sendState != connected || _replyState != normalReply)
+    if (_sendState < connected || _sendState > receiving)
         return 0;
 
-    if (_serial.spaceAvailable() <= MIN_SPACE_AVAILABLE)
-        return 0;
-
-    return _serial.spaceAvailable() - MIN_SPACE_AVAILABLE;
+    return _writeBuffer.availableSpace();
 }
 
 uint16_t ESim7x00CommDevice::read(uint8_t* data, uint16_t maxSize)
 {
-    if (_sendState != receiving)
-        return 0;
-
-    if (maxSize > _bytesToRead)
-        maxSize = _bytesToRead;
-
-    uint16_t bytesRead = _serial.read((char*)data, maxSize);
-    _bytesToRead -= bytesRead;
-
-    if (_bytesToRead == 0)
-    {
-        _stateBooleans |= LINE_READ;
-    }
-
-    return bytesRead;
+    return _readBuffer.pull(data, maxSize);
 }
 
 uint16_t ESim7x00CommDevice::write(const uint8_t* data, uint16_t size)
 {
-    if (_sendState != connected || _replyState != normalReply)
+    if (_sendState < connected || _sendState > receiving)
         return 0;
 
-    if ((_stateBooleans & WRITE_PENDING) || !(_stateBooleans & IP_CONNECTED))
-        return 0;
-
-    if (_serial.spaceAvailable() < MIN_SPACE_AVAILABLE)
-        return 0;
-
-    if (size > _serial.spaceAvailable() - MIN_SPACE_AVAILABLE)
-        size = _serial.spaceAvailable() - MIN_SPACE_AVAILABLE;
-
-    _stateBooleans |= WRITE_PENDING;
-    _stateBooleans &= ~LINE_READ;
-
-    const char str[] = "AT+CIPSEND=0,";
-    char sizeStr[6];
-
-    sprintf(sizeStr, "%d", size);
-
-    _serial.write(str, sizeof(str) - 1);
-    _serial.write(sizeStr, strlen(sizeStr));
-    _serial.write(_lineEndStr, LINE_END_STR_LENGTH);
-    _serial.setWriteBarrier();
-
-    return _serial.write((char*)data, size);
+    return _writeBuffer.push(data, size);
 }
 
 bool ESim7x00CommDevice::handleDisconnect(SendState nextState)
@@ -318,7 +273,8 @@ void ESim7x00CommDevice::run()
                 _bytesToReceive -= bytesToReceive;
                 _bytesToRead += bytesToReceive;
                 _stateBooleans &= ~LINE_READ;
-                _replyState = normalReply;
+                _replyState = noReply;
+                _sendState = receiving;
             }
             break;
 
@@ -460,10 +416,31 @@ void ESim7x00CommDevice::run()
         break;
 
     case connected:
-        if (_stateBooleans & WRITE_PENDING)
+        if (_writeBuffer.availableData())
         {
-            _stateBooleans &= ~WRITE_PENDING;
-            _sendState = sendCipsend;
+            if (_serial.spaceAvailable() >= MIN_SPACE_AVAILABLE)
+            {
+                _bytesToWrite = _writeBuffer.availableData();
+                if (_bytesToWrite >
+                    _serial.spaceAvailable() - MIN_SPACE_AVAILABLE)
+                {
+                    _bytesToWrite =
+                        _serial.spaceAvailable() - MIN_SPACE_AVAILABLE;
+                }
+
+                _stateBooleans &= ~LINE_READ;
+
+                const char str[] = "AT+CIPSEND=0,";
+                char sizeStr[6];
+
+                sprintf(sizeStr, "%d", _bytesToWrite);
+
+                _serial.write(str, sizeof(str) - 1);
+                _serial.write(sizeStr, strlen(sizeStr));
+                _serial.write(_lineEndStr, LINE_END_STR_LENGTH);
+
+                _sendState = sendCipsend;
+            }
         }
         else if (_stateBooleans & DATA_PENDING)
         {
@@ -485,18 +462,17 @@ void ESim7x00CommDevice::run()
         {
             if (data == '>')
             {
-                _serial.clearWriteBarrier();
+                while (_bytesToWrite--)
+                {
+                    _serial.write(_writeBuffer.pull());
+                }
                 _stateBooleans |= LINE_READ;
                 _waitForReply = _okStr;
-                _sendState = afterCipsend;
+                _sendState = connected;
             }
         }
         break;
     }
-
-    case afterCipsend:
-        _sendState = connected;
-        break;
 
     case sendCiprxget4:
         _replyState = ciprxget4;
@@ -508,12 +484,14 @@ void ESim7x00CommDevice::run()
 
         if (_bytesToReceive > 0)
         {
-            if (_serial.bufferSize() - _serial.bytesAvailable() > 4)
+            if (_serial.spaceAvailable() > 8 &&
+                _readBuffer.availableSpace() > 0)
             {
-                int bytesToReceive =
-                    _serial.bufferSize() - _serial.bytesAvailable() - 4;
+                int bytesToReceive = _serial.spaceAvailable() - 8;
                 if (bytesToReceive > _bytesToReceive)
                     bytesToReceive = _bytesToReceive;
+                if (bytesToReceive > _readBuffer.availableSpace())
+                    bytesToReceive = _readBuffer.availableSpace();
 
                 const char str[] = "AT+CIPRXGET=2,0,";
                 char sizeStr[6];
@@ -522,8 +500,7 @@ void ESim7x00CommDevice::run()
                 _serial.write(sizeStr, strlen(sizeStr));
                 _serial.write(_lineEndStr, LINE_END_STR_LENGTH);
                 _replyState = ciprxget2;
-                _waitForReply = _okStr;
-                _sendState = receiving;
+                _sendState = waitReceive;
             }
         }
         else if (_stateBooleans & IP_CONNECTED)
@@ -539,14 +516,31 @@ void ESim7x00CommDevice::run()
 
         break;
 
+    case waitReceive:
+        break;
+
     case receiving:
-        if (_bytesToReceive == 0)
+        if (_bytesToRead > 0)
         {
-            _sendState = sendCiprxget4;
+            if (_serial.bytesAvailable() >= _bytesToRead)
+            {
+                while(_bytesToRead)
+                {
+                    _readBuffer.push(_serial.read());
+                    _bytesToRead--;
+                }
+                _stateBooleans |= LINE_READ;
+                _replyState = normalReply;
+                _waitForReply = _okStr;
+            }
+        }
+        else if (_bytesToReceive > 0)
+        {
+            _sendState = sendCiprxget2;
         }
         else
         {
-            _sendState = sendCiprxget2;
+            _sendState = sendCiprxget4;
         }
         break;
 
