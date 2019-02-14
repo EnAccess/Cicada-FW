@@ -13,7 +13,8 @@ class SerialTask : public ETask
 {
 public:
     SerialTask(ESerial& serial) :
-        m_serial(serial)
+        m_serial(serial),
+        m_i(0)
     { }
 
     virtual void run()
@@ -37,33 +38,41 @@ public:
         else
             printf("Serial port open\n");
 
+        for (m_i=0; m_i<100; m_i++)
         {
-            const char* send_str = "AT\r\n";
-            printf("Sending command: %s", send_str);
-            int bytesWritten =
-                m_serial.write(send_str, strlen(send_str));
-            printf("%d bytes written\n", bytesWritten);
-        }
+            {
+                const char* send_str = "AT\r\n";
+                printf("Sending command: %s", send_str);
+                int bytesWritten =
+                    m_serial.write(send_str, strlen(send_str));
+                printf("%d bytes written\n", bytesWritten);
+            }
 
-        E_REENTER_COND_DELAY(m_serial.bytesAvailable(), 100);
+            E_REENTER_COND_DELAY(m_serial.bytesAvailable(), 100);
 
-        {
-            char buf[32];
-            int bytesReceived;
-            bytesReceived = m_serial.read(buf, 31);
-            printf("%d bytes received\n", bytesReceived);
+            {
+                char buf[32];
+                int bytesReceived;
+                bytesReceived = m_serial.read(buf, 31);
+                printf("%d bytes received\n", bytesReceived);
 
-            buf[bytesReceived] = '\0';
-            printf("Received message: %s", buf);
+                buf[bytesReceived] = '\0';
+                printf("Received message: %s", buf);
+            }
+
+            E_REENTER_DELAY(500);
         }
 
         m_serial.close();
+
+        printf("Serial port closed\n");
 
     E_END_TASK
     }
 
 private:
     ESerial& m_serial;
+    int m_i;
 };
 
 int main(int argc, char * argv[])
