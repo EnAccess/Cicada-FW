@@ -34,7 +34,7 @@ EMQTTCountdown::EMQTTCountdown(int ms)
 
 bool EMQTTCountdown::expired()
 {
-    return (int64_t)_endTime - eTickFunction() <= 0;
+    return left_ms() == 0;
 }
 
 void EMQTTCountdown::countdown_ms(int ms)
@@ -49,5 +49,9 @@ void EMQTTCountdown::countdown(int seconds)
 
 int EMQTTCountdown::left_ms()
 {
-    return (int64_t)_endTime - eTickFunction();
+    int64_t left = (int64_t)_endTime - eTickFunction();
+    if (left < 0)
+        left = 0;
+
+    return (int)left;
 }
