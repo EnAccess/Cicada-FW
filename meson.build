@@ -25,5 +25,5 @@ endif
 
 # Actually process the code
 subdir('src')
-subdir('dep/paho.mqtt.embedded-c')
+subdir('dep')
 subdir('examples')
