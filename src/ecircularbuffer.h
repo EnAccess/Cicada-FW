@@ -156,6 +156,14 @@ public:
     }
 
     /*!
+     * \return Number of available space in the buffer
+     */
+    virtual uint16_t availableSpace() const
+    {
+        return BUFFER_SIZE - _availableData;
+    }
+
+    /*!
      * \return size of the buffer, which was specified at compile time
      */
     virtual uint16_t size() const

@@ -42,8 +42,7 @@ uint16_t EBufferedSerial::bytesAvailable() const
 uint16_t EBufferedSerial::spaceAvailable() const
 {
     eDisableInterrupts();
-    uint16_t spaceAvailable =
-        _writeBuffer.size() - _writeBuffer.availableData();
+    uint16_t spaceAvailable = _writeBuffer.availableSpace();
     eEnableInterrupts();
 
     return spaceAvailable;
