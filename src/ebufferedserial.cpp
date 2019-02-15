@@ -130,7 +130,7 @@ uint16_t EBufferedSerial::bufferSize()
     return _writeBuffer.size();
 }
 
-void EBufferedSerialTask::run()
+void EBufferedSerial::performReadWrite()
 {
     if (_writeBuffer.availableData())
     {

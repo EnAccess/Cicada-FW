@@ -54,6 +54,12 @@ public:
 
     virtual uint16_t bufferSize();
 
+    /*!
+     * Actually perform read/write to the underlying
+     * raw serial device.
+     */
+    virtual void performReadWrite();
+
 protected:
     ELineCircularBuffer<E_SERIAL_BUFFERSIZE> _readBuffer;
     ELineCircularBuffer<E_SERIAL_BUFFERSIZE> _writeBuffer;
@@ -61,7 +67,7 @@ protected:
 
 class EBufferedSerialTask : public EBufferedSerial, public ETask
 {
-    void run();
+    inline void run() { performReadWrite(); }
 };
 
 #endif

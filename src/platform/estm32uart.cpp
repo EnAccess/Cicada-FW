@@ -223,24 +223,8 @@ void EStm32Uart::write(char data)
 
 void EStm32Uart::handleInterrupt()
 {
-    if (_writeBuffer.availableData())
-    {
-        if (rawWrite(_writeBuffer.read()))
-        {
-            _writeBuffer.pull();
-        }
-    }
-    else
-    {
-        CLEAR_BIT(_handle.Instance->CR1, USART_CR1_TXEIE);
-    }
+    performReadWrite();
 
-    if (rawBytesAvailable() && !_readBuffer.isFull())
-    {
-        uint8_t data;
-        if (rawRead(data))
-        {
-            _readBuffer.push(data);
-        }
-    }
+    if (!_writeBuffer.availableData())
+        CLEAR_BIT(_handle.Instance->CR1, USART_CR1_TXEIE);
 }
