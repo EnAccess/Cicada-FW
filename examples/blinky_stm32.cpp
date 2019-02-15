@@ -16,7 +16,7 @@ int main(int argc, char * argv[])
     /* Configure the system clock to 64 MHz */
     SystemClock_Config();
 
-    /* GPIO Port Clock Enagle */
+    /* GPIO Port Clock Enable */
     __HAL_RCC_GPIOA_CLK_ENABLE();
 
     /*Configure GPIO pin Output Level */

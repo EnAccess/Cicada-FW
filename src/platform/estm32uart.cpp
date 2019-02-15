@@ -135,6 +135,7 @@ bool EStm32Uart::open()
     // Configure interrupt
     NVIC_SetPriority(_uartInterruptInstance, E_INTERRUPT_PRIORITY);
     NVIC_EnableIRQ(_uartInterruptInstance);
+    SET_BIT(_handle.Instance->CR1, USART_CR1_RXNEIE);
 
     _flags |= FLAG_ISOPEN;
 
@@ -192,9 +193,7 @@ uint16_t EStm32Uart::write(const char* data, uint16_t size)
 {
     uint16_t written = EBufferedSerial::write(data, size);
 
-    eDisableInterrupts();
-    handleInterrupt();
-    eEnableInterrupts();
+    SET_BIT(_handle.Instance->CR1, USART_CR1_TXEIE);
 
     return written;
 }
@@ -203,21 +202,21 @@ void EStm32Uart::write(char data)
 {
     EBufferedSerial::write(data);
 
-    eDisableInterrupts();
-    handleInterrupt();
-    eEnableInterrupts();
+    SET_BIT(_handle.Instance->CR1, USART_CR1_TXEIE);
 }
 
 void EStm32Uart::handleInterrupt()
 {
-    if (_writeBuffer.availableData() &&
-        (!_writeBarrier || _bytesToWrite))
+    if (_writeBuffer.availableData())
     {
         if (rawWrite(_writeBuffer.read()))
         {
             _writeBuffer.pull();
-            _bytesToWrite--;
         }
+    }
+    else
+    {
+        CLEAR_BIT(_handle.Instance->CR1, USART_CR1_TXEIE);
     }
 
     if (rawBytesAvailable() && !_readBuffer.isFull())
