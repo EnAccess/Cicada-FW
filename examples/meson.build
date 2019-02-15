@@ -13,9 +13,9 @@ executable(
 )
 
 executable(
-    'serial',
+    'serial_linux',
     src_files,
-    'serial.cpp',
+    'serial_linux.cpp',
     include_directories : incdir,
     dependencies        : target_deps,
     name_suffix         : bin_suffix,
