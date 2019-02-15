@@ -21,15 +21,15 @@ public:
     {
     E_BEGIN_TASK
 
-        if (!m_serial.open())
-        {
-            printf("Error opening serial port %s\n", m_serial.portName());
-            exit(1);
-        }
-
         if (!m_serial.setSerialConfig(115200, 8))
         {
             printf("Error setting serial configuration\n");
+            exit(1);
+        }
+
+        if (!m_serial.open())
+        {
+            printf("Error opening serial port %s\n", m_serial.portName());
             exit(1);
         }
 

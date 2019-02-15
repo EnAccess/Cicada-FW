@@ -24,6 +24,7 @@
 #ifndef ETERMIOS_H
 #define ETERMIOS_H
 
+#include <termios.h>
 #include <stdint.h>
 #include "ebufferedserial.h"
 
@@ -68,6 +69,8 @@ private:
     bool _isOpen;
     const char* _port;
     int _fd;
+    speed_t _speed;
+    tcflag_t _dataBits;
 };
 
 #endif
