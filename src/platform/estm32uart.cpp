@@ -29,13 +29,11 @@
 
 EStm32Uart* EStm32Uart::instance[E_MULTITON_MAX_INSTANCES] = {NULL};
 
-EStm32Uart::EStm32Uart(USART_TypeDef* uartInstance,
-                       GPIO_TypeDef* txPort, uint16_t txPin,
-                       GPIO_TypeDef* rxPort, uint16_t rxPin) :
+EStm32Uart::EStm32Uart(USART_TypeDef* uartInstance, GPIO_TypeDef* uartPort,
+                       uint16_t txPin, uint16_t rxPin) :
     _flags(0),
     _handle(),
-    _txPort(txPort),
-    _rxPort(rxPort),
+    _uartPort(uartPort),
     _txPin(txPin),
     _rxPin(rxPin),
     _uartInterruptInstance()
@@ -110,17 +108,33 @@ bool EStm32Uart::open()
         return false;
     }
 
+    // Enable GPIO Clock
+    if (_uartPort == GPIOA)
+        __HAL_RCC_GPIOA_CLK_ENABLE();
+    else if (_uartPort == GPIOB)
+        __HAL_RCC_GPIOB_CLK_ENABLE();
+    else if (_uartPort == GPIOC)
+        __HAL_RCC_GPIOC_CLK_ENABLE();
+    else if (_uartPort == GPIOD)
+        __HAL_RCC_GPIOD_CLK_ENABLE();
+    else if (_uartPort == GPIOE)
+        __HAL_RCC_GPIOE_CLK_ENABLE();
+    else if (_uartPort == GPIOF)
+        __HAL_RCC_GPIOF_CLK_ENABLE();
+    else if (_uartPort == GPIOG)
+        __HAL_RCC_GPIOG_CLK_ENABLE();
+
     // Configure GPIO pins
     GPIO_InitTypeDef gpio = {0};
     gpio.Pin = _txPin;
     gpio.Mode = GPIO_MODE_AF_PP;
     gpio.Pull = GPIO_NOPULL;
     gpio.Speed = GPIO_SPEED_FREQ_HIGH;
-    HAL_GPIO_Init(_txPort, &gpio);
+    HAL_GPIO_Init(_uartPort, &gpio);
 
     gpio.Pin = _rxPin;
     gpio.Mode = GPIO_MODE_INPUT;
-    HAL_GPIO_Init(_rxPort, &gpio);
+    HAL_GPIO_Init(_uartPort, &gpio);
 
     // Configure UART
     _handle.Init.StopBits = UART_STOPBITS_1;
@@ -146,8 +160,8 @@ void EStm32Uart::close()
 {
     NVIC_DisableIRQ(_uartInterruptInstance);
     HAL_UART_DeInit(&_handle);
-    HAL_GPIO_DeInit(_txPort, _txPin);
-    HAL_GPIO_DeInit(_rxPort, _rxPin);
+    HAL_GPIO_DeInit(_uartPort, _txPin);
+    HAL_GPIO_DeInit(_uartPort, _rxPin);
 
     _flags &= ~FLAG_ISOPEN;
 }

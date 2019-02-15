@@ -31,8 +31,8 @@ class EStm32Uart : public EBufferedSerial
 {
 public:
     EStm32Uart(USART_TypeDef* uartInstance = USART3,
-               GPIO_TypeDef* txPort = GPIOB, uint16_t txPin = GPIO_PIN_10,
-               GPIO_TypeDef* rxPort = GPIOB, uint16_t rxPin = GPIO_PIN_11);
+               GPIO_TypeDef* uartPort = GPIOB,
+               uint16_t txPin = GPIO_PIN_10, uint16_t rxPin = GPIO_PIN_11);
 
     static EStm32Uart* getInstance(USART_TypeDef* uartInstance);
 
@@ -58,8 +58,7 @@ private:
 
     uint8_t _flags;
     UART_HandleTypeDef _handle;
-    GPIO_TypeDef* _txPort;
-    GPIO_TypeDef* _rxPort;
+    GPIO_TypeDef* _uartPort;
     uint16_t _txPin;
     uint16_t _rxPin;
     IRQn_Type _uartInterruptInstance;
