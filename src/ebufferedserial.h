@@ -50,10 +50,6 @@ public:
 
     virtual uint16_t readLine(char* data, uint16_t size);
 
-    virtual void setWriteBarrier();
-
-    virtual void clearWriteBarrier();
-
     virtual void flushReceiveBuffers();
 
     virtual uint16_t bufferSize();
@@ -61,8 +57,6 @@ public:
 protected:
     ELineCircularBuffer<E_SERIAL_BUFFERSIZE> _readBuffer;
     ELineCircularBuffer<E_SERIAL_BUFFERSIZE> _writeBuffer;
-    bool _writeBarrier;
-    uint16_t _bytesToWrite;
 };
 
 class EBufferedSerialTask : public EBufferedSerial, public ETask

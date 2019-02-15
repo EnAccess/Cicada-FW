@@ -25,9 +25,7 @@
 #include "eirq.h"
 #include "ebufferedserial.h"
 
-EBufferedSerial::EBufferedSerial() :
-    _writeBarrier(false),
-    _bytesToWrite(0)
+EBufferedSerial::EBufferedSerial()
 { }
 
 uint16_t EBufferedSerial::bytesAvailable() const
@@ -119,23 +117,6 @@ uint16_t EBufferedSerial::readLine(char* data, uint16_t size)
     return readCount;
 }
 
-void EBufferedSerial::setWriteBarrier()
-{
-    eDisableInterrupts();
-    _bytesToWrite = _writeBuffer.availableData();
-    _writeBarrier = true;
-    eEnableInterrupts();
-    
-}
-
-void EBufferedSerial::clearWriteBarrier()
-{
-    eDisableInterrupts();
-    _bytesToWrite = 0;
-    _writeBarrier = false;
-    eEnableInterrupts();
-}
-
 void EBufferedSerial::flushReceiveBuffers()
 {
     eDisableInterrupts();
@@ -151,13 +132,11 @@ uint16_t EBufferedSerial::bufferSize()
 
 void EBufferedSerialTask::run()
 {
-    if (_writeBuffer.availableData() &&
-        (!_writeBarrier || _bytesToWrite))
+    if (_writeBuffer.availableData())
     {
         if (rawWrite(_writeBuffer.read()))
         {
             _writeBuffer.pull();
-            _bytesToWrite--;
         }
     }
 

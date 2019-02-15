@@ -83,20 +83,6 @@ public:
     virtual uint16_t readLine(char* data, uint16_t size) = 0;
 
     /*!
-     * Sets the write barrier. A write barrier means, the BufferdSerial's
-     * run function will not send further than up to the number of bytes
-     * when the barrier was set. This is useful if there is data
-     * to be buffered, but those should not yet be sent to the device.
-     */
-    virtual void setWriteBarrier() = 0;
-
-    /*!
-     * Clears the write barrier. Data after the write barrier is now
-     * allowed to be sent to the device.
-     */
-    virtual void clearWriteBarrier() = 0;
-
-    /*!
      * Clears the read buffer, discarding all available data.
      */
     virtual void flushReceiveBuffers() = 0;
