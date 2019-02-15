@@ -39,6 +39,8 @@ EStm32Uart::EStm32Uart(USART_TypeDef* uartInstance, GPIO_TypeDef* uartPort,
     _uartInterruptInstance()
 {
     _handle.Instance = uartInstance;
+    _handle.Init.BaudRate = 115200;
+    _handle.Init.WordLength = UART_WORDLENGTH_8B;
 
     for (int i=0; i<E_MULTITON_MAX_INSTANCES; i++)
     {
