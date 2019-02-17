@@ -1,3 +1,6 @@
 [submodule "dep/paho.mqtt.embedded-c"]
 	path = dep/paho.mqtt.embedded-c
 	url = https://github.com/eclipse/paho.mqtt.embedded-c.git
+[submodule "dep/printf"]
+	path = dep/printf
+	url = https://github.com/mpaland/printf.git
