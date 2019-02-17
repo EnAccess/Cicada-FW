@@ -178,6 +178,7 @@ void ESim7x00CommDevice::run()
         uint8_t size = _serial.readLine(data, LINE_MAX_LENGTH);
         data[size] = '\0';
 
+        /*
         if (_sendState < connected || _sendState > receiving)
         {
             if (_waitForReply)
@@ -189,6 +190,7 @@ void ESim7x00CommDevice::run()
                        "_waitForReply=NULL, data: %s",
                        _sendState, _replyState, data);
         }
+        */
 
         // If we sent a command, we process the reply here
         if (_waitForReply)
