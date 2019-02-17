@@ -112,7 +112,7 @@ extern "C"
 
     void USART3_IRQHandler()
     {
-        static instance = EStm32Uart::getInstance(USART3);
+        static EStm32Uart* instance = EStm32Uart::getInstance(USART3);
         instance->handleInterrupt();
     }
 }
