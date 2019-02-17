@@ -7,6 +7,10 @@
 #include "eserial.h"
 #include "etick.h"
 #include "stm32f1xx_hal.h"
+#include "printf.h"
+
+#define LED_Pin GPIO_PIN_8
+#define LED_GPIO_Port GPIOA
 
 static void SystemClock_Config(void);
 
@@ -22,29 +26,26 @@ public:
     {
     E_BEGIN_TASK
 
-        if (!m_serial.setSerialConfig(115200, 8))
-        {
-            //TODO: Error
-        }
-
-        if (!m_serial.open())
-        {
-            //TODO: Error
-        }
-
         for (m_i=0; m_i<100; m_i++)
         {
             {
                 const char* send_str = "AT\r\n";
+                printf("Sending command: %s", send_str);
                 int bytesWritten =
                     m_serial.write(send_str, strlen(send_str));
+                printf("%d bytes written\r\n", bytesWritten);
             }
 
             E_REENTER_COND_DELAY(m_serial.bytesAvailable(), 100);
 
             {
                 char buf[32];
-                m_serial.read(buf, 31);
+                int bytesReceived;
+                bytesReceived = m_serial.read(buf, 31);
+                printf("%d bytes received\r\n", bytesReceived);
+
+                buf[bytesReceived] = '\0';
+                printf("Received message: %s", buf);
             }
 
             E_REENTER_DELAY(500);
@@ -66,12 +67,31 @@ int main(int argc, char * argv[])
     HAL_Init();
     SystemClock_Config();
 
-    ESerial serial;
+    /* GPIO Port Clock Enable */
+    __HAL_RCC_GPIOA_CLK_ENABLE();
+
+    /*Configure GPIO pin Output Level */
+    HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
+
+    /*Configure GPIO pin : LED_Pin */
+    GPIO_InitTypeDef GPIO_InitStruct = {0};
+    GPIO_InitStruct.Pin = LED_Pin;
+    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+    HAL_GPIO_Init(LED_GPIO_Port, &GPIO_InitStruct);
+
+    ESerial debug(USART3, GPIOB);
+    ESerial serial(UART4, GPIOC);
     SerialTask task(serial);
 
-    ETask* taskList[] = {&task, dynamic_cast<ETask*>(&serial), NULL};
+    ETask* taskList[] = {&task, NULL};
 
     EScheduler s(&eTickFunction, taskList);
+
+    debug.open();
+    serial.open();
+
     s.start();
 }
 
@@ -112,7 +132,23 @@ extern "C"
 
     void USART3_IRQHandler()
     {
-        static instance = EStm32Uart::getInstance(USART3);
+        static EStm32Uart* instance = EStm32Uart::getInstance(USART3);
         instance->handleInterrupt();
+    }
+
+    void UART4_IRQHandler()
+    {
+        static EStm32Uart* instance = EStm32Uart::getInstance(UART4);
+        instance->handleInterrupt();
+    }
+
+    void _putchar(char c)
+    {
+        static EStm32Uart* serial = NULL;
+        if (!serial)
+        {
+            serial = EStm32Uart::getInstance(USART3);
+        }
+        serial->write(c);
     }
 }
