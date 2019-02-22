@@ -43,6 +43,8 @@ int main(int argc, char * argv[])
     HAL_Init();
     SystemClock_Config();
 
+    HAL_Delay(2000);
+
     ESerial debug(USART3, GPIOB);
     ESerial serial(UART4, GPIOC);
     ESim7x00CommDevice commDev(serial);
