@@ -11,11 +11,13 @@ project(
 python   = find_program('python3', 'python')
 clangFormat  = find_program('clang-format')
 
-objcopy  = '@0@'.format(find_program('objcopy').path())
-objdump  = '@0@'.format(find_program('objdump').path())
-size     = '@0@'.format(find_program('size').path())
-gdb      = '@0@'.format(find_program('gdb').path())
-openocd  = '@0@'.format(find_program('openocd', required: false).path())
+if (meson.is_cross_build() == true)
+    objcopy  = '@0@'.format(find_program('objcopy').path())
+    objdump  = '@0@'.format(find_program('objdump').path())
+    size     = '@0@'.format(find_program('size').path())
+    gdb      = '@0@'.format(find_program('gdb').path())
+    openocd  = '@0@'.format(find_program('openocd', required: false).path())
+endif
 
 # Platform specific compiler/linker arguments
 mcu_args = []

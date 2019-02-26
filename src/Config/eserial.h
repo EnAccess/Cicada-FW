@@ -29,6 +29,15 @@
 #include "platform/estm32uart.h"
 typedef EStm32Uart ESerial;
 
+EStm32Uart stm32Uart;
+
+function(stm32Uart);
+
+void function(EISerial& serial)
+{
+
+} 
+
 #elif defined __linux__
 #include "platform/etermios.h"
 typedef ETermios ESerial;
