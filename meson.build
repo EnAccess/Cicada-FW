@@ -75,7 +75,7 @@ run_tests = executable(
 )
 
 # Setup custom build commands
-run_target('lint',      command: [ python, '.clang-format.py', '-r', '-e', 'test/Mocks/STM32-F103RCT-HAL/CMSIS', 'src', 'test' ])
+run_target('lint',      command: [ python, '.clang-format.py', '-r', '-e', 'dep', 'src', 'test' ])  # TODO: confirm these -e exclude args are correct
 run_target('ut',        command: [ run_tests, '-c' ], depends: run_tests)
 
 message('''
