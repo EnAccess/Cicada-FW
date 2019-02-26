@@ -93,8 +93,8 @@ private:
     };
 
     EIBufferedSerial& _serial;
-    ECircularBuffer<uint8_t, E_NETWORK_BUFFERSIZE> _readBuffer;
-    ECircularBuffer<uint8_t, E_NETWORK_BUFFERSIZE> _writeBuffer;
+    CircularBuffer<uint8_t, E_NETWORK_BUFFERSIZE> _readBuffer;
+    CircularBuffer<uint8_t, E_NETWORK_BUFFERSIZE> _writeBuffer;
     SendState _sendState;
     ReplyState _replyState;
     const char* _apn;

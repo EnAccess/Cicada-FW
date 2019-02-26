@@ -21,13 +21,16 @@
  *
  */
 
-#include "etick.h"
 #include "emqttcountdown.h"
 
-EMQTTCountdown::EMQTTCountdown()
-{ }
+EMQTTCountdown::EMQTTCountdown(SysTickHandler sysTickHandler) :
+    _sysTickHandler(sysTickHandler),
+    _endTime(0)
+{}
 
-EMQTTCountdown::EMQTTCountdown(int ms)
+EMQTTCountdown::EMQTTCountdown(SysTickHandler sysTickHandler, int ms) :
+    _sysTickHandler(sysTickHandler),
+    _endTime(0)
 {
     countdown_ms(ms);
 }
@@ -39,17 +42,17 @@ bool EMQTTCountdown::expired()
 
 void EMQTTCountdown::countdown_ms(int ms)
 {
-    _endTime = eTickFunction() + ms;
+    _endTime = _sysTickHandler() + ms;
 }
 
 void EMQTTCountdown::countdown(int seconds)
 {
-    _endTime = eTickFunction() + seconds * 1000;
+    _endTime = _sysTickHandler() + seconds * 1000;
 }
 
 int EMQTTCountdown::left_ms()
 {
-    int64_t left = (int64_t)_endTime - eTickFunction();
+    int64_t left = (int64_t)_endTime - _sysTickHandler();
     if (left < 0)
         left = 0;
 

@@ -1,8 +1,10 @@
 test_src_inc = include_directories([
-    'src',
-    'mocks'
+    'CommDevices',
+    'Mocks',
+    'Modules'
 ])
 
 test_src_files = files([
-    'src/FirstTest.cpp'
+    'Modules/CircularBufferTest.cpp',
+    'Modules/LineCircularBufferTest.cpp'
 ])

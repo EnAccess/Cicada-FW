@@ -27,12 +27,13 @@
 
 #include <cstdint>
 #include "edefines.h"
+#include "etick.h"
 
 class EMQTTCountdown
 {
 public:
-    EMQTTCountdown();
-    EMQTTCountdown(int ms);
+    EMQTTCountdown(SysTickHandler sysTickHandler);
+    EMQTTCountdown(SysTickHandler sysTickHandler, int ms);
 
     bool expired();
     void countdown_ms(int ms);
@@ -40,6 +41,7 @@ public:
     int left_ms();
 
 private:
+    SysTickHandler _sysTickHandler;
     E_TICK_TYPE _endTime;
 };
     

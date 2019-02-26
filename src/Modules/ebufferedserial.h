@@ -26,7 +26,8 @@
 
 #include "eibufferedserial.h"
 #include "etask.h"
-#include "ecircularbuffer.h"
+#include "CircularBuffer.h"
+#include "LineCircularBuffer.h"
 #include "edefines.h"
 
 class EBufferedSerial : public EIBufferedSerial
@@ -61,8 +62,8 @@ public:
     virtual void performReadWrite();
 
 protected:
-    ELineCircularBuffer<E_SERIAL_BUFFERSIZE> _readBuffer;
-    ELineCircularBuffer<E_SERIAL_BUFFERSIZE> _writeBuffer;
+    LineCircularBuffer<E_SERIAL_BUFFERSIZE> _readBuffer;
+    LineCircularBuffer<E_SERIAL_BUFFERSIZE> _writeBuffer;
 };
 
 class EBufferedSerialTask : public EBufferedSerial, public ETask
