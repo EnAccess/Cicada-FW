@@ -27,20 +27,6 @@ target_link_args = []
 bin_suffix = []
 target_deps = []
 
-
-# if (meson.is_cross_build() == true)
-#   stm32_proj = subproject('STM32Cube')
-#   mcu = 'STM32F103xE'
-#   mcu_args = stm32_proj.get_variable('mcu_args')
-#   target_link_args = stm32_proj.get_variable('stm32_link_args')
-#   target_deps = stm32_proj.get_variable('stm32_dep')
-#   bin_suffix = 'elf'
-# endif
-
-# subdir('dep')
-# subdir('examples')
-
-
 # Add src dependancies
 subdir('src')
 src_inc   = get_variable('src_inc')
@@ -57,10 +43,6 @@ cpputest_dep = cpputest.get_variable('cpputest_dep')
 
 # Unit test args
 test_args = []
-# test_args += '-D@0@'.format(mcu)
-# test_args += '-D@0@'.format('OKRA_UNIT_TEST_BUILD')
-# test_args += '-W@0@'.format('no-unused-variable')      # HAL Mocks causes these annoying warnings, disable in the test build
-# test_args += '-W@0@'.format('no-int-to-pointer-cast')  # HAL Mocks causes these annoying warnings, disable in the test build
 
 # Build native unit tests
 run_tests = executable(

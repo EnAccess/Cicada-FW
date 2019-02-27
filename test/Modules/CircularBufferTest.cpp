@@ -63,7 +63,7 @@ TEST_GROUP(CircularBufferTest){};
 //     STRNCMP_EQUAL(expectedDataOut, dataOut, MAX_BUFFER_SIZE);
 // }
 
-TEST(CircularBufferTest, ShouldWrapToTheStartAndOverwriteData)
+TEST(CircularBufferTest, ShouldWrapToTheStartWhenBufferIsFull)
 {
     const uint8_t MAX_BUFFER_SIZE = 10;
     CircularBuffer<char, MAX_BUFFER_SIZE> buffer;
@@ -74,29 +74,33 @@ TEST(CircularBufferTest, ShouldWrapToTheStartAndOverwriteData)
     // the buffer should contain:   67CDE12345
     // and when read it should be:  CDE1234567
 
-    char expectedDataOut[] = "CDE1234567";
-    char dataOut[MAX_BUFFER_SIZE];
+    // char expectedDataOut[] = "ABCDE";
+    // char expectedDataOut[] = "234567";
 
-    const uint8_t FIRST_SIZE = 5;
-    char dataInFirst[FIRST_SIZE] = { 'A', 'B', 'C', 'D', 'E' };
+    const uint8_t SIZE = 7;
+    char dataInFirst[SIZE] = { 'A', 'B', 'C', 'D', 'E', 'F', 'G' };
+    char dataOutFirst[SIZE];
 
-    const uint8_t SECOND_SIZE = 7;
-    char dataInSecond[SECOND_SIZE] = { '1', '2', '3', '4', '5', '6', '7' };
+    char dataInSecond[SIZE] = { '1', '2', '3', '4', '5', '6', '7' };
+    char dataOutSecond[SIZE];
 
-    uint8_t writeLen = buffer.push(dataInFirst, FIRST_SIZE);
-    writeLen += buffer.push(dataInSecond, SECOND_SIZE);
-    uint8_t readLen = buffer.pull(dataOut, MAX_BUFFER_SIZE);
+    uint8_t writeLen = buffer.push(dataInFirst, SIZE);
+    uint8_t availLen = buffer.availableData();
+    uint8_t readLen = buffer.pull(dataOutFirst, SIZE);
+    
+    CHECK_EQUAL(SIZE, writeLen);
+    CHECK_EQUAL(SIZE, availLen);
+    CHECK_EQUAL(SIZE, readLen);
+    STRNCMP_EQUAL(dataInFirst, dataOutFirst, SIZE);
 
-    // printf("\r\n\r\n");
-    // printf("RESULTS\r\n");
-    // printf("%u\r\n", writeLen);
-    // printf("%u\r\n", readLen);
-    // printf("%.*s", MAX_BUFFER_SIZE, dataOut);
-    // printf("\r\n\r\n");
-
-    CHECK_EQUAL(FIRST_SIZE + SECOND_SIZE, writeLen);
-    CHECK_EQUAL(MAX_BUFFER_SIZE, readLen);
-    STRNCMP_EQUAL(expectedDataOut, dataOut, MAX_BUFFER_SIZE);
+    writeLen = buffer.push(dataInSecond, SIZE);
+    availLen = buffer.availableData();
+    readLen = buffer.pull(dataOutSecond, SIZE);
+    
+    CHECK_EQUAL(SIZE, writeLen);
+    CHECK_EQUAL(SIZE, availLen);
+    CHECK_EQUAL(SIZE, readLen);
+    STRNCMP_EQUAL(dataInSecond, dataOutSecond, SIZE);
 }
 
 TEST(CircularBufferTest, ShouldReadNothingAfterFlushingTheBuffer)
