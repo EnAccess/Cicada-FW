@@ -7,7 +7,3 @@
 [submodule "dep/paho.mqtt.embedded-c/src"]
 	path = dep/paho.mqtt.embedded-c/src
 	url = https://github.com/eclipse/paho.mqtt.embedded-c.git
-[submodule "dep/stm32cube_fw_f1/src"]
-	path = dep/stm32cube_fw_f1/src
-	url = https://gitlab.com/Kamcuk/STM32Cube_FW.git
-	branch = F1_use
