@@ -27,6 +27,6 @@
 #include "stdint.h"
 #include "edefines.h"
 
-typedef E_TICK_TYPE (*SysTickHandler)(void);
+E_TICK_TYPE eTickFunction();
 
 #endif

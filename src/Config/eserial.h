@@ -21,29 +21,22 @@
  *
  */
 
+// TODO: remove this file. All uart classes share a base class, hence this should not be needed
+
 #ifndef ESERIAL_H
 #define ESERIAL_H
 
 // Import platform specific serial driver
 #if defined TARGET_STM32
-#include "platform/estm32uart.h"
+#include "../platform/STM32F1/estm32uart.h"
 typedef EStm32Uart ESerial;
 
-EStm32Uart stm32Uart;
-
-function(stm32Uart);
-
-void function(EISerial& serial)
-{
-
-} 
-
 #elif defined __linux__
-#include "platform/etermios.h"
+#include "../platform/Linux/etermios.h"
 typedef ETermios ESerial;
 
 #else
-#include "platform/enoplatform.h"
+#include "../platform/NoPlatform/enoplatform.h"
 typedef ENoplatformSerial ESerial;
 
 #endif

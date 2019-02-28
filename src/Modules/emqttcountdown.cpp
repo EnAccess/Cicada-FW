@@ -23,13 +23,23 @@
 
 #include "emqttcountdown.h"
 
-EMQTTCountdown::EMQTTCountdown(SysTickHandler sysTickHandler) :
-    _sysTickHandler(sysTickHandler),
+// EMQTTCountdown::EMQTTCountdown(E_TICK_TYPE (*sysTickHandler)()) :
+//     _sysTickHandler(sysTickHandler),
+//     _endTime(0)
+// {}
+
+// EMQTTCountdown::EMQTTCountdown(E_TICK_TYPE (*sysTickHandler)(), int ms) :
+//     _sysTickHandler(sysTickHandler),
+//     _endTime(0)
+// {
+//     countdown_ms(ms);
+// }
+
+EMQTTCountdown::EMQTTCountdown() :
     _endTime(0)
 {}
 
-EMQTTCountdown::EMQTTCountdown(SysTickHandler sysTickHandler, int ms) :
-    _sysTickHandler(sysTickHandler),
+EMQTTCountdown::EMQTTCountdown(int ms) :
     _endTime(0)
 {
     countdown_ms(ms);

@@ -8,8 +8,8 @@ project(
 )
 
 # Import binary helpers
-python   = find_program('python3', 'python')
-clangFormat  = find_program('clang-format')
+python       = find_program('python3', 'python', required: false)
+clangFormat  = find_program('clang-format',  required: false)
 
 if (meson.is_cross_build() == true)
     objcopy  = '@0@'.format(find_program('objcopy').path())
@@ -19,20 +19,23 @@ if (meson.is_cross_build() == true)
     openocd  = '@0@'.format(find_program('openocd', required: false).path())
 endif
 
-# Platform specific compiler/linker arguments
-mcu_args = []
-target_c_args = []
-target_cpp_args = []
-target_link_args = []
-bin_suffix = []
-target_deps = []
-
-# Add src dependancies
+# Add src 
 subdir('src')
 src_inc   = get_variable('src_inc')
 src_files = get_variable('src_files')
 
-# Add unit test src dependencies
+# Add embedded printf dependancy
+embedded_printf    = subproject('printf')
+embedded_prinf_dep = embedded_printf.get_variable('embedded_prinf_dep')
+
+# Add mqtt dependancy
+eclipse_paho_mqtt     = subproject('paho.mqtt.embedded-c')
+eclipse_paho_mqtt_dep = eclipse_paho_mqtt.get_variable('eclipse_paho_mqtt_dep')
+
+# Setup examples
+subdir('examples')
+
+# Add unit test src 
 subdir('test')
 test_src_inc   = get_variable('test_src_inc')
 test_src_files = get_variable('test_src_files')
@@ -67,5 +70,6 @@ Build commands:
     ninja clean     clean
     ninja lint      prints a diff for files that do not match the style guide
     ninja ut        run unit tests - note: `ninja test` is reserved and doesn't do anything
+    
 '''
 )

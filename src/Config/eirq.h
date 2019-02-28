@@ -21,6 +21,8 @@
  *
  */
 
+// TODO: remove this global and let the user implement in their platform specific uart driver
+
 #ifndef EIRQ_H
 #define EIRQ_H
 
