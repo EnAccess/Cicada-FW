@@ -124,19 +124,17 @@ if (meson.is_cross_build() == true)
         link_args           : [ mcu_args, target_link_args ]
     )
 
-    # TODO: 'printf_stm32.cpp' does this example exist?
-    #
-    # printf_stm32 = executable(
-    #     'printf_stm32',
-    #     [ src_files, platform_src_files ],
-    #     'printf_stm32.cpp',
-    #     include_directories : [ src_inc, platform_src_inc ],
-    #     dependencies        : [ target_deps, embedded_prinf_dep ],
-    #     name_suffix         : bin_suffix,
-    #     c_args              : [ mcu_args, target_c_args ],
-    #     cpp_args            : [ mcu_args, target_cpp_args ],
-    #     link_args           : [ mcu_args, target_link_args ]
-    # )
+    printf_stm32 = executable(
+        'printf_stm32',
+        [ src_files, platform_src_files ],
+        'printf_stm32.cpp',
+        include_directories : [ src_inc, platform_src_inc ],
+        dependencies        : [ target_deps, embedded_prinf_dep ],
+        name_suffix         : bin_suffix,
+        c_args              : [ mcu_args, target_c_args ],
+        cpp_args            : [ mcu_args, target_cpp_args ],
+        link_args           : [ mcu_args, target_link_args ]
+    )
 
     dualport_stm32 = executable(
         'dualport_stm32',
@@ -192,16 +190,14 @@ if (meson.is_cross_build() == true)
         depends          : [ serial_stm32 ]
     )
 
-    # TODO: 'printf_stm32.cpp' does this example exist?
-    #
-    # custom_target(
-    #     'printf_bin',
-    #     output           : [ 'printf_stm.bin' ],
-    #     build_by_default : true,
-    #     command          : [ objcopy, '-O', 'binary', '-S', 'examples/printf_stm32.elf',
-    #                         'examples/printf_stm32.bin' ],
-    #     depends          : [ printf_stm32 ]
-    # )
+    custom_target(
+        'printf_bin',
+        output           : [ 'printf_stm.bin' ],
+        build_by_default : true,
+        command          : [ objcopy, '-O', 'binary', '-S', 'examples/printf_stm32.elf',
+                            'examples/printf_stm32.bin' ],
+        depends          : [ printf_stm32 ]
+    )
 
     custom_target(
         'dualport_bin',
