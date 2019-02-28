@@ -35,6 +35,7 @@
 #define QUOTE_END_STR_LENGTH 3
 
 #define CONNECT_PENDING    (1 << 0)
+#define RESET_PENDING      (1 << 1)
 #define DATA_PENDING       (1 << 2)
 #define DISCONNECT_PENDING (1 << 3)
 #define IP_CONNECTED       (1 << 4)
@@ -171,6 +172,29 @@ void ESim7x00CommDevice::run()
         return;
     }
 
+    // If a modem reset is pending, handle it
+    if (_stateBooleans & RESET_PENDING)
+    {
+        _serial.flushReceiveBuffers();
+        _stateBooleans = LINE_READ;
+        _bytesToRead = 0;
+        _bytesToReceive = 0;
+        _bytesToWrite = 0;
+        if (_sendState >= connecting && _sendState <= receiving)
+            _sendState = connecting;
+        else
+            _sendState = notConnected;
+        const char str[] = "AT+CRESET";
+        _serial.write(str, sizeof(str) - 1);
+        _serial.write(_lineEndStr, LINE_END_STR_LENGTH);
+        _replyState = normalReply;
+        _waitForReply = "RDY";
+
+        setDelay(4000);
+
+        return;
+    }
+
     // Check if there is a reply from the modem
     if ((_stateBooleans & LINE_READ) && _serial.canReadLine())
     {
@@ -202,7 +226,7 @@ void ESim7x00CommDevice::run()
             }
             else if (strncmp(data, "ERROR", 5) == 0)
             {
-                _stateBooleans |= DISCONNECT_PENDING;
+                _stateBooleans |= RESET_PENDING;
 
                 _replyState = noReply;
                 _waitForReply = NULL;
@@ -216,8 +240,11 @@ void ESim7x00CommDevice::run()
         case netopen:
             if (strncmp(data, "+NETOPEN: 1", 11) == 0)
             {
-                _sendState = netopenError;
+                setDelay(2000);
+                _sendState = sendNetopen;
                 _waitForReply = NULL;
+                _replyState = noReply;
+                return;
             }
             break;
 
@@ -326,6 +353,7 @@ void ESim7x00CommDevice::run()
     switch(_sendState)
     {
     case notConnected:
+        setDelay(10);
         handleConnect(connecting);
         break;
 
@@ -369,11 +397,11 @@ void ESim7x00CommDevice::run()
         SEND_COMMAND("AT+CIPMODE=0", _okStr, sendNetopen);
 
     case sendNetopen:
+        setDelay(10);
         _replyState = netopen;
         SEND_COMMAND("AT+NETOPEN", "+NETOPEN: 0", sendCiprxget);
 
     case sendCiprxget:
-        setDelay(10);
         SEND_COMMAND("AT+CIPRXGET=1", _okStr, sendDnsQuery);
 
     case sendDnsQuery:

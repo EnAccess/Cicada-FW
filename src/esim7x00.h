@@ -68,7 +68,6 @@ private:
         notConnected,
         serialError,
         dnsError,
-        netopenError,
         connecting,
         sendCgdcont,
         sendAtd,
