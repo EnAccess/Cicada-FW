@@ -1,6 +1,6 @@
 test_src_inc = include_directories([
-    'CommDevices',
-    'Mocks',
+    # 'CommDevices',
+    # 'Mocks',
     'Modules'
 ])
 
