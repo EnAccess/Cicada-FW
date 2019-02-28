@@ -13,7 +13,7 @@ platform_src_inc = []
 bin_suffix = ''
 
 if (meson.is_cross_build() != true)
-    bin_suffix = 'bin'
+    bin_suffix = []
     platform_src_files = files(['../platform/Linux/etick_linux.cpp', '../platform/Linux/etermios.cpp'])
     platform_src_inc = include_directories(['../platform/Linux'])
 else
