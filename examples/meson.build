@@ -36,7 +36,7 @@ if (meson.is_cross_build() != true)
     executable(
         'scheduler',
         [ src_files, platform_src_files ],
-        'scheduler.cpp',
+        './linux/scheduler.cpp',
         include_directories : [ src_inc, platform_src_inc ],
         dependencies        : target_deps,
         name_suffix         : bin_suffix,
@@ -48,7 +48,7 @@ if (meson.is_cross_build() != true)
     executable(
         'serial_linux',
         [ src_files, platform_src_files ],
-        'serial_linux.cpp',
+        './linux/serial_linux.cpp',
         include_directories : [ src_inc, platform_src_inc ],
         dependencies        : target_deps,
         name_suffix         : bin_suffix,
@@ -60,7 +60,7 @@ if (meson.is_cross_build() != true)
     executable(
         'ipcommdevice',
         [ src_files, platform_src_files ],
-        'ipcommdevice.cpp',
+        './linux/ipcommdevice.cpp',
         include_directories : [ src_inc, platform_src_inc ],
         dependencies        : target_deps,
         name_suffix         : bin_suffix,
@@ -72,7 +72,7 @@ if (meson.is_cross_build() != true)
     executable(
         'blocking',
         [ src_files, platform_src_files ],
-        'blocking.cpp',
+        './linux/blocking.cpp',
         include_directories : [ src_inc, platform_src_inc ],
         dependencies        : target_deps,
         name_suffix         : bin_suffix,
@@ -84,7 +84,7 @@ if (meson.is_cross_build() != true)
     executable(
         'blockingmqtt',
         [ src_files, platform_src_files ],
-        'blockingmqtt.cpp',
+        './linux/blockingmqtt.cpp',
         include_directories : [ src_inc, platform_src_inc ],
         dependencies        : [ target_deps, eclipse_paho_mqtt_dep ],
         name_suffix         : bin_suffix,
@@ -103,7 +103,7 @@ if (meson.is_cross_build() == true)
     blinky_stm32 = executable(
         'blinky_stm32',
         [ src_files, platform_src_files ],
-        'blinky_stm32.cpp',
+        './stm32f1/blinky_stm32.cpp',
         include_directories : [ src_inc, platform_src_inc ],
         dependencies        : target_deps,
         name_suffix         : bin_suffix,
@@ -115,7 +115,7 @@ if (meson.is_cross_build() == true)
     serial_stm32 = executable(
         'serial_stm32',
         [ src_files, platform_src_files ],
-        'serial_stm32.cpp',
+        './stm32f1/serial_stm32.cpp',
         include_directories : [ src_inc, platform_src_inc ],
         dependencies        : target_deps,
         name_suffix         : bin_suffix,
@@ -127,7 +127,7 @@ if (meson.is_cross_build() == true)
     printf_stm32 = executable(
         'printf_stm32',
         [ src_files, platform_src_files ],
-        'printf_stm32.cpp',
+        './stm32f1/printf_stm32.cpp',
         include_directories : [ src_inc, platform_src_inc ],
         dependencies        : [ target_deps, embedded_prinf_dep ],
         name_suffix         : bin_suffix,
@@ -139,7 +139,7 @@ if (meson.is_cross_build() == true)
     dualport_stm32 = executable(
         'dualport_stm32',
         [ src_files, platform_src_files ],
-        'dualport_stm32.cpp',
+        './stm32f1/dualport_stm32.cpp',
         include_directories : [ src_inc, platform_src_inc ],
         dependencies        : [ target_deps, embedded_prinf_dep ],
         name_suffix         : bin_suffix,
@@ -151,7 +151,7 @@ if (meson.is_cross_build() == true)
     ipcommdevice_stm32 = executable(
         'ipcommdevice_stm32',
         [ src_files, platform_src_files ],
-        'ipcommdevice_stm32.cpp',
+        './stm32f1/ipcommdevice_stm32.cpp',
         include_directories : [ src_inc, platform_src_inc ],
         dependencies        : [ target_deps, embedded_prinf_dep ],
         name_suffix         : bin_suffix,
@@ -163,7 +163,7 @@ if (meson.is_cross_build() == true)
     blockingmqtt_stm32 = executable(
         'blockingmqtt_stm32',
         [ src_files, platform_src_files ],
-        'blockingmqtt_stm32.cpp',
+        './stm32f1/blockingmqtt_stm32.cpp',
         include_directories : [ src_inc, platform_src_inc ],
         dependencies        : [ target_deps, embedded_prinf_dep, eclipse_paho_mqtt_dep ],
         name_suffix         : bin_suffix,
