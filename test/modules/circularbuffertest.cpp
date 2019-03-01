@@ -1,7 +1,7 @@
 #include "CppUTest/TestHarness.h"
 #include "CppUTestExt/MockSupport.h"
 
-#include "CircularBuffer.h"
+#include "circularbuffer.h"
 
 TEST_GROUP(CircularBufferTest){};
 

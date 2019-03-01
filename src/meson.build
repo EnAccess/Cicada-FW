@@ -1,13 +1,13 @@
 src_inc = include_directories([
-    'CommDevices',
-    'Config',
-    'Modules'
+    'commdevices',
+    'config',
+    'modules'
 ])
 
 src_files = files([
-    'CommDevices/esim7x00.cpp',
-    'CommDevices/eblockingcommdev.cpp',
-    'Modules/ebufferedserial.cpp',
-    'Modules/emqttcountdown.cpp',
-    'Modules/escheduler.cpp'
+    'commdevices/esim7x00.cpp',
+    'commdevices/eblockingcommdev.cpp',
+    'modules/ebufferedserial.cpp',
+    'modules/emqttcountdown.cpp',
+    'modules/escheduler.cpp'
 ])

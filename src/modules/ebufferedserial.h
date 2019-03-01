@@ -26,8 +26,8 @@
 
 #include "eibufferedserial.h"
 #include "etask.h"
-#include "CircularBuffer.h"
-#include "LineCircularBuffer.h"
+#include "circularbuffer.h"
+#include "linecircularbuffer.h"
 #include "edefines.h"
 
 class EBufferedSerial : public EIBufferedSerial
