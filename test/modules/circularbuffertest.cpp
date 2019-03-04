@@ -3,6 +3,8 @@
 
 #include "circularbuffer.h"
 
+using namespace EnAccess;
+
 TEST_GROUP(CircularBufferTest){};
 
 // TEST(CircularBufferTest, ShouldPushAndPullDataAsExpected)
