@@ -46,7 +46,7 @@ public:
 
 private:
     E_TICK_TYPE (*_sysTickHandler)();
-    E_TICK_TYPE _endTime;
+    uint32_t _endTime;
 };
 
 }

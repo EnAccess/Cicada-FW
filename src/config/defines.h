@@ -29,7 +29,7 @@
 #endif
 
 #ifndef E_TICK_TYPE
-#define E_TICK_TYPE uint64_t
+#define E_TICK_TYPE uint32_t
 #endif
 
 #ifndef E_SERIAL_BUFFERSIZE

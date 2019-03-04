@@ -64,9 +64,9 @@ void MQTTCountdown::countdown(int seconds)
 
 int MQTTCountdown::left_ms()
 {
-    int64_t left = (int64_t)_endTime - _sysTickHandler();
-    if (left < 0)
+    uint32_t left = _endTime - (uint32_t)_sysTickHandler();
+    if (left > INT32_MAX)
         left = 0;
 
-    return (int)left;
+    return left;
 }

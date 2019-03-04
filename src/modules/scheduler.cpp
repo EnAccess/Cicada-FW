@@ -36,7 +36,7 @@ void Scheduler::runTask()
 {
     E_TICK_TYPE tick = _tickFunction();
     if ((*_currentTask)->delay() == 0 ||
-        tick >= (*_currentTask)->lastRun() + (*_currentTask)->delay())
+        tick - (*_currentTask)->lastRun() >= (*_currentTask)->delay())
     {
         (*_currentTask)->setLastRun(tick);
         (*_currentTask)->run();

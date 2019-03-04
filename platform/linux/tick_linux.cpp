@@ -29,7 +29,7 @@ E_TICK_TYPE eTickFunction()
     uint64_t ms;
     struct timespec spec;
 
-    clock_gettime(CLOCK_REALTIME, &spec);
+    clock_gettime(CLOCK_MONOTONIC, &spec);
     
     ms  = spec.tv_sec * 1000;
     ms += spec.tv_nsec / 1.0e6;
