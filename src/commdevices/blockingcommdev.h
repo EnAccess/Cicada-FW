@@ -28,6 +28,8 @@
 #include "defines.h"
 #include "icommdevice.h"
 
+namespace EnAccess {
+
 /*!
  *\class BlockingCommDevice
  *
@@ -69,4 +71,6 @@ private:
     void * _yieldUserData;
 };
 
+}
+    
 #endif

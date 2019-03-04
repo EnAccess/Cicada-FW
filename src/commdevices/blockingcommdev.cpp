@@ -24,6 +24,8 @@
 #include <cstdint>
 #include "blockingcommdev.h"
 
+using namespace EnAccess;
+
 BlockingCommDevice::BlockingCommDevice(ICommDevice& dev,
                                          E_TICK_TYPE (*tickFunction)(void),
                                          void (*yieldFunction)(void*),

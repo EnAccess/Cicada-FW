@@ -2,6 +2,8 @@
 #include "tick.h"
 #include "scheduler.h"
 
+using namespace EnAccess;
+
 class Task1 : public Task
 {
 public:

@@ -12,6 +12,8 @@
 #include "stm32f1xx_hal.h"
 #include "printf.h"
 
+using namespace EnAccess;
+
 static void SystemClock_Config(void);
 
 class IPCommTask : public Task

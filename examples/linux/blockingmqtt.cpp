@@ -17,6 +17,8 @@
 #include "tick.h"
 #include "mqttcountdown.h"
 
+using namespace EnAccess;
+
 void yieldFunction(void *sched) {
     ((Scheduler*)sched)->runTask();
 }

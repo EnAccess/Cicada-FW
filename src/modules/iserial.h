@@ -24,6 +24,8 @@
 #ifndef EISERIAL_H
 #define EISERIAL_H
 
+namespace EnAccess {
+
 enum EConnectionStatus
 {
     notConnected,
@@ -90,5 +92,7 @@ protected:
      */
     virtual bool rawWrite(uint8_t data) = 0;
 };
+
+}
 
 #endif

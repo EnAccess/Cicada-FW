@@ -29,15 +29,24 @@
 // Import platform specific serial driver
 #if defined TARGET_STM32
 #include "../platform/stm32f1/stm32uart.h"
-typedef Stm32Uart Serial;
+namespace EnAccess
+{
+    typedef Stm32Uart Serial;
+}
 
 #elif defined __linux__
 #include "../platform/linux/unixserial.h"
-typedef UnixSerial Serial;
+namespace EnAccess
+{
+    typedef UnixSerial Serial;
+}
 
 #else
 #include "../platform/noplatform/enoplatform.h"
-typedef NoplatformSerial Serial;
+namespace EnAccess
+{
+    typedef NoplatformSerial Serial;
+}
 
 #endif
 

@@ -9,6 +9,8 @@
 #include "serial.h"
 #include "tick.h"
 
+using namespace EnAccess;
+
 class SerialTask : public Task
 {
 public:

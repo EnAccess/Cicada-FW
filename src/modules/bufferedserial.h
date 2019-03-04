@@ -30,6 +30,8 @@
 #include "linecircularbuffer.h"
 #include "defines.h"
 
+namespace EnAccess {
+
 class BufferedSerial : public IBufferedSerial
 {
 public:
@@ -70,5 +72,7 @@ class BufferedSerialTask : public BufferedSerial, public Task
 {
     inline void run() { performReadWrite(); }
 };
+
+}
 
 #endif

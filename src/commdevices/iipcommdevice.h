@@ -26,6 +26,8 @@
 
 #include "icommdevice.h"
 
+namespace EnAccess {
+
 class IIPCommDevice : public ICommDevice
 {
 public:
@@ -37,5 +39,7 @@ public:
      */
     virtual void setHostPort(const char* host, uint16_t port) = 0;
 };
+
+}
 
 #endif

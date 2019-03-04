@@ -24,6 +24,8 @@
 #include <cstddef>
 #include "scheduler.h"
 
+using namespace EnAccess;
+
 Scheduler::Scheduler(E_TICK_TYPE (*tickFunction)(), Task** taskList) :
     _tickFunction(tickFunction),
     _taskList(taskList),

@@ -26,6 +26,8 @@
 
 #include <cstdint>
 
+namespace EnAccess {
+
 /*!
  * \class CircularBuffer
  *
@@ -202,5 +204,7 @@ private:
         _availableData--;
     }
 };
+
+}
 
 #endif

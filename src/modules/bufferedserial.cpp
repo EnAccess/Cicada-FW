@@ -25,6 +25,8 @@
 #include "irq.h"
 #include "bufferedserial.h"
 
+using namespace EnAccess;
+
 BufferedSerial::BufferedSerial()
 { }
 

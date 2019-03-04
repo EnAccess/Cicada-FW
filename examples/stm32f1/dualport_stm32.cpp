@@ -9,6 +9,8 @@
 #include "stm32f1xx_hal.h"
 #include "printf.h"
 
+using namespace EnAccess;
+
 #define LED_Pin GPIO_PIN_8
 #define LED_GPIO_Port GPIOA
 

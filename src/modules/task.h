@@ -108,6 +108,8 @@
     case ENTRY_POINT:                                           \
     if (!(COND)) return;                                        \
 
+namespace EnAccess {
+
 class Task
 {
 public:
@@ -162,5 +164,7 @@ private:
     uint16_t _delay; /**< Time before the task will run again */
     E_TICK_TYPE _lastRun; /**< Stores the tick when the task last ran */
 };
+
+}
 
 #endif

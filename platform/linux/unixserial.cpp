@@ -27,6 +27,8 @@
 #include <sys/ioctl.h>
 #include "unixserial.h"
 
+using namespace EnAccess;
+
 UnixSerial::UnixSerial(const char* port) :
     _isOpen(false),
     _port(port),

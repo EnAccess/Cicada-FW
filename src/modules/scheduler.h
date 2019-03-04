@@ -26,6 +26,8 @@
 
 #include "task.h"
 
+namespace EnAccess {
+
 class Scheduler
 {
 public:
@@ -54,5 +56,7 @@ private:
     Task** _taskList;
     Task** _currentTask;
 };
+
+}
 
 #endif

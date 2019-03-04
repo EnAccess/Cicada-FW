@@ -10,6 +10,8 @@
 #include "sim7x00.h"
 #include "tick.h"
 
+using namespace EnAccess;
+
 class IPCommTask : public Task
 {
 public:

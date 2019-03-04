@@ -37,6 +37,8 @@
  * one byte at a time).
  */
 
+namespace EnAccess {
+
 class UnixSerial : public BufferedSerialTask
 {
 public:
@@ -72,5 +74,7 @@ private:
     speed_t _speed;
     tcflag_t _dataBits;
 };
+
+}
 
 #endif

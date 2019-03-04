@@ -26,6 +26,8 @@
 
 #include "iserial.h"
 
+namespace EnAccess {
+
 class IBufferedSerial : public ISerial
 {
 public:
@@ -93,4 +95,6 @@ public:
     virtual uint16_t bufferSize() = 0;
 };
 
+}
+    
 #endif

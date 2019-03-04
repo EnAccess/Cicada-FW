@@ -25,6 +25,8 @@
 #include "stm32uart.h"
 #include "irq.h"
 
+using namespace EnAccess;
+
 #define FLAG_ISOPEN (1 << 0)
 
 Stm32Uart* Stm32Uart::instance[E_MULTITON_MAX_INSTANCES] = {NULL};

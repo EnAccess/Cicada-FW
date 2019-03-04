@@ -28,6 +28,8 @@
 #include <cstdint>
 #include "defines.h"
 
+namespace EnAccess {
+
 class MQTTCountdown
 {
 public:
@@ -46,5 +48,7 @@ private:
     E_TICK_TYPE (*_sysTickHandler)();
     E_TICK_TYPE _endTime;
 };
+
+}
 
 #endif

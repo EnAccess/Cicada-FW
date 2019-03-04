@@ -18,6 +18,8 @@
 #include "mqttcountdown.h"
 #include "printf.h"
 
+using namespace EnAccess;
+
 static void SystemClock_Config(void);
 
 void yieldFunction(void *sched) {

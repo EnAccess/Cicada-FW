@@ -21,9 +21,14 @@
  *
  */
 
+#ifndef E_SIM7x00_H
+#define E_SIM7x00_H
+
 #include <stdint.h>
 #include "bufferedserial.h"
 #include "iipcommdevice.h"
+
+namespace EnAccess {
 
 class Sim7x00CommDevice : public IIPCommDevice
 {
@@ -113,3 +118,7 @@ private:
     bool handleDisconnect(SendState nextState);
     bool handleConnect(SendState nextState);
 };
+
+}
+
+#endif

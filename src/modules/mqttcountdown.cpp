@@ -23,6 +23,8 @@
 
 #include "mqttcountdown.h"
 
+using namespace EnAccess;
+
 // MQTTCountdown::MQTTCountdown(E_TICK_TYPE (*sysTickHandler)()) :
 //     _sysTickHandler(sysTickHandler),
 //     _endTime(0)

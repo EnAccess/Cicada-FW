@@ -26,6 +26,8 @@
 
 #include <cstdint>
 
+namespace EnAccess {
+
 /*!
  * \class LineCircularBuffer
  *
@@ -99,5 +101,7 @@ public:
 private:
     uint16_t _bufferedLines;
 };
+
+}
 
 #endif

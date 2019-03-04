@@ -26,6 +26,8 @@
 
 #include "task.h"
 
+namespace EnAccess {
+
 class ICommDevice : public Task
 {
 public:
@@ -88,4 +90,6 @@ public:
     virtual uint16_t write(const uint8_t* data, uint16_t size) = 0;
 };
 
+}
+    
 #endif

@@ -9,6 +9,8 @@
 #include "stm32f1xx_hal.h"
 #include "printf.h"
 
+using namespace EnAccess;
+
 #define USE_UART USART3
 
 static void SystemClock_Config(void);

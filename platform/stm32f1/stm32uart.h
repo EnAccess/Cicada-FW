@@ -27,6 +27,8 @@
 #include "stm32f1xx_hal.h"
 #include "bufferedserial.h"
 
+namespace EnAccess {
+
 class Stm32Uart : public BufferedSerial
 {
 public:
@@ -63,5 +65,7 @@ private:
     uint16_t _rxPin;
     IRQn_Type _uartInterruptInstance;
 };
+
+}
 
 #endif

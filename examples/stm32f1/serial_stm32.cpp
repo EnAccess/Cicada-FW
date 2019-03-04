@@ -8,6 +8,8 @@
 #include "tick.h"
 #include "stm32f1xx_hal.h"
 
+using namespace EnAccess;
+
 static void SystemClock_Config(void);
 
 class SerialTask : public Task

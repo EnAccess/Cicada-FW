@@ -27,6 +27,8 @@
 #include <cstdio>
 #include "sim7x00.h"
 
+using namespace EnAccess;
+
 #define LINE_MAX_LENGTH     60
 #define MIN_SPACE_AVAILABLE 22
 
