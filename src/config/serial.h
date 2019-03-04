@@ -21,21 +21,24 @@
  *
  */
 
-#ifndef EIIPCOMMDEVICE_H
-#define EIIPCOMMDEVICE_H
+// TODO: remove this file. All uart classes share a base class, hence this should not be needed
 
-#include "eicommdevice.h"
+#ifndef ESERIAL_H
+#define ESERIAL_H
 
-class IIPCommDevice : public ICommDevice
-{
-public:
-    /*!
-     * Set parameters for IP connection.
-     * Need to be set before connect() is called.
-     * \param host Host to connect to. Needs to be valid for 
-     * \param port port to connect to
-     */
-    virtual void setHostPort(const char* host, uint16_t port) = 0;
-};
+// Import platform specific serial driver
+#if defined TARGET_STM32
+#include "../platform/STM32F1/stm32uart.h"
+typedef Stm32Uart Serial;
+
+#elif defined __linux__
+#include "../platform/Linux/unixserial.h"
+typedef UnixSerial Serial;
+
+#else
+#include "../platform/NoPlatform/enoplatform.h"
+typedef NoplatformSerial Serial;
+
+#endif
 
 #endif

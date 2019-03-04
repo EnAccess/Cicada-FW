@@ -22,8 +22,8 @@
  */
 
 #include <cstdint>
-#include "eirq.h"
-#include "ebufferedserial.h"
+#include "irq.h"
+#include "bufferedserial.h"
 
 BufferedSerial::BufferedSerial()
 { }

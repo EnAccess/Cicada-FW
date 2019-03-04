@@ -21,30 +21,18 @@
  *
  */
 
+#include <time.h>
+#include "tick.h"
 
-#ifndef EMQTTCOUNTDOWN_H
-#define EMQTTCOUNTDOWN_H
-
-#include <cstdint>
-#include "edefines.h"
-
-class MQTTCountdown
+E_TICK_TYPE eTickFunction()
 {
-public:
-    // MQTTCountdown(E_TICK_TYPE (*sysTickHandler)());
-    // MQTTCountdown(E_TICK_TYPE (*sysTickHandler)(), int ms);
+    uint64_t ms;
+    struct timespec spec;
 
-    MQTTCountdown();
-    MQTTCountdown(int ms);
+    clock_gettime(CLOCK_REALTIME, &spec);
+    
+    ms  = spec.tv_sec * 1000;
+    ms += spec.tv_nsec / 1.0e6;
 
-    bool expired();
-    void countdown_ms(int ms);
-    void countdown(int seconds);
-    int left_ms();
-
-private:
-    E_TICK_TYPE (*_sysTickHandler)();
-    E_TICK_TYPE _endTime;
-};
-
-#endif
+    return (E_TICK_TYPE)ms;
+}

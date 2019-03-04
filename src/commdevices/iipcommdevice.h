@@ -21,12 +21,21 @@
  *
  */
 
-#ifndef ETICK_H
-#define ETICK_H
+#ifndef EIIPCOMMDEVICE_H
+#define EIIPCOMMDEVICE_H
 
-#include "stdint.h"
-#include "edefines.h"
+#include "icommdevice.h"
 
-E_TICK_TYPE eTickFunction();
+class IIPCommDevice : public ICommDevice
+{
+public:
+    /*!
+     * Set parameters for IP connection.
+     * Need to be set before connect() is called.
+     * \param host Host to connect to. Needs to be valid for 
+     * \param port port to connect to
+     */
+    virtual void setHostPort(const char* host, uint16_t port) = 0;
+};
 
 #endif

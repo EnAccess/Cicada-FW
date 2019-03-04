@@ -5,10 +5,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "escheduler.h"
-#include "eserial.h"
-#include "esim7x00.h"
-#include "etick.h"
+#include "scheduler.h"
+#include "serial.h"
+#include "sim7x00.h"
+#include "tick.h"
 #include "stm32f1xx_hal.h"
 #include "printf.h"
 
@@ -79,8 +79,8 @@ int main(int argc, char * argv[])
     HAL_Init();
     SystemClock_Config();
 
-    ESerial debug(USART3, GPIOB);
-    ESerial serial(UART4, GPIOC);
+    Serial debug(USART3, GPIOB);
+    Serial serial(UART4, GPIOC);
     Sim7x00CommDevice commDev(serial);
     IPCommTask task(commDev);
 

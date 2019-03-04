@@ -5,10 +5,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "escheduler.h"
-#include "eserial.h"
-#include "esim7x00.h"
-#include "etick.h"
+#include "scheduler.h"
+#include "serial.h"
+#include "sim7x00.h"
+#include "tick.h"
 
 class IPCommTask : public Task
 {
@@ -71,7 +71,7 @@ private:
 
 int main(int argc, char * argv[])
 {
-    ESerial serial;
+    Serial serial;
     Sim7x00CommDevice commDev(serial);
     IPCommTask task(commDev);
 

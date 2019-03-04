@@ -26,10 +26,10 @@
 
 #include <termios.h>
 #include <stdint.h>
-#include "ebufferedserial.h"
+#include "bufferedserial.h"
 
 /*!
- * \class Termios
+ * \class UnixSerial
  *
  * Serial driver for Linux/Unix tty serial devices.
  * This class is meant for testing porpose only, since
@@ -37,16 +37,16 @@
  * one byte at a time).
  */
 
-class Termios : public BufferedSerialTask
+class UnixSerial : public BufferedSerialTask
 {
 public:
     /*!
-     * Construct a new Termios object with the given serial port,
+     * Construct a new UnixSerial object with the given serial port,
      * for example /dev/ttyUSB0. The String is not copied and must
      * be valid for the object's lifetime.
      * \param port Name of the serial port
      */
-    Termios(const char* port = "/dev/ttyUSB0");
+    UnixSerial(const char* port = "/dev/ttyUSB0");
 
     virtual bool open();
 

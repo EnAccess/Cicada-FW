@@ -21,18 +21,10 @@
  *
  */
 
-#include <time.h>
-#include "etick.h"
+#include "stm32f1xx_hal.h"
+#include "tick.h"
 
 E_TICK_TYPE eTickFunction()
 {
-    uint64_t ms;
-    struct timespec spec;
-
-    clock_gettime(CLOCK_REALTIME, &spec);
-    
-    ms  = spec.tv_sec * 1000;
-    ms += spec.tv_nsec / 1.0e6;
-
-    return (E_TICK_TYPE)ms;
+    return HAL_GetTick();
 }

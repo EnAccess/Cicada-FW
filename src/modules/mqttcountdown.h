@@ -21,47 +21,30 @@
  *
  */
 
-#ifndef ESTM32UART_H
-#define ESTM32UART_H
 
-#include "stm32f1xx_hal.h"
-#include "ebufferedserial.h"
+#ifndef EMQTTCOUNTDOWN_H
+#define EMQTTCOUNTDOWN_H
 
-class Stm32Uart : public BufferedSerial
+#include <cstdint>
+#include "defines.h"
+
+class MQTTCountdown
 {
 public:
-    Stm32Uart(USART_TypeDef* uartInstance = USART3,
-               GPIO_TypeDef* uartPort = GPIOB,
-               uint16_t txPin = GPIO_PIN_10, uint16_t rxPin = GPIO_PIN_11);
+    // MQTTCountdown(E_TICK_TYPE (*sysTickHandler)());
+    // MQTTCountdown(E_TICK_TYPE (*sysTickHandler)(), int ms);
 
-    static Stm32Uart* getInstance(USART_TypeDef* uartInstance);
+    MQTTCountdown();
+    MQTTCountdown(int ms);
 
-    bool open();
-    bool isOpen();
-    bool setSerialConfig(uint32_t baudRate, uint8_t dataBits);
-    void close();
-    const char* portName() const;
-    uint16_t write(const char* data, uint16_t size);
-    void write(char data);
-    bool rawRead(uint8_t& data);
-    bool rawWrite(uint8_t data);
-    uint16_t rawBytesAvailable() const;
-
-    void handleInterrupt();
+    bool expired();
+    void countdown_ms(int ms);
+    void countdown(int seconds);
+    int left_ms();
 
 private:
-    // Private constructors to avoid copying
-    Stm32Uart(const Stm32Uart&);
-    Stm32Uart& operator=(const Stm32Uart&);
-
-    static Stm32Uart* instance[E_MULTITON_MAX_INSTANCES];
-
-    uint8_t _flags;
-    UART_HandleTypeDef _handle;
-    GPIO_TypeDef* _uartPort;
-    uint16_t _txPin;
-    uint16_t _rxPin;
-    IRQn_Type _uartInterruptInstance;
+    E_TICK_TYPE (*_sysTickHandler)();
+    E_TICK_TYPE _endTime;
 };
 
 #endif

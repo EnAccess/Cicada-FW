@@ -4,11 +4,11 @@
 
 #include <cstdint>
 #include <cstdio>
-#include "escheduler.h"
-#include "eserial.h"
-#include "eblockingcommdev.h"
-#include "esim7x00.h"
-#include "etick.h"
+#include "scheduler.h"
+#include "serial.h"
+#include "blockingcommdev.h"
+#include "sim7x00.h"
+#include "tick.h"
 
 void yieldFunction(void *sched) {
     ((Scheduler*)sched)->runTask();
@@ -16,7 +16,7 @@ void yieldFunction(void *sched) {
 
 int main(int argc, char * argv[])
 {
-    ESerial serial;
+    Serial serial;
     Sim7x00CommDevice commDev(serial);
 
     Task* taskList[] = {&commDev, dynamic_cast<Task*>(&serial), NULL};

@@ -25,7 +25,7 @@
 #define ETASK_H
 
 #include <stdint.h>
-#include "edefines.h"
+#include "defines.h"
 
 /*!
  * \def E_BEGIN_TASK

@@ -25,8 +25,8 @@
 #define EBLOCKINGCOMMDEV_H
 
 #include <cstddef>
-#include "edefines.h"
-#include "eicommdevice.h"
+#include "defines.h"
+#include "icommdevice.h"
 
 /*!
  *\class BlockingCommDevice

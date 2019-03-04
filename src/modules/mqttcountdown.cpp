@@ -21,10 +21,50 @@
  *
  */
 
-#include "stm32f1xx_hal.h"
-#include "etick.h"
+#include "mqttcountdown.h"
 
-E_TICK_TYPE eTickFunction()
+// MQTTCountdown::MQTTCountdown(E_TICK_TYPE (*sysTickHandler)()) :
+//     _sysTickHandler(sysTickHandler),
+//     _endTime(0)
+// {}
+
+// MQTTCountdown::MQTTCountdown(E_TICK_TYPE (*sysTickHandler)(), int ms) :
+//     _sysTickHandler(sysTickHandler),
+//     _endTime(0)
+// {
+//     countdown_ms(ms);
+// }
+
+MQTTCountdown::MQTTCountdown() :
+    _endTime(0)
+{}
+
+MQTTCountdown::MQTTCountdown(int ms) :
+    _endTime(0)
 {
-    return HAL_GetTick();
+    countdown_ms(ms);
+}
+
+bool MQTTCountdown::expired()
+{
+    return left_ms() == 0;
+}
+
+void MQTTCountdown::countdown_ms(int ms)
+{
+    _endTime = _sysTickHandler() + ms;
+}
+
+void MQTTCountdown::countdown(int seconds)
+{
+    _endTime = _sysTickHandler() + seconds * 1000;
+}
+
+int MQTTCountdown::left_ms()
+{
+    int64_t left = (int64_t)_endTime - _sysTickHandler();
+    if (left < 0)
+        left = 0;
+
+    return (int)left;
 }

@@ -21,50 +21,38 @@
  *
  */
 
-#include "emqttcountdown.h"
+#ifndef ESCHEDULER_H
+#define ESCHEDULER_H
 
-// MQTTCountdown::MQTTCountdown(E_TICK_TYPE (*sysTickHandler)()) :
-//     _sysTickHandler(sysTickHandler),
-//     _endTime(0)
-// {}
+#include "task.h"
 
-// MQTTCountdown::MQTTCountdown(E_TICK_TYPE (*sysTickHandler)(), int ms) :
-//     _sysTickHandler(sysTickHandler),
-//     _endTime(0)
-// {
-//     countdown_ms(ms);
-// }
-
-MQTTCountdown::MQTTCountdown() :
-    _endTime(0)
-{}
-
-MQTTCountdown::MQTTCountdown(int ms) :
-    _endTime(0)
+class Scheduler
 {
-    countdown_ms(ms);
-}
+public:
+    /*!
+     * \param tickFunction pointer to a function returning the current
+     * system time tick
+     * \param taskList NULL-Terminated list of pointers to tasks
+     * for being handeled by the task scheduler
+     */
+    Scheduler(E_TICK_TYPE (*tickFunction)(), Task* taskList[]);
 
-bool MQTTCountdown::expired()
-{
-    return left_ms() == 0;
-}
+    /*!
+     * Check one task in the task list and if its due,
+     * call it's run method.
+     */
+    void runTask();
 
-void MQTTCountdown::countdown_ms(int ms)
-{
-    _endTime = _sysTickHandler() + ms;
-}
+    /*!
+     * Starts the scheduler. The method simply calls runTask()
+     * in a loop.
+     */
+    void start();
 
-void MQTTCountdown::countdown(int seconds)
-{
-    _endTime = _sysTickHandler() + seconds * 1000;
-}
+private:
+    E_TICK_TYPE (*_tickFunction)();
+    Task** _taskList;
+    Task** _currentTask;
+};
 
-int MQTTCountdown::left_ms()
-{
-    int64_t left = (int64_t)_endTime - _sysTickHandler();
-    if (left < 0)
-        left = 0;
-
-    return (int)left;
-}
+#endif

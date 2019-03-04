@@ -21,12 +21,32 @@
  *
  */
 
-#ifndef ETICK_H
-#define ETICK_H
+#include <cstddef>
+#include "scheduler.h"
 
-#include "stdint.h"
-#include "edefines.h"
+Scheduler::Scheduler(E_TICK_TYPE (*tickFunction)(), Task** taskList) :
+    _tickFunction(tickFunction),
+    _taskList(taskList),
+    _currentTask(taskList)
+{ }
 
-E_TICK_TYPE eTickFunction();
+void Scheduler::runTask()
+{
+    E_TICK_TYPE tick = _tickFunction();
+    if ((*_currentTask)->delay() == 0 ||
+        tick >= (*_currentTask)->lastRun() + (*_currentTask)->delay())
+    {
+        (*_currentTask)->setLastRun(tick);
+        (*_currentTask)->run();
+    }
 
-#endif
+    if (*++_currentTask == NULL)
+    {
+        _currentTask = _taskList;
+    }
+}
+
+void Scheduler::start()
+{
+    for(;;) runTask();
+}

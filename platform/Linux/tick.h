@@ -21,54 +21,12 @@
  *
  */
 
-#ifndef EBUFFEREDSERIAL_H
-#define EBUFFEREDSERIAL_H
+#ifndef ETICK_H
+#define ETICK_H
 
-#include "eibufferedserial.h"
-#include "etask.h"
-#include "circularbuffer.h"
-#include "linecircularbuffer.h"
-#include "edefines.h"
+#include "stdint.h"
+#include "defines.h"
 
-class BufferedSerial : public IBufferedSerial
-{
-public:
-    BufferedSerial();
-
-    virtual uint16_t bytesAvailable() const;
-
-    virtual uint16_t spaceAvailable() const;
-
-    virtual uint16_t read(char* data, uint16_t size);
-
-    virtual char read();
-
-    virtual uint16_t write(const char* data, uint16_t size);
-
-    virtual void write(char data);
-
-    virtual bool canReadLine() const;
-
-    virtual uint16_t readLine(char* data, uint16_t size);
-
-    virtual void flushReceiveBuffers();
-
-    virtual uint16_t bufferSize();
-
-    /*!
-     * Actually perform read/write to the underlying
-     * raw serial device.
-     */
-    virtual void performReadWrite();
-
-protected:
-    LineCircularBuffer<E_SERIAL_BUFFERSIZE> _readBuffer;
-    LineCircularBuffer<E_SERIAL_BUFFERSIZE> _writeBuffer;
-};
-
-class BufferedSerialTask : public BufferedSerial, public Task
-{
-    inline void run() { performReadWrite(); }
-};
+E_TICK_TYPE eTickFunction();
 
 #endif

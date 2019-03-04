@@ -5,9 +5,9 @@ src_inc = include_directories([
 ])
 
 src_files = files([
-    'commdevices/esim7x00.cpp',
-    'commdevices/eblockingcommdev.cpp',
-    'modules/ebufferedserial.cpp',
-    'modules/emqttcountdown.cpp',
-    'modules/escheduler.cpp'
+    'commdevices/sim7x00.cpp',
+    'commdevices/blockingcommdev.cpp',
+    'modules/bufferedserial.cpp',
+    'modules/mqttcountdown.cpp',
+    'modules/scheduler.cpp'
 ])

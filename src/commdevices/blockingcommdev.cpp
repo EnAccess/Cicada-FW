@@ -22,7 +22,7 @@
  */
 
 #include <cstdint>
-#include "eblockingcommdev.h"
+#include "blockingcommdev.h"
 
 BlockingCommDevice::BlockingCommDevice(ICommDevice& dev,
                                          E_TICK_TYPE (*tickFunction)(void),

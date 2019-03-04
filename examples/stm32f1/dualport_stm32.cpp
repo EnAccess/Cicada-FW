@@ -3,9 +3,9 @@
  */
 
 #include <cstring>
-#include "escheduler.h"
-#include "eserial.h"
-#include "etick.h"
+#include "scheduler.h"
+#include "serial.h"
+#include "tick.h"
 #include "stm32f1xx_hal.h"
 #include "printf.h"
 
@@ -17,7 +17,7 @@ static void SystemClock_Config(void);
 class SerialTask : public Task
 {
 public:
-    SerialTask(ESerial& serial) :
+    SerialTask(Serial& serial) :
         m_serial(serial),
         m_i(0)
     { }
@@ -81,8 +81,8 @@ int main(int argc, char * argv[])
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
     HAL_GPIO_Init(LED_GPIO_Port, &GPIO_InitStruct);
 
-    ESerial debug(USART3, GPIOB);
-    ESerial serial(UART4, GPIOC);
+    Serial debug(USART3, GPIOB);
+    Serial serial(UART4, GPIOC);
     SerialTask task(serial);
 
     Task* taskList[] = {&task, NULL};

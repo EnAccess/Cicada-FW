@@ -5,14 +5,14 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "escheduler.h"
-#include "eserial.h"
-#include "etick.h"
+#include "scheduler.h"
+#include "serial.h"
+#include "tick.h"
 
 class SerialTask : public Task
 {
 public:
-    SerialTask(ESerial& serial) :
+    SerialTask(Serial& serial) :
         m_serial(serial),
         m_i(0)
     { }
@@ -71,13 +71,13 @@ public:
     }
 
 private:
-    ESerial& m_serial;
+    Serial& m_serial;
     int m_i;
 };
 
 int main(int argc, char * argv[])
 {
-    ESerial serial;
+    Serial serial;
     SerialTask task(serial);
 
     Task* taskList[] = {&task, dynamic_cast<Task*>(&serial), NULL};

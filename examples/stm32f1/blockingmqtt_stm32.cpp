@@ -10,12 +10,12 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <MQTTClient.h>
-#include "escheduler.h"
-#include "eserial.h"
-#include "esim7x00.h"
-#include "eblockingcommdev.h"
-#include "etick.h"
-#include "emqttcountdown.h"
+#include "scheduler.h"
+#include "serial.h"
+#include "sim7x00.h"
+#include "blockingcommdev.h"
+#include "tick.h"
+#include "mqttcountdown.h"
 #include "printf.h"
 
 static void SystemClock_Config(void);
@@ -45,8 +45,8 @@ int main(int argc, char * argv[])
 
     HAL_Delay(2000);
 
-    ESerial debug(USART3, GPIOB);
-    ESerial serial(UART4, GPIOC);
+    Serial debug(USART3, GPIOB);
+    Serial serial(UART4, GPIOC);
     Sim7x00CommDevice commDev(serial);
 
     debug.open();

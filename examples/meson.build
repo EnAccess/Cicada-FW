@@ -14,11 +14,11 @@ bin_suffix = ''
 
 if (meson.is_cross_build() != true)
     bin_suffix = []
-    platform_src_files = files(['../platform/Linux/etick_linux.cpp', '../platform/Linux/etermios.cpp'])
+    platform_src_files = files(['../platform/Linux/tick_linux.cpp', '../platform/Linux/unixserial.cpp'])
     platform_src_inc = include_directories(['../platform/Linux'])
 else
     bin_suffix = 'elf'
-    platform_src_files = files(['../platform/STM32F1/etick_stm32.cpp', '../platform/STM32F1/estm32uart.cpp'])
+    platform_src_files = files(['../platform/STM32F1/tick_stm32.cpp', '../platform/STM32F1/stm32uart.cpp'])
     platform_src_inc = include_directories(['../platform/STM32F1'])
 
     stm32_proj = subproject('STM32Cube')

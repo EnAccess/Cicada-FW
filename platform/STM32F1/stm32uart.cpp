@@ -22,8 +22,8 @@
  */
 
 #include <cstdint>
-#include "estm32uart.h"
-#include "eirq.h"
+#include "stm32uart.h"
+#include "irq.h"
 
 #define FLAG_ISOPEN (1 << 0)
 

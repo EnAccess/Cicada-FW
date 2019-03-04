@@ -10,12 +10,12 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <MQTTClient.h>
-#include "escheduler.h"
-#include "eserial.h"
-#include "esim7x00.h"
-#include "eblockingcommdev.h"
-#include "etick.h"
-#include "emqttcountdown.h"
+#include "scheduler.h"
+#include "serial.h"
+#include "sim7x00.h"
+#include "blockingcommdev.h"
+#include "tick.h"
+#include "mqttcountdown.h"
 
 void yieldFunction(void *sched) {
     ((Scheduler*)sched)->runTask();
@@ -36,7 +36,7 @@ void messageArrived(MQTT::MessageData& md)
 // Most of the code taken from MQTT hello.cpp
 int main(int argc, char * argv[])
 {
-    ESerial serial;
+    Serial serial;
     Sim7x00CommDevice commDev(serial);
 
     Task* taskList[] = {&commDev, dynamic_cast<Task*>(&serial), NULL};

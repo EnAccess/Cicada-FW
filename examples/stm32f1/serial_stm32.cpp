@@ -3,9 +3,9 @@
  */
 
 #include <cstring>
-#include "escheduler.h"
-#include "eserial.h"
-#include "etick.h"
+#include "scheduler.h"
+#include "serial.h"
+#include "tick.h"
 #include "stm32f1xx_hal.h"
 
 static void SystemClock_Config(void);
@@ -13,7 +13,7 @@ static void SystemClock_Config(void);
 class SerialTask : public Task
 {
 public:
-    SerialTask(ESerial& serial) :
+    SerialTask(Serial& serial) :
         m_serial(serial),
         m_i(0)
     { }
@@ -66,7 +66,7 @@ int main(int argc, char * argv[])
     HAL_Init();
     SystemClock_Config();
 
-    ESerial serial;
+    Serial serial;
     SerialTask task(serial);
 
     Task* taskList[] = {&task, dynamic_cast<Task*>(&serial), NULL};

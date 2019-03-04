@@ -24,7 +24,7 @@
 #ifndef EIBUFFEREDSERIAL_H
 #define EIBUFFEREDSERIAL_H
 
-#include "eiserial.h"
+#include "iserial.h"
 
 class IBufferedSerial : public ISerial
 {

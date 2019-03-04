@@ -24,7 +24,7 @@
 #ifndef EICOMMDEVICE_H
 #define EICOMMDEVICE_H
 
-#include "etask.h"
+#include "task.h"
 
 class ICommDevice : public Task
 {

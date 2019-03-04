@@ -1,6 +1,6 @@
 #include <stdio.h>
-#include "etick.h"
-#include "escheduler.h"
+#include "tick.h"
+#include "scheduler.h"
 
 class Task1 : public Task
 {

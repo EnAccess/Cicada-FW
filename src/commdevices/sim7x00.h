@@ -22,8 +22,8 @@
  */
 
 #include <stdint.h>
-#include "ebufferedserial.h"
-#include "eiipcommdevice.h"
+#include "bufferedserial.h"
+#include "iipcommdevice.h"
 
 class Sim7x00CommDevice : public IIPCommDevice
 {

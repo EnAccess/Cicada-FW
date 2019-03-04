@@ -21,38 +21,47 @@
  *
  */
 
-#ifndef ESCHEDULER_H
-#define ESCHEDULER_H
+#ifndef ESTM32UART_H
+#define ESTM32UART_H
 
-#include "etask.h"
+#include "stm32f1xx_hal.h"
+#include "bufferedserial.h"
 
-class Scheduler
+class Stm32Uart : public BufferedSerial
 {
 public:
-    /*!
-     * \param tickFunction pointer to a function returning the current
-     * system time tick
-     * \param taskList NULL-Terminated list of pointers to tasks
-     * for being handeled by the task scheduler
-     */
-    Scheduler(E_TICK_TYPE (*tickFunction)(), Task* taskList[]);
+    Stm32Uart(USART_TypeDef* uartInstance = USART3,
+               GPIO_TypeDef* uartPort = GPIOB,
+               uint16_t txPin = GPIO_PIN_10, uint16_t rxPin = GPIO_PIN_11);
 
-    /*!
-     * Check one task in the task list and if its due,
-     * call it's run method.
-     */
-    void runTask();
+    static Stm32Uart* getInstance(USART_TypeDef* uartInstance);
 
-    /*!
-     * Starts the scheduler. The method simply calls runTask()
-     * in a loop.
-     */
-    void start();
+    bool open();
+    bool isOpen();
+    bool setSerialConfig(uint32_t baudRate, uint8_t dataBits);
+    void close();
+    const char* portName() const;
+    uint16_t write(const char* data, uint16_t size);
+    void write(char data);
+    bool rawRead(uint8_t& data);
+    bool rawWrite(uint8_t data);
+    uint16_t rawBytesAvailable() const;
+
+    void handleInterrupt();
 
 private:
-    E_TICK_TYPE (*_tickFunction)();
-    Task** _taskList;
-    Task** _currentTask;
+    // Private constructors to avoid copying
+    Stm32Uart(const Stm32Uart&);
+    Stm32Uart& operator=(const Stm32Uart&);
+
+    static Stm32Uart* instance[E_MULTITON_MAX_INSTANCES];
+
+    uint8_t _flags;
+    UART_HandleTypeDef _handle;
+    GPIO_TypeDef* _uartPort;
+    uint16_t _txPin;
+    uint16_t _rxPin;
+    IRQn_Type _uartInterruptInstance;
 };
 
 #endif

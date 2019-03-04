@@ -21,24 +21,54 @@
  *
  */
 
-// TODO: remove this file. All uart classes share a base class, hence this should not be needed
+#ifndef EBUFFEREDSERIAL_H
+#define EBUFFEREDSERIAL_H
 
-#ifndef ESERIAL_H
-#define ESERIAL_H
+#include "ibufferedserial.h"
+#include "task.h"
+#include "circularbuffer.h"
+#include "linecircularbuffer.h"
+#include "defines.h"
 
-// Import platform specific serial driver
-#if defined TARGET_STM32
-#include "../platform/STM32F1/estm32uart.h"
-typedef Stm32Uart ESerial;
+class BufferedSerial : public IBufferedSerial
+{
+public:
+    BufferedSerial();
 
-#elif defined __linux__
-#include "../platform/Linux/etermios.h"
-typedef Termios ESerial;
+    virtual uint16_t bytesAvailable() const;
 
-#else
-#include "../platform/NoPlatform/enoplatform.h"
-typedef NoplatformSerial ESerial;
+    virtual uint16_t spaceAvailable() const;
 
-#endif
+    virtual uint16_t read(char* data, uint16_t size);
+
+    virtual char read();
+
+    virtual uint16_t write(const char* data, uint16_t size);
+
+    virtual void write(char data);
+
+    virtual bool canReadLine() const;
+
+    virtual uint16_t readLine(char* data, uint16_t size);
+
+    virtual void flushReceiveBuffers();
+
+    virtual uint16_t bufferSize();
+
+    /*!
+     * Actually perform read/write to the underlying
+     * raw serial device.
+     */
+    virtual void performReadWrite();
+
+protected:
+    LineCircularBuffer<E_SERIAL_BUFFERSIZE> _readBuffer;
+    LineCircularBuffer<E_SERIAL_BUFFERSIZE> _writeBuffer;
+};
+
+class BufferedSerialTask : public BufferedSerial, public Task
+{
+    inline void run() { performReadWrite(); }
+};
 
 #endif
