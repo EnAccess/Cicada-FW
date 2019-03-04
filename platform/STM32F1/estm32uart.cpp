@@ -27,9 +27,9 @@
 
 #define FLAG_ISOPEN (1 << 0)
 
-EStm32Uart* EStm32Uart::instance[E_MULTITON_MAX_INSTANCES] = {NULL};
+Stm32Uart* Stm32Uart::instance[E_MULTITON_MAX_INSTANCES] = {NULL};
 
-EStm32Uart::EStm32Uart(USART_TypeDef* uartInstance, GPIO_TypeDef* uartPort,
+Stm32Uart::Stm32Uart(USART_TypeDef* uartInstance, GPIO_TypeDef* uartPort,
                        uint16_t txPin, uint16_t rxPin) :
     _flags(0),
     _handle(),
@@ -52,11 +52,11 @@ EStm32Uart::EStm32Uart(USART_TypeDef* uartInstance, GPIO_TypeDef* uartPort,
     }
 }
 
-EStm32Uart* EStm32Uart::getInstance(USART_TypeDef* uartInstance)
+Stm32Uart* Stm32Uart::getInstance(USART_TypeDef* uartInstance)
 {
     for (int i=0; i<E_MULTITON_MAX_INSTANCES; i++)
     {
-        EStm32Uart* uart = instance[i];
+        Stm32Uart* uart = instance[i];
         if (uart != NULL && uart->_handle.Instance == uartInstance)
         {
             return instance[i];
@@ -66,7 +66,7 @@ EStm32Uart* EStm32Uart::getInstance(USART_TypeDef* uartInstance)
     return NULL;
 }
 
-bool EStm32Uart::setSerialConfig(uint32_t baudRate, uint8_t dataBits)
+bool Stm32Uart::setSerialConfig(uint32_t baudRate, uint8_t dataBits)
 {
     if (baudRate < 50 || baudRate > 4500000)
         return false;
@@ -88,7 +88,7 @@ bool EStm32Uart::setSerialConfig(uint32_t baudRate, uint8_t dataBits)
     return true;
 }
 
-bool EStm32Uart::open()
+bool Stm32Uart::open()
 {
     // Enable USART/UART Clock
     if (_handle.Instance == USART1) {
@@ -158,7 +158,7 @@ bool EStm32Uart::open()
     return true;
 }
 
-void EStm32Uart::close()
+void Stm32Uart::close()
 {
     NVIC_DisableIRQ(_uartInterruptInstance);
     HAL_UART_DeInit(&_handle);
@@ -168,22 +168,22 @@ void EStm32Uart::close()
     _flags &= ~FLAG_ISOPEN;
 }
 
-bool EStm32Uart::isOpen()
+bool Stm32Uart::isOpen()
 {
     return _flags & FLAG_ISOPEN;
 }
 
-const char* EStm32Uart::portName() const
+const char* Stm32Uart::portName() const
 {
     return NULL;
 }
 
-uint16_t EStm32Uart::rawBytesAvailable() const
+uint16_t Stm32Uart::rawBytesAvailable() const
 {
     return __HAL_UART_GET_FLAG(&_handle, UART_FLAG_RXNE) ? 1 : 0;
 }
 
-bool EStm32Uart::rawRead(uint8_t& data)
+bool Stm32Uart::rawRead(uint8_t& data)
 {
     if (__HAL_UART_GET_FLAG(&_handle, UART_FLAG_RXNE))
     {
@@ -194,7 +194,7 @@ bool EStm32Uart::rawRead(uint8_t& data)
     return false;
 }
 
-bool EStm32Uart::rawWrite(uint8_t data)
+bool Stm32Uart::rawWrite(uint8_t data)
 {
     if (__HAL_UART_GET_FLAG(&_handle, UART_FLAG_TXE))
     {
@@ -205,23 +205,23 @@ bool EStm32Uart::rawWrite(uint8_t data)
     return false;
 }
 
-uint16_t EStm32Uart::write(const char* data, uint16_t size)
+uint16_t Stm32Uart::write(const char* data, uint16_t size)
 {
-    uint16_t written = EBufferedSerial::write(data, size);
+    uint16_t written = BufferedSerial::write(data, size);
 
     SET_BIT(_handle.Instance->CR1, USART_CR1_TXEIE);
 
     return written;
 }
 
-void EStm32Uart::write(char data)
+void Stm32Uart::write(char data)
 {
-    EBufferedSerial::write(data);
+    BufferedSerial::write(data);
 
     SET_BIT(_handle.Instance->CR1, USART_CR1_TXEIE);
 }
 
-void EStm32Uart::handleInterrupt()
+void Stm32Uart::handleInterrupt()
 {
     performReadWrite();
 

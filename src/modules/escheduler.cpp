@@ -24,13 +24,13 @@
 #include <cstddef>
 #include "escheduler.h"
 
-EScheduler::EScheduler(E_TICK_TYPE (*tickFunction)(), ETask** taskList) :
+Scheduler::Scheduler(E_TICK_TYPE (*tickFunction)(), Task** taskList) :
     _tickFunction(tickFunction),
     _taskList(taskList),
     _currentTask(taskList)
 { }
 
-void EScheduler::runTask()
+void Scheduler::runTask()
 {
     E_TICK_TYPE tick = _tickFunction();
     if ((*_currentTask)->delay() == 0 ||
@@ -46,7 +46,7 @@ void EScheduler::runTask()
     }
 }
 
-void EScheduler::start()
+void Scheduler::start()
 {
     for(;;) runTask();
 }

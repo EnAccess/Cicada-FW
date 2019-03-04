@@ -10,10 +10,10 @@
 #include "esim7x00.h"
 #include "etick.h"
 
-class IPCommTask : public ETask
+class IPCommTask : public Task
 {
 public:
-    IPCommTask(ESim7x00CommDevice& commDev) :
+    IPCommTask(Sim7x00CommDevice& commDev) :
         m_commDev(commDev),
         m_i(0)
     { }
@@ -65,18 +65,18 @@ public:
     }
 
 private:
-    ESim7x00CommDevice& m_commDev;
+    Sim7x00CommDevice& m_commDev;
     int m_i;
 };
 
 int main(int argc, char * argv[])
 {
     ESerial serial;
-    ESim7x00CommDevice commDev(serial);
+    Sim7x00CommDevice commDev(serial);
     IPCommTask task(commDev);
 
-    ETask* taskList[] = {&task, &commDev, dynamic_cast<ETask*>(&serial), NULL};
+    Task* taskList[] = {&task, &commDev, dynamic_cast<Task*>(&serial), NULL};
 
-    EScheduler s(&eTickFunction, taskList);
+    Scheduler s(&eTickFunction, taskList);
     s.start();
 }

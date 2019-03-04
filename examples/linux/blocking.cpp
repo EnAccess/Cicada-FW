@@ -11,19 +11,19 @@
 #include "etick.h"
 
 void yieldFunction(void *sched) {
-    ((EScheduler*)sched)->runTask();
+    ((Scheduler*)sched)->runTask();
 }
 
 int main(int argc, char * argv[])
 {
     ESerial serial;
-    ESim7x00CommDevice commDev(serial);
+    Sim7x00CommDevice commDev(serial);
 
-    ETask* taskList[] = {&commDev, dynamic_cast<ETask*>(&serial), NULL};
+    Task* taskList[] = {&commDev, dynamic_cast<Task*>(&serial), NULL};
 
-    EScheduler s(&eTickFunction, taskList);
+    Scheduler s(&eTickFunction, taskList);
 
-    EBlockingCommDevice bld(commDev, eTickFunction, yieldFunction, &s);
+    BlockingCommDevice bld(commDev, eTickFunction, yieldFunction, &s);
 
     commDev.setApn("internet");
     commDev.setHostPort("wttr.in", 80);

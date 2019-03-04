@@ -27,14 +27,14 @@
 #include "stm32f1xx_hal.h"
 #include "ebufferedserial.h"
 
-class EStm32Uart : public EBufferedSerial
+class Stm32Uart : public BufferedSerial
 {
 public:
-    EStm32Uart(USART_TypeDef* uartInstance = USART3,
+    Stm32Uart(USART_TypeDef* uartInstance = USART3,
                GPIO_TypeDef* uartPort = GPIOB,
                uint16_t txPin = GPIO_PIN_10, uint16_t rxPin = GPIO_PIN_11);
 
-    static EStm32Uart* getInstance(USART_TypeDef* uartInstance);
+    static Stm32Uart* getInstance(USART_TypeDef* uartInstance);
 
     bool open();
     bool isOpen();
@@ -51,10 +51,10 @@ public:
 
 private:
     // Private constructors to avoid copying
-    EStm32Uart(const EStm32Uart&);
-    EStm32Uart& operator=(const EStm32Uart&);
+    Stm32Uart(const Stm32Uart&);
+    Stm32Uart& operator=(const Stm32Uart&);
 
-    static EStm32Uart* instance[E_MULTITON_MAX_INSTANCES];
+    static Stm32Uart* instance[E_MULTITON_MAX_INSTANCES];
 
     uint8_t _flags;
     UART_HandleTypeDef _handle;

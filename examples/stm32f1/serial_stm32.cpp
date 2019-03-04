@@ -10,7 +10,7 @@
 
 static void SystemClock_Config(void);
 
-class SerialTask : public ETask
+class SerialTask : public Task
 {
 public:
     SerialTask(ESerial& serial) :
@@ -56,7 +56,7 @@ public:
     }
 
 private:
-    EStm32Uart& m_serial;
+    Stm32Uart& m_serial;
     int m_i;
 };
 
@@ -69,9 +69,9 @@ int main(int argc, char * argv[])
     ESerial serial;
     SerialTask task(serial);
 
-    ETask* taskList[] = {&task, dynamic_cast<ETask*>(&serial), NULL};
+    Task* taskList[] = {&task, dynamic_cast<Task*>(&serial), NULL};
 
-    EScheduler s(&eTickFunction, taskList);
+    Scheduler s(&eTickFunction, taskList);
     s.start();
 }
 
@@ -112,7 +112,7 @@ extern "C"
 
     void USART3_IRQHandler()
     {
-        static EStm32Uart* instance = EStm32Uart::getInstance(USART3);
+        static Stm32Uart* instance = Stm32Uart::getInstance(USART3);
         instance->handleInterrupt();
     }
 }

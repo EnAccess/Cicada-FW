@@ -26,10 +26,10 @@
 
 #include "etask.h"
 
-class EICommDevice : public ETask
+class ICommDevice : public Task
 {
 public:
-    virtual ~EICommDevice() { }
+    virtual ~ICommDevice() { }
 
     /*!
      * Connects the device to the other side of the communication channel

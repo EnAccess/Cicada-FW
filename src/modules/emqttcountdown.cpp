@@ -23,44 +23,44 @@
 
 #include "emqttcountdown.h"
 
-// EMQTTCountdown::EMQTTCountdown(E_TICK_TYPE (*sysTickHandler)()) :
+// MQTTCountdown::MQTTCountdown(E_TICK_TYPE (*sysTickHandler)()) :
 //     _sysTickHandler(sysTickHandler),
 //     _endTime(0)
 // {}
 
-// EMQTTCountdown::EMQTTCountdown(E_TICK_TYPE (*sysTickHandler)(), int ms) :
+// MQTTCountdown::MQTTCountdown(E_TICK_TYPE (*sysTickHandler)(), int ms) :
 //     _sysTickHandler(sysTickHandler),
 //     _endTime(0)
 // {
 //     countdown_ms(ms);
 // }
 
-EMQTTCountdown::EMQTTCountdown() :
+MQTTCountdown::MQTTCountdown() :
     _endTime(0)
 {}
 
-EMQTTCountdown::EMQTTCountdown(int ms) :
+MQTTCountdown::MQTTCountdown(int ms) :
     _endTime(0)
 {
     countdown_ms(ms);
 }
 
-bool EMQTTCountdown::expired()
+bool MQTTCountdown::expired()
 {
     return left_ms() == 0;
 }
 
-void EMQTTCountdown::countdown_ms(int ms)
+void MQTTCountdown::countdown_ms(int ms)
 {
     _endTime = _sysTickHandler() + ms;
 }
 
-void EMQTTCountdown::countdown(int seconds)
+void MQTTCountdown::countdown(int seconds)
 {
     _endTime = _sysTickHandler() + seconds * 1000;
 }
 
-int EMQTTCountdown::left_ms()
+int MQTTCountdown::left_ms()
 {
     int64_t left = (int64_t)_endTime - _sysTickHandler();
     if (left < 0)

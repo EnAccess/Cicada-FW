@@ -9,7 +9,7 @@
 #include "eserial.h"
 #include "etick.h"
 
-class SerialTask : public ETask
+class SerialTask : public Task
 {
 public:
     SerialTask(ESerial& serial) :
@@ -80,8 +80,8 @@ int main(int argc, char * argv[])
     ESerial serial;
     SerialTask task(serial);
 
-    ETask* taskList[] = {&task, dynamic_cast<ETask*>(&serial), NULL};
+    Task* taskList[] = {&task, dynamic_cast<Task*>(&serial), NULL};
 
-    EScheduler s(&eTickFunction, taskList);
+    Scheduler s(&eTickFunction, taskList);
     s.start();
 }

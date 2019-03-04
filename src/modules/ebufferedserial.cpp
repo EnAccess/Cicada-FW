@@ -25,10 +25,10 @@
 #include "eirq.h"
 #include "ebufferedserial.h"
 
-EBufferedSerial::EBufferedSerial()
+BufferedSerial::BufferedSerial()
 { }
 
-uint16_t EBufferedSerial::bytesAvailable() const
+uint16_t BufferedSerial::bytesAvailable() const
 {
     eDisableInterrupts();
     uint16_t availableData = _readBuffer.availableData();
@@ -37,7 +37,7 @@ uint16_t EBufferedSerial::bytesAvailable() const
     return availableData;
 }
 
-uint16_t EBufferedSerial::spaceAvailable() const
+uint16_t BufferedSerial::spaceAvailable() const
 {
     eDisableInterrupts();
     uint16_t spaceAvailable = _writeBuffer.availableSpace();
@@ -46,7 +46,7 @@ uint16_t EBufferedSerial::spaceAvailable() const
     return spaceAvailable;
 }
 
-uint16_t EBufferedSerial::read(char* data, uint16_t size)
+uint16_t BufferedSerial::read(char* data, uint16_t size)
 {
     uint16_t avail = bytesAvailable();
     if (size > avail)
@@ -61,7 +61,7 @@ uint16_t EBufferedSerial::read(char* data, uint16_t size)
     return readCount;
 }
 
-char EBufferedSerial::read()
+char BufferedSerial::read()
 {
     eDisableInterrupts();
     char c = _readBuffer.pull();
@@ -70,7 +70,7 @@ char EBufferedSerial::read()
     return c;
 }
 
-uint16_t EBufferedSerial::write(const char* data, uint16_t size)
+uint16_t BufferedSerial::write(const char* data, uint16_t size)
 {
     uint16_t space = spaceAvailable();
     if (size > space)
@@ -85,14 +85,14 @@ uint16_t EBufferedSerial::write(const char* data, uint16_t size)
     return writeCount;
 }
 
-void EBufferedSerial::write(char data)
+void BufferedSerial::write(char data)
 {
     eDisableInterrupts();
     _writeBuffer.push(data);
     eEnableInterrupts();
 }
 
-bool EBufferedSerial::canReadLine() const
+bool BufferedSerial::canReadLine() const
 {
     eDisableInterrupts();
     uint16_t lines =  _readBuffer.numBufferedLines();
@@ -101,7 +101,7 @@ bool EBufferedSerial::canReadLine() const
     return lines > 0;
 }
 
-uint16_t EBufferedSerial::readLine(char* data, uint16_t size)
+uint16_t BufferedSerial::readLine(char* data, uint16_t size)
 {
     uint16_t readCount = 0;
     char c = '\0';
@@ -117,7 +117,7 @@ uint16_t EBufferedSerial::readLine(char* data, uint16_t size)
     return readCount;
 }
 
-void EBufferedSerial::flushReceiveBuffers()
+void BufferedSerial::flushReceiveBuffers()
 {
     eDisableInterrupts();
     _readBuffer.flush();
@@ -125,12 +125,12 @@ void EBufferedSerial::flushReceiveBuffers()
     
 }
 
-uint16_t EBufferedSerial::bufferSize()
+uint16_t BufferedSerial::bufferSize()
 {
     return _writeBuffer.size();
 }
 
-void EBufferedSerial::performReadWrite()
+void BufferedSerial::performReadWrite()
 {
     if (_writeBuffer.availableData())
     {

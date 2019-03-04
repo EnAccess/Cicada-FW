@@ -21,7 +21,7 @@
 static void SystemClock_Config(void);
 
 void yieldFunction(void *sched) {
-    ((EScheduler*)sched)->runTask();
+    ((Scheduler*)sched)->runTask();
 }
 
 int arrivedcount = 0;
@@ -47,20 +47,20 @@ int main(int argc, char * argv[])
 
     ESerial debug(USART3, GPIOB);
     ESerial serial(UART4, GPIOC);
-    ESim7x00CommDevice commDev(serial);
+    Sim7x00CommDevice commDev(serial);
 
     debug.open();
 
-    ETask* taskList[] = {&commDev, NULL};
+    Task* taskList[] = {&commDev, NULL};
 
-    EScheduler s(&eTickFunction, taskList);
+    Scheduler s(&eTickFunction, taskList);
 
-    EBlockingCommDevice bld(commDev, eTickFunction, yieldFunction, &s);
+    BlockingCommDevice bld(commDev, eTickFunction, yieldFunction, &s);
 
     const char* topic = "enaccess/test";
 
-    MQTT::Client<EBlockingCommDevice, EMQTTCountdown> client =
-        MQTT::Client<EBlockingCommDevice, EMQTTCountdown>(bld);
+    MQTT::Client<BlockingCommDevice, MQTTCountdown> client =
+        MQTT::Client<BlockingCommDevice, MQTTCountdown>(bld);
 
     const char* hostname = "test.mosquitto.org";
     int port = 1883;
@@ -180,22 +180,22 @@ extern "C"
 
     void USART3_IRQHandler()
     {
-        static EStm32Uart* instance = EStm32Uart::getInstance(USART3);
+        static Stm32Uart* instance = Stm32Uart::getInstance(USART3);
         instance->handleInterrupt();
     }
 
     void UART4_IRQHandler()
     {
-        static EStm32Uart* instance = EStm32Uart::getInstance(UART4);
+        static Stm32Uart* instance = Stm32Uart::getInstance(UART4);
         instance->handleInterrupt();
     }
 
     void _putchar(char c)
     {
-        static EStm32Uart* serial = NULL;
+        static Stm32Uart* serial = NULL;
         if (!serial)
         {
-            serial = EStm32Uart::getInstance(USART3);
+            serial = Stm32Uart::getInstance(USART3);
         }
         serial->write(c);
     }

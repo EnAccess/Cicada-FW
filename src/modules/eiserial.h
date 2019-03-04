@@ -32,10 +32,10 @@ enum EConnectionStatus
     connectionError
 };
 
-class EISerial
+class ISerial
 {
 public:
-    virtual ~EISerial() { }
+    virtual ~ISerial() { }
 
     /*!
      * Opens the serial device.

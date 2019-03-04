@@ -14,10 +14,10 @@
 
 static void SystemClock_Config(void);
 
-class IPCommTask : public ETask
+class IPCommTask : public Task
 {
 public:
-    IPCommTask(ESim7x00CommDevice& commDev) :
+    IPCommTask(Sim7x00CommDevice& commDev) :
         m_commDev(commDev),
         m_i(0)
     { }
@@ -69,7 +69,7 @@ public:
     }
 
 private:
-    ESim7x00CommDevice& m_commDev;
+    Sim7x00CommDevice& m_commDev;
     int m_i;
 };
 
@@ -81,12 +81,12 @@ int main(int argc, char * argv[])
 
     ESerial debug(USART3, GPIOB);
     ESerial serial(UART4, GPIOC);
-    ESim7x00CommDevice commDev(serial);
+    Sim7x00CommDevice commDev(serial);
     IPCommTask task(commDev);
 
-    ETask* taskList[] = {&task, &commDev, NULL};
+    Task* taskList[] = {&task, &commDev, NULL};
 
-    EScheduler s(&eTickFunction, taskList);
+    Scheduler s(&eTickFunction, taskList);
     debug.open();
     s.start();
 }
@@ -128,22 +128,22 @@ extern "C"
 
     void USART3_IRQHandler()
     {
-        static EStm32Uart* instance = EStm32Uart::getInstance(USART3);
+        static Stm32Uart* instance = Stm32Uart::getInstance(USART3);
         instance->handleInterrupt();
     }
 
     void UART4_IRQHandler()
     {
-        static EStm32Uart* instance = EStm32Uart::getInstance(UART4);
+        static Stm32Uart* instance = Stm32Uart::getInstance(UART4);
         instance->handleInterrupt();
     }
 
     void _putchar(char c)
     {
-        static EStm32Uart* serial = NULL;
+        static Stm32Uart* serial = NULL;
         if (!serial)
         {
-            serial = EStm32Uart::getInstance(USART3);
+            serial = Stm32Uart::getInstance(USART3);
         }
         serial->write(c);
     }

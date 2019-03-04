@@ -26,7 +26,7 @@
 
 #include "etask.h"
 
-class EScheduler
+class Scheduler
 {
 public:
     /*!
@@ -35,7 +35,7 @@ public:
      * \param taskList NULL-Terminated list of pointers to tasks
      * for being handeled by the task scheduler
      */
-    EScheduler(E_TICK_TYPE (*tickFunction)(), ETask* taskList[]);
+    Scheduler(E_TICK_TYPE (*tickFunction)(), Task* taskList[]);
 
     /*!
      * Check one task in the task list and if its due,
@@ -51,8 +51,8 @@ public:
 
 private:
     E_TICK_TYPE (*_tickFunction)();
-    ETask** _taskList;
-    ETask** _currentTask;
+    Task** _taskList;
+    Task** _currentTask;
 };
 
 #endif

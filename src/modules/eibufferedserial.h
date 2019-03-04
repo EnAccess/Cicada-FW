@@ -26,7 +26,7 @@
 
 #include "eiserial.h"
 
-class EIBufferedSerial : public EISerial
+class IBufferedSerial : public ISerial
 {
 public:
     /*!

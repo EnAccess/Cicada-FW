@@ -26,7 +26,7 @@
 
 #include "ebufferedserial.h"
 
-class ENoplatformSerial : public EDefaultBufferedSerial
+class NoplatformSerial : public EDefaultBufferedSerial
 {
 public:
     bool open() { return false; }

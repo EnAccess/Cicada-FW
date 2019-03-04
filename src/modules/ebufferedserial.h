@@ -30,10 +30,10 @@
 #include "linecircularbuffer.h"
 #include "edefines.h"
 
-class EBufferedSerial : public EIBufferedSerial
+class BufferedSerial : public IBufferedSerial
 {
 public:
-    EBufferedSerial();
+    BufferedSerial();
 
     virtual uint16_t bytesAvailable() const;
 
@@ -66,7 +66,7 @@ protected:
     LineCircularBuffer<E_SERIAL_BUFFERSIZE> _writeBuffer;
 };
 
-class EBufferedSerialTask : public EBufferedSerial, public ETask
+class BufferedSerialTask : public BufferedSerial, public Task
 {
     inline void run() { performReadWrite(); }
 };

@@ -108,15 +108,15 @@
     case ENTRY_POINT:                                           \
     if (!(COND)) return;                                        \
 
-class ETask
+class Task
 {
 public:
-    ETask(uint16_t initialDelay = 0) :
+    Task(uint16_t initialDelay = 0) :
         _delay(initialDelay),
         _lastRun(0)
     { }
 
-    virtual ~ETask() {}
+    virtual ~Task() {}
     
     /*!
      * Minimum delay before the task will run again.
@@ -155,9 +155,9 @@ public:
 
 private:
     /*
-     * Doesn't make sense to copy an ETask object
+     * Doesn't make sense to copy an Task object
      */
-    ETask(const ETask&);
+    Task(const Task&);
 
     uint16_t _delay; /**< Time before the task will run again */
     E_TICK_TYPE _lastRun; /**< Stores the tick when the task last ran */

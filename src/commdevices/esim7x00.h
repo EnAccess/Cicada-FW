@@ -25,10 +25,10 @@
 #include "ebufferedserial.h"
 #include "eiipcommdevice.h"
 
-class ESim7x00CommDevice : public EIIPCommDevice
+class Sim7x00CommDevice : public IIPCommDevice
 {
 public:
-    ESim7x00CommDevice(EIBufferedSerial& serial);
+    Sim7x00CommDevice(IBufferedSerial& serial);
 
     virtual void setHostPort(const char* host, uint16_t port);
 
@@ -91,7 +91,7 @@ private:
         finalizeDisconnect
     };
 
-    EIBufferedSerial& _serial;
+    IBufferedSerial& _serial;
     CircularBuffer<uint8_t, E_NETWORK_BUFFERSIZE> _readBuffer;
     CircularBuffer<uint8_t, E_NETWORK_BUFFERSIZE> _writeBuffer;
     SendState _sendState;

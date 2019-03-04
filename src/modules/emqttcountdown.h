@@ -28,14 +28,14 @@
 #include <cstdint>
 #include "edefines.h"
 
-class EMQTTCountdown
+class MQTTCountdown
 {
 public:
-    // EMQTTCountdown(E_TICK_TYPE (*sysTickHandler)());
-    // EMQTTCountdown(E_TICK_TYPE (*sysTickHandler)(), int ms);
+    // MQTTCountdown(E_TICK_TYPE (*sysTickHandler)());
+    // MQTTCountdown(E_TICK_TYPE (*sysTickHandler)(), int ms);
 
-    EMQTTCountdown();
-    EMQTTCountdown(int ms);
+    MQTTCountdown();
+    MQTTCountdown(int ms);
 
     bool expired();
     void countdown_ms(int ms);

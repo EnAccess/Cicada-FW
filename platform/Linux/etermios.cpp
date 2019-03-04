@@ -27,7 +27,7 @@
 #include <sys/ioctl.h>
 #include "etermios.h"
 
-ETermios::ETermios(const char* port) :
+Termios::Termios(const char* port) :
     _isOpen(false),
     _port(port),
     _fd(-1),
@@ -36,7 +36,7 @@ ETermios::ETermios(const char* port) :
 {
 }
 
-bool ETermios::open()
+bool Termios::open()
 {
     struct termios config;
 
@@ -82,7 +82,7 @@ bool ETermios::open()
     return true;
 }
 
-bool ETermios::setSerialConfig(uint32_t baudRate, uint8_t dataBits)
+bool Termios::setSerialConfig(uint32_t baudRate, uint8_t dataBits)
 {
     switch(baudRate)
     {
@@ -198,7 +198,7 @@ bool ETermios::setSerialConfig(uint32_t baudRate, uint8_t dataBits)
     return true;
 }
 
-void ETermios::close()
+void Termios::close()
 {
     _isOpen = false;
 
@@ -208,7 +208,7 @@ void ETermios::close()
     _fd = -1;
 }
 
-uint16_t ETermios::rawBytesAvailable() const
+uint16_t Termios::rawBytesAvailable() const
 {
     if (_fd < 0)
         return 0;
@@ -219,12 +219,12 @@ uint16_t ETermios::rawBytesAvailable() const
     return bytes > UINT16_MAX ? UINT16_MAX : bytes;
 }
 
-bool ETermios::rawRead(uint8_t& data)
+bool Termios::rawRead(uint8_t& data)
 {
     return ::read(_fd, &data, 1) == 1;
 }
 
-bool ETermios::rawWrite(uint8_t data)
+bool Termios::rawWrite(uint8_t data)
 {
     return ::write(_fd, &data, 1) == 1;
 }

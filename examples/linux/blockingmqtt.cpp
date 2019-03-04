@@ -18,7 +18,7 @@
 #include "emqttcountdown.h"
 
 void yieldFunction(void *sched) {
-    ((EScheduler*)sched)->runTask();
+    ((Scheduler*)sched)->runTask();
 }
 
 int arrivedcount = 0;
@@ -37,18 +37,18 @@ void messageArrived(MQTT::MessageData& md)
 int main(int argc, char * argv[])
 {
     ESerial serial;
-    ESim7x00CommDevice commDev(serial);
+    Sim7x00CommDevice commDev(serial);
 
-    ETask* taskList[] = {&commDev, dynamic_cast<ETask*>(&serial), NULL};
+    Task* taskList[] = {&commDev, dynamic_cast<Task*>(&serial), NULL};
 
-    EScheduler s(&eTickFunction, taskList);
+    Scheduler s(&eTickFunction, taskList);
 
-    EBlockingCommDevice bld(commDev, eTickFunction, yieldFunction, &s);
+    BlockingCommDevice bld(commDev, eTickFunction, yieldFunction, &s);
 
     const char* topic = "mbed-sample";
 
-    MQTT::Client<EBlockingCommDevice, EMQTTCountdown> client =
-        MQTT::Client<EBlockingCommDevice, EMQTTCountdown>(bld);
+    MQTT::Client<BlockingCommDevice, MQTTCountdown> client =
+        MQTT::Client<BlockingCommDevice, MQTTCountdown>(bld);
 
     const char* hostname = "iot.eclipse.org";
     int port = 1883;

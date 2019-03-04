@@ -41,11 +41,11 @@
 #define IP_CONNECTED       (1 << 4)
 #define LINE_READ          (1 << 5)
 
-const char* ESim7x00CommDevice::_okStr = "OK";
-const char* ESim7x00CommDevice::_lineEndStr = "\r\n";
-const char* ESim7x00CommDevice::_quoteEndStr = "\"\r\n";
+const char* Sim7x00CommDevice::_okStr = "OK";
+const char* Sim7x00CommDevice::_lineEndStr = "\r\n";
+const char* Sim7x00CommDevice::_quoteEndStr = "\"\r\n";
 
-ESim7x00CommDevice::ESim7x00CommDevice(EIBufferedSerial& serial) :
+Sim7x00CommDevice::Sim7x00CommDevice(IBufferedSerial& serial) :
     _serial(serial),
     _sendState(notConnected),
     _replyState(normalReply),
@@ -59,18 +59,18 @@ ESim7x00CommDevice::ESim7x00CommDevice(EIBufferedSerial& serial) :
     _bytesToRead(0)
 { }
 
-void ESim7x00CommDevice::setHostPort(const char* host, uint16_t port)
+void Sim7x00CommDevice::setHostPort(const char* host, uint16_t port)
 {
     _host = host;
     _port = port;
 }
 
-void ESim7x00CommDevice::setApn(const char* apn)
+void Sim7x00CommDevice::setApn(const char* apn)
 {
     _apn = apn;
 }
 
-bool ESim7x00CommDevice::connect()
+bool Sim7x00CommDevice::connect()
 {
     if (_apn == NULL || _host == NULL || _port == 0)
         return false;
@@ -80,28 +80,28 @@ bool ESim7x00CommDevice::connect()
     return true;
 }
 
-void ESim7x00CommDevice::disconnect()
+void Sim7x00CommDevice::disconnect()
 {
     _stateBooleans |= DISCONNECT_PENDING;
 }
 
-bool ESim7x00CommDevice::isConnected()
+bool Sim7x00CommDevice::isConnected()
 {
     return _sendState >= connected &&
         _sendState < ipUnconnected && (_stateBooleans & IP_CONNECTED);
 }
 
-bool ESim7x00CommDevice::isIdle()
+bool Sim7x00CommDevice::isIdle()
 {
     return _sendState == notConnected;
 }
 
-uint16_t ESim7x00CommDevice::bytesAvailable() const
+uint16_t Sim7x00CommDevice::bytesAvailable() const
 {
     return _readBuffer.availableData();
 }
 
-uint16_t ESim7x00CommDevice::spaceAvailable() const
+uint16_t Sim7x00CommDevice::spaceAvailable() const
 {
     if (_sendState < connected || _sendState > receiving)
         return 0;
@@ -109,12 +109,12 @@ uint16_t ESim7x00CommDevice::spaceAvailable() const
     return _writeBuffer.availableSpace();
 }
 
-uint16_t ESim7x00CommDevice::read(uint8_t* data, uint16_t maxSize)
+uint16_t Sim7x00CommDevice::read(uint8_t* data, uint16_t maxSize)
 {
     return _readBuffer.pull(data, maxSize);
 }
 
-uint16_t ESim7x00CommDevice::write(const uint8_t* data, uint16_t size)
+uint16_t Sim7x00CommDevice::write(const uint8_t* data, uint16_t size)
 {
     if (_sendState < connected || _sendState > receiving)
         return 0;
@@ -122,7 +122,7 @@ uint16_t ESim7x00CommDevice::write(const uint8_t* data, uint16_t size)
     return _writeBuffer.push(data, size);
 }
 
-bool ESim7x00CommDevice::handleDisconnect(SendState nextState)
+bool Sim7x00CommDevice::handleDisconnect(SendState nextState)
 {
     if (_stateBooleans & DISCONNECT_PENDING)
     {
@@ -136,7 +136,7 @@ bool ESim7x00CommDevice::handleDisconnect(SendState nextState)
     return false;
 }
 
-bool ESim7x00CommDevice::handleConnect(SendState nextState)
+bool Sim7x00CommDevice::handleConnect(SendState nextState)
 {
     if (_stateBooleans & CONNECT_PENDING)
     {
@@ -160,7 +160,7 @@ bool ESim7x00CommDevice::handleConnect(SendState nextState)
         break;                                                  \
     }
 
-void ESim7x00CommDevice::run()
+void Sim7x00CommDevice::run()
 {
     // If the serial device is net yet open, try to open it
     if (!_serial.isOpen())

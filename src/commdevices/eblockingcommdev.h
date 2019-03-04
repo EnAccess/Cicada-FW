@@ -29,14 +29,14 @@
 #include "eicommdevice.h"
 
 /*!
- *\class EBlockingCommDevice
+ *\class BlockingCommDevice
  *
- * A blocking wrapper around the non-blocking EICommDevice.
+ * A blocking wrapper around the non-blocking ICommDevice.
  * This class is especially useful for the Eclips Paho MQTTClient.
  * It can be directly passed to the MQTTClient as it's
  * Network class.
  */
-class EBlockingCommDevice
+class BlockingCommDevice
 {
 public:
     /*!
@@ -47,7 +47,7 @@ public:
      * while waiting for buffers. This is usually the operating system's
      * yield() or a user defined function to process other tasks.
      */
-    EBlockingCommDevice(EICommDevice& dev,
+    BlockingCommDevice(ICommDevice& dev,
                         E_TICK_TYPE (*tickFunction)(void),
                         void (*yieldFunction)(void*),
                         void* yieldUserData = NULL);
@@ -63,7 +63,7 @@ public:
     int write(unsigned char* buffer, int len, int timeout);
 
 private:
-    EICommDevice& _commDev;
+    ICommDevice& _commDev;
     E_TICK_TYPE (*_tickFunction)(void);
     void (*_yieldFunction)(void*);
     void * _yieldUserData;

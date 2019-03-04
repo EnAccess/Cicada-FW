@@ -2,7 +2,7 @@
 #include "etick.h"
 #include "escheduler.h"
 
-class Task1 : public ETask
+class Task1 : public Task
 {
 public:
     Task1() : m_wakeup(false)
@@ -37,7 +37,7 @@ private:
     bool m_wakeup;
 };
 
-class Task2 : public ETask
+class Task2 : public Task
 {
 public:
     Task2(Task1& task1) : m_task1(task1)
@@ -74,8 +74,8 @@ int main(int argc, char * argv[])
     Task1 task1;
     Task2 task2(task1);
 
-    ETask* taskList[] = {&task1, &task2, NULL};
+    Task* taskList[] = {&task1, &task2, NULL};
 
-    EScheduler s(&eTickFunction, taskList);
+    Scheduler s(&eTickFunction, taskList);
     s.start();
 }

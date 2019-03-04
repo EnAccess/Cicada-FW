@@ -26,7 +26,7 @@
 
 #include "eicommdevice.h"
 
-class EIIPCommDevice : public EICommDevice
+class IIPCommDevice : public ICommDevice
 {
 public:
     /*!

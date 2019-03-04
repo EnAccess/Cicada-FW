@@ -29,15 +29,15 @@
 // Import platform specific serial driver
 #if defined TARGET_STM32
 #include "../platform/STM32F1/estm32uart.h"
-typedef EStm32Uart ESerial;
+typedef Stm32Uart ESerial;
 
 #elif defined __linux__
 #include "../platform/Linux/etermios.h"
-typedef ETermios ESerial;
+typedef Termios ESerial;
 
 #else
 #include "../platform/NoPlatform/enoplatform.h"
-typedef ENoplatformSerial ESerial;
+typedef NoplatformSerial ESerial;
 
 #endif
 

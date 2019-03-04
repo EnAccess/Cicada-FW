@@ -24,7 +24,7 @@
 #include <cstdint>
 #include "eblockingcommdev.h"
 
-EBlockingCommDevice::EBlockingCommDevice(EICommDevice& dev,
+BlockingCommDevice::BlockingCommDevice(ICommDevice& dev,
                                          E_TICK_TYPE (*tickFunction)(void),
                                          void (*yieldFunction)(void*),
                                          void* yieldUserData) :
@@ -34,7 +34,7 @@ EBlockingCommDevice::EBlockingCommDevice(EICommDevice& dev,
     _yieldUserData(yieldUserData)
 { }
 
-int EBlockingCommDevice::read(unsigned char* buffer, int len, int timeout)
+int BlockingCommDevice::read(unsigned char* buffer, int len, int timeout)
 {
     E_TICK_TYPE startTime = _tickFunction();
 
@@ -54,7 +54,7 @@ int EBlockingCommDevice::read(unsigned char* buffer, int len, int timeout)
     return totalBytes;
 }
 
-int EBlockingCommDevice::write(unsigned char* buffer, int len, int timeout)
+int BlockingCommDevice::write(unsigned char* buffer, int len, int timeout)
 {
     E_TICK_TYPE startTime = _tickFunction();
 

@@ -14,7 +14,7 @@
 
 static void SystemClock_Config(void);
 
-class SerialTask : public ETask
+class SerialTask : public Task
 {
 public:
     SerialTask(ESerial& serial) :
@@ -57,7 +57,7 @@ public:
     }
 
 private:
-    EStm32Uart& m_serial;
+    Stm32Uart& m_serial;
     int m_i;
 };
 
@@ -85,9 +85,9 @@ int main(int argc, char * argv[])
     ESerial serial(UART4, GPIOC);
     SerialTask task(serial);
 
-    ETask* taskList[] = {&task, NULL};
+    Task* taskList[] = {&task, NULL};
 
-    EScheduler s(&eTickFunction, taskList);
+    Scheduler s(&eTickFunction, taskList);
 
     debug.open();
     serial.open();
@@ -132,22 +132,22 @@ extern "C"
 
     void USART3_IRQHandler()
     {
-        static EStm32Uart* instance = EStm32Uart::getInstance(USART3);
+        static Stm32Uart* instance = Stm32Uart::getInstance(USART3);
         instance->handleInterrupt();
     }
 
     void UART4_IRQHandler()
     {
-        static EStm32Uart* instance = EStm32Uart::getInstance(UART4);
+        static Stm32Uart* instance = Stm32Uart::getInstance(UART4);
         instance->handleInterrupt();
     }
 
     void _putchar(char c)
     {
-        static EStm32Uart* serial = NULL;
+        static Stm32Uart* serial = NULL;
         if (!serial)
         {
-            serial = EStm32Uart::getInstance(USART3);
+            serial = Stm32Uart::getInstance(USART3);
         }
         serial->write(c);
     }
