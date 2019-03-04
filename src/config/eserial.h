@@ -21,37 +21,24 @@
  *
  */
 
-#include "etick.h"
-#include "emqttcountdown.h"
+// TODO: remove this file. All uart classes share a base class, hence this should not be needed
 
-EMQTTCountdown::EMQTTCountdown()
-{ }
+#ifndef ESERIAL_H
+#define ESERIAL_H
 
-EMQTTCountdown::EMQTTCountdown(int ms)
-{
-    countdown_ms(ms);
-}
+// Import platform specific serial driver
+#if defined TARGET_STM32
+#include "../platform/STM32F1/estm32uart.h"
+typedef EStm32Uart ESerial;
 
-bool EMQTTCountdown::expired()
-{
-    return left_ms() == 0;
-}
+#elif defined __linux__
+#include "../platform/Linux/etermios.h"
+typedef ETermios ESerial;
 
-void EMQTTCountdown::countdown_ms(int ms)
-{
-    _endTime = eTickFunction() + ms;
-}
+#else
+#include "../platform/NoPlatform/enoplatform.h"
+typedef ENoplatformSerial ESerial;
 
-void EMQTTCountdown::countdown(int seconds)
-{
-    _endTime = eTickFunction() + seconds * 1000;
-}
+#endif
 
-int EMQTTCountdown::left_ms()
-{
-    int64_t left = (int64_t)_endTime - eTickFunction();
-    if (left < 0)
-        left = 0;
-
-    return (int)left;
-}
+#endif

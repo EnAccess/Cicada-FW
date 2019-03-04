@@ -21,53 +21,50 @@
  *
  */
 
-#ifndef EBUFFEREDSERIAL_H
-#define EBUFFEREDSERIAL_H
+#include "emqttcountdown.h"
 
-#include "eibufferedserial.h"
-#include "etask.h"
-#include "ecircularbuffer.h"
-#include "edefines.h"
+// EMQTTCountdown::EMQTTCountdown(E_TICK_TYPE (*sysTickHandler)()) :
+//     _sysTickHandler(sysTickHandler),
+//     _endTime(0)
+// {}
 
-class EBufferedSerial : public EIBufferedSerial
+// EMQTTCountdown::EMQTTCountdown(E_TICK_TYPE (*sysTickHandler)(), int ms) :
+//     _sysTickHandler(sysTickHandler),
+//     _endTime(0)
+// {
+//     countdown_ms(ms);
+// }
+
+EMQTTCountdown::EMQTTCountdown() :
+    _endTime(0)
+{}
+
+EMQTTCountdown::EMQTTCountdown(int ms) :
+    _endTime(0)
 {
-public:
-    EBufferedSerial();
+    countdown_ms(ms);
+}
 
-    virtual uint16_t bytesAvailable() const;
-
-    virtual uint16_t spaceAvailable() const;
-
-    virtual uint16_t read(char* data, uint16_t size);
-
-    virtual char read();
-
-    virtual uint16_t write(const char* data, uint16_t size);
-
-    virtual void write(char data);
-
-    virtual bool canReadLine() const;
-
-    virtual uint16_t readLine(char* data, uint16_t size);
-
-    virtual void flushReceiveBuffers();
-
-    virtual uint16_t bufferSize();
-
-    /*!
-     * Actually perform read/write to the underlying
-     * raw serial device.
-     */
-    virtual void performReadWrite();
-
-protected:
-    ELineCircularBuffer<E_SERIAL_BUFFERSIZE> _readBuffer;
-    ELineCircularBuffer<E_SERIAL_BUFFERSIZE> _writeBuffer;
-};
-
-class EBufferedSerialTask : public EBufferedSerial, public ETask
+bool EMQTTCountdown::expired()
 {
-    inline void run() { performReadWrite(); }
-};
+    return left_ms() == 0;
+}
 
-#endif
+void EMQTTCountdown::countdown_ms(int ms)
+{
+    _endTime = _sysTickHandler() + ms;
+}
+
+void EMQTTCountdown::countdown(int seconds)
+{
+    _endTime = _sysTickHandler() + seconds * 1000;
+}
+
+int EMQTTCountdown::left_ms()
+{
+    int64_t left = (int64_t)_endTime - _sysTickHandler();
+    if (left < 0)
+        left = 0;
+
+    return (int)left;
+}

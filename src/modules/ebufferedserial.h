@@ -21,26 +21,54 @@
  *
  */
 
+#ifndef EBUFFEREDSERIAL_H
+#define EBUFFEREDSERIAL_H
 
-#ifndef EMQTTCOUNTDOWN_H
-#define EMQTTCOUNTDOWN_H
-
-#include <cstdint>
+#include "eibufferedserial.h"
+#include "etask.h"
+#include "circularbuffer.h"
+#include "linecircularbuffer.h"
 #include "edefines.h"
 
-class EMQTTCountdown
+class EBufferedSerial : public EIBufferedSerial
 {
 public:
-    EMQTTCountdown();
-    EMQTTCountdown(int ms);
+    EBufferedSerial();
 
-    bool expired();
-    void countdown_ms(int ms);
-    void countdown(int seconds);
-    int left_ms();
+    virtual uint16_t bytesAvailable() const;
 
-private:
-    E_TICK_TYPE _endTime;
+    virtual uint16_t spaceAvailable() const;
+
+    virtual uint16_t read(char* data, uint16_t size);
+
+    virtual char read();
+
+    virtual uint16_t write(const char* data, uint16_t size);
+
+    virtual void write(char data);
+
+    virtual bool canReadLine() const;
+
+    virtual uint16_t readLine(char* data, uint16_t size);
+
+    virtual void flushReceiveBuffers();
+
+    virtual uint16_t bufferSize();
+
+    /*!
+     * Actually perform read/write to the underlying
+     * raw serial device.
+     */
+    virtual void performReadWrite();
+
+protected:
+    LineCircularBuffer<E_SERIAL_BUFFERSIZE> _readBuffer;
+    LineCircularBuffer<E_SERIAL_BUFFERSIZE> _writeBuffer;
 };
-    
+
+class EBufferedSerialTask : public EBufferedSerial, public ETask
+{
+    inline void run() { performReadWrite(); }
+};
+
 #endif

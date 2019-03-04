@@ -21,12 +21,30 @@
  *
  */
 
-#ifndef ETICK_H
-#define ETICK_H
 
-#include "stdint.h"
+#ifndef EMQTTCOUNTDOWN_H
+#define EMQTTCOUNTDOWN_H
+
+#include <cstdint>
 #include "edefines.h"
 
-E_TICK_TYPE eTickFunction(void);
+class EMQTTCountdown
+{
+public:
+    // EMQTTCountdown(E_TICK_TYPE (*sysTickHandler)());
+    // EMQTTCountdown(E_TICK_TYPE (*sysTickHandler)(), int ms);
+
+    EMQTTCountdown();
+    EMQTTCountdown(int ms);
+
+    bool expired();
+    void countdown_ms(int ms);
+    void countdown(int seconds);
+    int left_ms();
+
+private:
+    E_TICK_TYPE (*_sysTickHandler)();
+    E_TICK_TYPE _endTime;
+};
 
 #endif

@@ -21,27 +21,29 @@
  *
  */
 
-#ifndef ECIRCULARBUFFER_H
-#define ECIRCULARBUFFER_H
+#ifndef CIRCULAR_BUFFER_H
+#define CIRCULAR_BUFFER_H
+
+#include <cstdint>
 
 /*!
- * \class ECircularBuffer
+ * \class CircularBuffer
  *
  * Implementation of a circular buffer.
  */
 
 template <typename T, uint16_t BUFFER_SIZE>
-class ECircularBuffer
+class CircularBuffer
 {
 public:
-    ECircularBuffer() :
+    CircularBuffer() :
         _writeHead(0),
         _readHead(0),
         _availableData(0),
         _buffer()
     { }
 
-    virtual ~ECircularBuffer()
+    virtual ~CircularBuffer()
     { }
 
     /*!
@@ -199,80 +201,6 @@ private:
     {
         _availableData--;
     }
-};
-
-/*!
- * \class ELineCircularBuffer
- *
- * Extends the circular buffer for handling lines.
- */
-
-template <uint16_t BUFFER_SIZE>
-class ELineCircularBuffer : public ECircularBuffer<char, BUFFER_SIZE>
-{
-public:
-    ELineCircularBuffer() :
-        _bufferedLines(0)
-        { }
-
-    using ECircularBuffer<char, BUFFER_SIZE>::push;
-
-    void push(char data)
-    {
-        ECircularBuffer<char, BUFFER_SIZE>::push(data);
-
-        if (data == '\n')
-        {
-            _bufferedLines++;
-        }
-    }
-
-    using ECircularBuffer<char, BUFFER_SIZE>::pull;
-
-    char pull()
-    {
-        char data = ECircularBuffer<char, BUFFER_SIZE>::pull();
-
-        if (data == '\n')
-        {
-            _bufferedLines--;
-        }
-
-        return data;
-    }
-
-    /*!
-     * \return Number of lines currently in the buffer
-     */
-    inline uint16_t numBufferedLines() const
-    {
-        return _bufferedLines;
-    }
-
-    /*!
-     * Reads a full line from the buffer.
-     * \param data Pointer where pulled data will be stored
-     * \param size Available space in data
-     * \return Actual number of characters pulled from the buffer
-     */
-    uint16_t readLine(char* data, uint16_t size)
-    {
-        uint16_t readCount = 0;
-        char c = '\0';
-
-        while (!ECircularBuffer<char, BUFFER_SIZE>::isEmpty() && c != '\n') {
-            c = pull();
-            if (readCount < size)
-            {
-                data[readCount++] = c;
-            }
-        }
-
-        return readCount;
-    }
-
-private:
-    uint16_t _bufferedLines;
 };
 
 #endif

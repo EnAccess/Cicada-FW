@@ -1,6 +1,9 @@
-[submodule "dep/paho.mqtt.embedded-c"]
-	path = dep/paho.mqtt.embedded-c
-	url = https://github.com/eclipse/paho.mqtt.embedded-c.git
-[submodule "dep/printf"]
-	path = dep/printf
+[submodule "dep/cpputest/src"]
+	path = dep/cpputest/src
+	url = https://github.com/cpputest/cpputest
+[submodule "dep/printf/src"]
+	path = dep/printf/src
 	url = https://github.com/mpaland/printf.git
+[submodule "dep/paho.mqtt.embedded-c/src"]
+	path = dep/paho.mqtt.embedded-c/src
+	url = https://github.com/eclipse/paho.mqtt.embedded-c.git

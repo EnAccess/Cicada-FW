@@ -21,5 +21,12 @@
  *
  */
 
-#include <cstdint>
-#include "ecircularbuffer.h"
+#ifndef ETICK_H
+#define ETICK_H
+
+#include "stdint.h"
+#include "edefines.h"
+
+E_TICK_TYPE eTickFunction();
+
+#endif
