@@ -142,6 +142,9 @@ bool UnixSerial::setSerialConfig(uint32_t baudRate, uint8_t dataBits)
     case 230400:
         _speed = B230400;
         break;
+
+// NOTE: termios on OSX doesn't define these buad rates
+#if defined __linux__
     case 460800:
         _speed = B460800;
         break;
@@ -175,6 +178,8 @@ bool UnixSerial::setSerialConfig(uint32_t baudRate, uint8_t dataBits)
     case 4000000:
         _speed = B4000000;
         break;
+#endif
+
     default:
         return false;
     }
