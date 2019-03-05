@@ -21,7 +21,7 @@
  *
  */
 
-#include "etick.h"
+#include "tick.h"
 
 E_TICK_TYPE eTickFunction()
 {
