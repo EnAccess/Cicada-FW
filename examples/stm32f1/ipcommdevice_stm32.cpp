@@ -6,7 +6,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "scheduler.h"
-#include "serial.h"
+#include "stm32uart.h"
 #include "sim7x00.h"
 #include "tick.h"
 #include "stm32f1xx_hal.h"
@@ -81,8 +81,8 @@ int main(int argc, char * argv[])
     HAL_Init();
     SystemClock_Config();
 
-    Serial debug(USART3, GPIOB);
-    Serial serial(UART4, GPIOC);
+    Stm32Uart debug(USART3, GPIOB);
+    Stm32Uart serial(UART4, GPIOC);
     Sim7x00CommDevice commDev(serial);
     IPCommTask task(commDev);
 

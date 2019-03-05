@@ -5,7 +5,7 @@
 #include <cstdint>
 #include <cstdio>
 #include "scheduler.h"
-#include "serial.h"
+#include "unixserial.h"
 #include "blockingcommdev.h"
 #include "sim7x00.h"
 #include "tick.h"
@@ -18,7 +18,7 @@ void yieldFunction(void *sched) {
 
 int main(int argc, char * argv[])
 {
-    Serial serial;
+    UnixSerial serial;
     Sim7x00CommDevice commDev(serial);
 
     Task* taskList[] = {&commDev, dynamic_cast<Task*>(&serial), NULL};

@@ -6,7 +6,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "scheduler.h"
-#include "serial.h"
+#include "unixserial.h"
 #include "sim7x00.h"
 #include "tick.h"
 
@@ -73,7 +73,7 @@ private:
 
 int main(int argc, char * argv[])
 {
-    Serial serial;
+    UnixSerial serial;
     Sim7x00CommDevice commDev(serial);
     IPCommTask task(commDev);
 

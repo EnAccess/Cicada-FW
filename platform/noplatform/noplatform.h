@@ -24,9 +24,9 @@
 #ifndef ENOPLATFORM_H
 #define ENOPLATFORM_H
 
-#include "ebufferedserial.h"
+#include "bufferedserial.h"
 
-class NoplatformSerial : public EDefaultBufferedSerial
+class NoplatformSerial : public DefaultBufferedSerial
 {
 public:
     bool open() { return false; }

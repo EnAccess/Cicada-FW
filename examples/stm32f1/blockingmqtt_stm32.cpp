@@ -11,7 +11,7 @@
 #include <stdint.h>
 #include <MQTTClient.h>
 #include "scheduler.h"
-#include "serial.h"
+#include "stm32uart.h"
 #include "sim7x00.h"
 #include "blockingcommdev.h"
 #include "tick.h"
@@ -47,8 +47,8 @@ int main(int argc, char * argv[])
 
     HAL_Delay(2000);
 
-    Serial debug(USART3, GPIOB);
-    Serial serial(UART4, GPIOC);
+    Stm32Uart debug(USART3, GPIOB);
+    Stm32Uart serial(UART4, GPIOC);
     Sim7x00CommDevice commDev(serial);
 
     debug.open();

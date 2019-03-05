@@ -6,7 +6,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "scheduler.h"
-#include "serial.h"
+#include "unixserial.h"
 #include "tick.h"
 
 using namespace EnAccess;
@@ -14,7 +14,7 @@ using namespace EnAccess;
 class SerialTask : public Task
 {
 public:
-    SerialTask(Serial& serial) :
+    SerialTask(BufferedSerial& serial) :
         m_serial(serial),
         m_i(0)
     { }
@@ -73,13 +73,13 @@ public:
     }
 
 private:
-    Serial& m_serial;
+    BufferedSerial& m_serial;
     int m_i;
 };
 
 int main(int argc, char * argv[])
 {
-    Serial serial;
+    UnixSerial serial;
     SerialTask task(serial);
 
     Task* taskList[] = {&task, dynamic_cast<Task*>(&serial), NULL};

@@ -11,7 +11,7 @@
 #include <stdint.h>
 #include <MQTTClient.h>
 #include "scheduler.h"
-#include "serial.h"
+#include "unixserial.h"
 #include "sim7x00.h"
 #include "blockingcommdev.h"
 #include "tick.h"
@@ -38,7 +38,7 @@ void messageArrived(MQTT::MessageData& md)
 // Most of the code taken from MQTT hello.cpp
 int main(int argc, char * argv[])
 {
-    Serial serial;
+    UnixSerial serial;
     Sim7x00CommDevice commDev(serial);
 
     Task* taskList[] = {&commDev, dynamic_cast<Task*>(&serial), NULL};
