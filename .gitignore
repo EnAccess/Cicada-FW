@@ -2,6 +2,9 @@
 .env
 .ds_store
 build
+build_stm
+build_linux
+build_mbed
 
 # Ignore the Meson packagecache dir
 packagecache
