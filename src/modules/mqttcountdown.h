@@ -21,7 +21,6 @@
  *
  */
 
-
 #ifndef EMQTTCOUNTDOWN_H
 #define EMQTTCOUNTDOWN_H
 
@@ -33,9 +32,11 @@ namespace EnAccess {
 class MQTTCountdown
 {
 public:
-    // MQTTCountdown(E_TICK_TYPE (*sysTickHandler)());
-    // MQTTCountdown(E_TICK_TYPE (*sysTickHandler)(), int ms);
-
+    /*!
+     * Due to limitations of the MQTTClient API, it's not possible
+     * to pass any arguments to the constructor. So, this class accesses
+     * the global timer tick function directly.
+     */
     MQTTCountdown();
     MQTTCountdown(int ms);
 
@@ -45,8 +46,7 @@ public:
     int left_ms();
 
 private:
-    E_TICK_TYPE (*_sysTickHandler)();
-    uint32_t _endTime;
+    E_TICK_TYPE _endTime;
 };
 
 }

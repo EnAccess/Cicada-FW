@@ -21,28 +21,15 @@
  *
  */
 
+#include "tick.h"
 #include "mqttcountdown.h"
 
 using namespace EnAccess;
 
-// MQTTCountdown::MQTTCountdown(E_TICK_TYPE (*sysTickHandler)()) :
-//     _sysTickHandler(sysTickHandler),
-//     _endTime(0)
-// {}
+MQTTCountdown::MQTTCountdown()
+{ }
 
-// MQTTCountdown::MQTTCountdown(E_TICK_TYPE (*sysTickHandler)(), int ms) :
-//     _sysTickHandler(sysTickHandler),
-//     _endTime(0)
-// {
-//     countdown_ms(ms);
-// }
-
-MQTTCountdown::MQTTCountdown() :
-    _endTime(0)
-{}
-
-MQTTCountdown::MQTTCountdown(int ms) :
-    _endTime(0)
+MQTTCountdown::MQTTCountdown(int ms)
 {
     countdown_ms(ms);
 }
@@ -54,19 +41,19 @@ bool MQTTCountdown::expired()
 
 void MQTTCountdown::countdown_ms(int ms)
 {
-    _endTime = _sysTickHandler() + ms;
+    _endTime = eTickFunction() + ms;
 }
 
 void MQTTCountdown::countdown(int seconds)
 {
-    _endTime = _sysTickHandler() + seconds * 1000;
+    _endTime = eTickFunction() + seconds * 1000;
 }
 
 int MQTTCountdown::left_ms()
 {
-    uint32_t left = _endTime - (uint32_t)_sysTickHandler();
-    if (left > INT32_MAX)
+    int64_t left = (int64_t)_endTime - eTickFunction();
+    if (left < 0)
         left = 0;
 
-    return left;
+    return (int)left;
 }
