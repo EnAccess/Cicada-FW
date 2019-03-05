@@ -64,7 +64,7 @@ int main(int argc, char * argv[])
     Stm32Uart serial(USE_UART, GPIOB);
     SerialTask task(serial);
 
-    Task* taskList[] = {&task, dynamic_cast<Task*>(&serial), NULL};
+    Task* taskList[] = {&task, NULL};
 
     Scheduler s(&eTickFunction, taskList);
     s.start();

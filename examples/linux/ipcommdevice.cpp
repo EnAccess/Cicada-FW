@@ -77,7 +77,7 @@ int main(int argc, char * argv[])
     Sim7x00CommDevice commDev(serial);
     IPCommTask task(commDev);
 
-    Task* taskList[] = {&task, &commDev, dynamic_cast<Task*>(&serial), NULL};
+    Task* taskList[] = {&task, &commDev, &serial, NULL};
 
     Scheduler s(&eTickFunction, taskList);
     s.start();

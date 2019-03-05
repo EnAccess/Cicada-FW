@@ -41,7 +41,7 @@ int main(int argc, char * argv[])
     UnixSerial serial;
     Sim7x00CommDevice commDev(serial);
 
-    Task* taskList[] = {&commDev, dynamic_cast<Task*>(&serial), NULL};
+    Task* taskList[] = {&commDev, &serial, NULL};
 
     Scheduler s(&eTickFunction, taskList);
 

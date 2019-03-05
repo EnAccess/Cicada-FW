@@ -82,7 +82,7 @@ int main(int argc, char * argv[])
     UnixSerial serial;
     SerialTask task(serial);
 
-    Task* taskList[] = {&task, dynamic_cast<Task*>(&serial), NULL};
+    Task* taskList[] = {&task, &serial, NULL};
 
     Scheduler s(&eTickFunction, taskList);
     s.start();
