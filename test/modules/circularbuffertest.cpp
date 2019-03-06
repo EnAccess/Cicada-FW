@@ -7,77 +7,54 @@ using namespace EnAccess;
 
 TEST_GROUP(CircularBufferTest){};
 
-// TEST(CircularBufferTest, ShouldPushAndPullDataAsExpected)
-// {
-//     CircularBuffer<char, 255> buffer;
+TEST(CircularBufferTest, ShouldPushAndPullDataAsExpected)
+{
+    const uint8_t MAX_BUFFER_SIZE = 255;
+    CircularBuffer<char, MAX_BUFFER_SIZE> buffer;
 
-//     const uint8_t SIZE = 20;
-//     char dataIn[SIZE] = "123456789 987654321";
-//     char dataOut[SIZE];
+    const uint8_t SIZE = 20;
+    char dataIn[SIZE] = "123456789 987654321";
+    char dataOut[SIZE];
 
-//     const uint8_t expectedHeadBefore = 0;
-//     const uint8_t expectedHeadAfter = SIZE;
+    uint8_t writeLen = buffer.push(dataIn, SIZE);
+    uint8_t readLen = buffer.pull(dataOut, SIZE);
+    uint8_t availableData = buffer.availableData();
+    uint8_t availableSpace = buffer.availableSpace();
+    bool isEmpty = buffer.isEmpty();
+    bool isFull = buffer.isFull();
 
-//     uint8_t writeHeadBefore = buffer.writeHead();
-//     uint8_t writeLen = buffer.push(dataIn, SIZE);
-//     uint8_t writeHeadAfter = buffer.writeHead();
+    CHECK_EQUAL(SIZE, writeLen);
+    CHECK_EQUAL(SIZE, readLen);
+    CHECK_EQUAL(0, availableData);
+    CHECK_EQUAL(MAX_BUFFER_SIZE, availableSpace);
+    STRNCMP_EQUAL(dataIn, dataOut, SIZE);
+    CHECK(isEmpty);
+    CHECK_FALSE(isFull);
+}
 
-//     uint8_t readHeadBefore = buffer.readHead();
-//     uint8_t readLen = buffer.pull(dataOut, SIZE);
-//     uint8_t readHeadAfter = buffer.readHead();
+TEST(CircularBufferTest, ShouldTruncateDataIfItDoesntFitInTheBuffer)
+{
+    const uint8_t MAX_BUFFER_SIZE = 9;
+    CircularBuffer<char, MAX_BUFFER_SIZE> buffer;
 
-//     bool isEmpty = buffer.isEmpty();
+    const uint8_t SIZE = 20;
+    char dataIn[SIZE] = "123456789 987654321";
+    char dataOut[SIZE];
 
-//     CHECK_EQUAL(expectedHeadBefore, writeHeadBefore);
-//     CHECK_EQUAL(expectedHeadAfter, writeHeadAfter);
-//     CHECK_EQUAL(SIZE, writeLen);
+    char expectedDataOut[] = "123456789";
 
-//     CHECK_EQUAL(expectedHeadBefore, readHeadBefore);
-//     CHECK_EQUAL(expectedHeadAfter, readHeadAfter);
-//     CHECK_EQUAL(SIZE, readLen);
+    uint8_t writeLen = buffer.push(dataIn, SIZE);
+    uint8_t readLen = buffer.pull(dataOut, SIZE);
 
-//     STRNCMP_EQUAL(dataIn, dataOut, SIZE);
-//     CHECK(isEmpty);
-// }
+    CHECK_EQUAL(MAX_BUFFER_SIZE, writeLen);
+    CHECK_EQUAL(MAX_BUFFER_SIZE, readLen);
+    STRNCMP_EQUAL(expectedDataOut, dataOut, MAX_BUFFER_SIZE);
+}
 
-// TEST(CircularBufferTest, ShouldTruncateDataIfItDoesntFitInTheBuffer)
-// {
-//     const uint8_t MAX_BUFFER_SIZE = 9;
-//     CircularBuffer<char, MAX_BUFFER_SIZE> buffer;
-
-//     const uint8_t SIZE = 20;
-//     char dataIn[SIZE] = "123456789 987654321";
-//     char dataOut[SIZE];
-
-//     char expectedDataOut[] = "123456789";
-//     uint8_t expectedHeadBeforeAndAfter = 0;
-
-//     uint8_t headBefore = buffer.writeHead();
-//     uint8_t writeLen = buffer.push(dataIn, SIZE);
-//     uint8_t headAfter = buffer.writeHead();
-
-//     uint8_t readLen = buffer.pull(dataOut, SIZE);
-
-//     CHECK_EQUAL(expectedHeadBeforeAndAfter, headBefore);
-//     CHECK_EQUAL(expectedHeadBeforeAndAfter, headAfter);
-//     CHECK_EQUAL(MAX_BUFFER_SIZE, writeLen);
-//     CHECK_EQUAL(MAX_BUFFER_SIZE, readLen);
-//     STRNCMP_EQUAL(expectedDataOut, dataOut, MAX_BUFFER_SIZE);
-// }
-
-TEST(CircularBufferTest, ShouldWrapToTheStartWhenBufferIsFull)
+TEST(CircularBufferTest, WriteReadMultipleTimes)
 {
     const uint8_t MAX_BUFFER_SIZE = 10;
     CircularBuffer<char, MAX_BUFFER_SIZE> buffer;
-
-    // Buffer size is 10 and data is 12
-    // Therfore, 2 chars should wrap around to the start
-    // Based on the test data below:
-    // the buffer should contain:   67CDE12345
-    // and when read it should be:  CDE1234567
-
-    // char expectedDataOut[] = "ABCDE";
-    // char expectedDataOut[] = "234567";
 
     const uint8_t SIZE = 7;
     char dataInFirst[SIZE] = { 'A', 'B', 'C', 'D', 'E', 'F', 'G' };
