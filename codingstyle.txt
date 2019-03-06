@@ -1,0 +1,14 @@
+This EnAccess library uses Artistic Style for code formatting:
+http://astyle.sourceforge.net/
+
+The astyle options are the following:
+--style=kr
+--indent=spaces=4
+--indent-after-parens
+--indent-modifiers 
+--align-pointer=type
+--align-reference=type 
+--convert-tabs
+--attach-namespaces
+--max-code-length=100
+--pad-header

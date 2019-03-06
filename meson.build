@@ -60,7 +60,7 @@ run_tests = executable(
 )
 
 # Setup custom build commands
-run_target('lint',      command: [ python, '.clang-format.py', '-r', '-e', 'dep', 'src', 'test' ])  # TODO: confirm these -e exclude args are correct
+run_target('lint',      command: [ 'astyle', '-r', '--style=kr', '--indent=spaces=4', '--indent-after-parens', '--indent-modifiers', '--align-pointer=type', '--align-reference=type', '--convert-tabs', '--attach-namespaces', '--max-code-length=100', '--pad-header', '--pad-oper', 'src/*.cpp', 'src/*.h', 'platform/*.cpp', 'platform/*.h', 'examples/*.cpp' ])
 run_target('ut',        command: [ run_tests, '-c' ], depends: run_tests)
 
 message('''
