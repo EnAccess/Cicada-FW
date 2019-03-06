@@ -56,14 +56,16 @@ public:
     //TODO: Check if virtual is appropriate
     virtual uint16_t push(const T* data, uint16_t size)
     {
-        if (size > BUFFER_SIZE)
-            size = BUFFER_SIZE;
+        if (size > availableSpace())
+            size = availableSpace();
 
         uint16_t writeCount = 0;
 
-        while (!isFull() && writeCount < size) {
-            push(data[writeCount++]);
+        while (writeCount < size) {
+            _buffer[_writeHead] = data[writeCount++];
+            incrementOrResetHead(_writeHead);
         }
+        _availableData += writeCount;
 
         return writeCount;
     }
@@ -79,7 +81,8 @@ public:
     {
         _buffer[_writeHead] = data;
         incrementOrResetHead(_writeHead);
-        increaseAvailableDataCount();
+        if (_availableData < BUFFER_SIZE)
+            _availableData++;
     }
 
     /*!
@@ -90,11 +93,16 @@ public:
      */
     virtual uint16_t pull(T* data, uint16_t size)
     {
+        if (size > availableData())
+            size = availableData();
+
         uint16_t readCount = 0;
 
-        while (!isEmpty() && readCount < size) {
-            data[readCount++] = pull();
+        while (readCount < size) {
+            data[readCount++] = _buffer[_readHead];
+            incrementOrResetHead(_readHead);
         }
+        _availableData -= readCount;
 
         return readCount;
     }
@@ -109,7 +117,8 @@ public:
     {
         T data = _buffer[_readHead];
         incrementOrResetHead(_readHead);
-        decreaseAvailableDataCount();
+        if (_availableData > 0)
+            _availableData--;
 
         return data;
     }
@@ -186,22 +195,6 @@ private:
         head++;
         if (head >= BUFFER_SIZE)
             head = 0;
-    }
-
-    void increaseAvailableDataCount()
-    {
-        // If we hit max data available,
-        // make sure we keep bumping up the _readHead to ensure FIFO
-        _availableData++;
-        if (_availableData > BUFFER_SIZE) {
-            _availableData = BUFFER_SIZE;
-            _readHead++;
-        }
-    }
-
-    void decreaseAvailableDataCount()
-    {
-        _availableData--;
     }
 };
 
