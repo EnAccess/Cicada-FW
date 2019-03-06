@@ -51,6 +51,51 @@ TEST(CircularBufferTest, ShouldTruncateDataIfItDoesntFitInTheBuffer)
     STRNCMP_EQUAL(expectedDataOut, dataOut, MAX_BUFFER_SIZE);
 }
 
+TEST(CircularBufferTest, ShouldFillBufferExactly)
+{
+    const uint8_t SIZE = 20;
+    CircularBuffer<char, SIZE> buffer;
+
+    char dataIn[SIZE] = "123456789 987654321";
+    char dataOut[SIZE];
+
+    uint8_t writeLen = buffer.push(dataIn, SIZE);
+    uint8_t availableData = buffer.availableData();
+    uint8_t availableSpace = buffer.availableSpace();
+    uint8_t readLen = buffer.pull(dataOut, SIZE);
+
+    CHECK_EQUAL(SIZE, writeLen);
+    CHECK_EQUAL(SIZE, readLen);
+    CHECK_EQUAL(SIZE, availableData);
+    CHECK_EQUAL(0, availableSpace);
+    STRNCMP_EQUAL(dataIn, dataOut, SIZE);
+}
+
+TEST(CircularBufferTest, MaximumBufferSize)
+{
+    const uint16_t SIZE = UINT16_MAX;
+    CircularBuffer<uint8_t, SIZE> buffer;
+    uint8_t dataOut[SIZE];
+    uint8_t dataExpected[SIZE];
+
+    for (int i=0; i<SIZE; i++) {
+        dataExpected[i] = i % 255;
+        buffer.push(dataExpected[i]);
+    }
+    uint16_t availableDataBeforeRead = buffer.availableData();
+    uint16_t availableSpaceBeforeRead = buffer.availableSpace();
+    uint16_t readLen = buffer.pull(dataOut, SIZE);
+    uint16_t availableDataAfterRead = buffer.availableData();
+    uint16_t availableSpaceAfterRead = buffer.availableSpace();
+
+    CHECK_EQUAL(SIZE, availableDataBeforeRead);
+    CHECK_EQUAL(0, availableSpaceBeforeRead);
+    CHECK_EQUAL(SIZE, readLen);
+    CHECK_EQUAL(0, availableDataAfterRead);
+    CHECK_EQUAL(SIZE, availableSpaceAfterRead);
+    MEMCMP_EQUAL(dataExpected, dataOut, SIZE);
+}
+
 TEST(CircularBufferTest, WriteReadMultipleTimes)
 {
     const uint8_t MAX_BUFFER_SIZE = 10;
