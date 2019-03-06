@@ -34,7 +34,7 @@ namespace EnAccess {
 
 class BufferedSerial : public IBufferedSerial
 {
-public:
+  public:
     BufferedSerial();
 
     virtual uint16_t bytesAvailable() const;
@@ -63,14 +63,17 @@ public:
      */
     virtual void performReadWrite();
 
-protected:
+  protected:
     LineCircularBuffer<E_SERIAL_BUFFERSIZE> _readBuffer;
     LineCircularBuffer<E_SERIAL_BUFFERSIZE> _writeBuffer;
 };
 
 class BufferedSerialTask : public BufferedSerial, public Task
 {
-    inline void run() { performReadWrite(); }
+    inline void run()
+    {
+        performReadWrite();
+    }
 };
 
 }

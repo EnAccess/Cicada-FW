@@ -27,9 +27,9 @@
 using namespace EnAccess;
 
 BlockingCommDevice::BlockingCommDevice(ICommDevice& dev,
-                                         E_TICK_TYPE (*tickFunction)(void),
-                                         void (*yieldFunction)(void*),
-                                         void* yieldUserData) :
+    E_TICK_TYPE (*tickFunction)(void),
+    void (*yieldFunction)(void*),
+    void* yieldUserData) :
     _commDev(dev),
     _tickFunction(tickFunction),
     _yieldFunction(yieldFunction),
@@ -41,8 +41,7 @@ int BlockingCommDevice::read(unsigned char* buffer, int len, int timeout)
     E_TICK_TYPE startTime = _tickFunction();
 
     int totalBytes = 0;
-    while (len)
-    {
+    while (len) {
         if (_tickFunction() - startTime > (E_TICK_TYPE)timeout)
             break;
 
@@ -60,8 +59,7 @@ int BlockingCommDevice::write(unsigned char* buffer, int len, int timeout)
 {
     E_TICK_TYPE startTime = _tickFunction();
 
-    while (_commDev.spaceAvailable() < len)
-    {
+    while (_commDev.spaceAvailable() < len) {
         if (_tickFunction() - startTime > (E_TICK_TYPE)timeout)
             return 0;
 

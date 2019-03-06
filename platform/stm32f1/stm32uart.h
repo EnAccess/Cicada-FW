@@ -31,10 +31,10 @@ namespace EnAccess {
 
 class Stm32Uart : public BufferedSerial
 {
-public:
+  public:
     Stm32Uart(USART_TypeDef* uartInstance = USART3,
-               GPIO_TypeDef* uartPort = GPIOB,
-               uint16_t txPin = GPIO_PIN_10, uint16_t rxPin = GPIO_PIN_11);
+        GPIO_TypeDef* uartPort = GPIOB,
+        uint16_t txPin = GPIO_PIN_10, uint16_t rxPin = GPIO_PIN_11);
 
     static Stm32Uart* getInstance(USART_TypeDef* uartInstance);
 
@@ -51,7 +51,7 @@ public:
 
     void handleInterrupt();
 
-private:
+  private:
     // Private constructors to avoid copying
     Stm32Uart(const Stm32Uart&);
     Stm32Uart& operator=(const Stm32Uart&);

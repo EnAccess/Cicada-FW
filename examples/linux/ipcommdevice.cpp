@@ -14,7 +14,7 @@ using namespace EnAccess;
 
 class IPCommTask : public Task
 {
-public:
+  public:
     IPCommTask(Sim7x00CommDevice& commDev) :
         m_commDev(commDev),
         m_i(0)
@@ -22,7 +22,7 @@ public:
 
     virtual void run()
     {
-    E_BEGIN_TASK
+        E_BEGIN_TASK
 
         m_commDev.setApn("internet");
         m_commDev.setHostPort("wttr.in", 80);
@@ -43,17 +43,13 @@ public:
 
         E_REENTER_COND(m_commDev.bytesAvailable());
 
-        for(m_i = 0; m_i < 400; m_i++)
-        {
-            if (m_commDev.bytesAvailable())
-            {
+        for (m_i = 0; m_i < 400; m_i++) {
+            if (m_commDev.bytesAvailable()) {
                 char buf[41];
                 uint16_t bytesRead = m_commDev.read((uint8_t*)buf, 40);
                 buf[bytesRead] = '\0';
                 printf("%s", buf);
-            }
-            else
-            {
+            } else {
                 E_REENTER_DELAY(10);
             }
         }
@@ -63,15 +59,15 @@ public:
 
         printf("*** Disconnected ***\n");
 
-    E_END_TASK
+        E_END_TASK
     }
 
-private:
+  private:
     Sim7x00CommDevice& m_commDev;
     int m_i;
 };
 
-int main(int argc, char * argv[])
+int main(int argc, char* argv[])
 {
     UnixSerial serial;
     Sim7x00CommDevice commDev(serial);

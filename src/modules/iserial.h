@@ -26,8 +26,7 @@
 
 namespace EnAccess {
 
-enum EConnectionStatus
-{
+enum EConnectionStatus {
     notConnected,
     connecting,
     connected,
@@ -36,7 +35,7 @@ enum EConnectionStatus
 
 class ISerial
 {
-public:
+  public:
     virtual ~ISerial() { }
 
     /*!
@@ -70,7 +69,7 @@ public:
      */
     virtual const char* portName() const = 0;
 
-protected:
+  protected:
     /*!
      * Number of bytes available for reading.
      * \return Number of bytes available for reading

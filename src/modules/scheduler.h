@@ -30,7 +30,7 @@ namespace EnAccess {
 
 class Scheduler
 {
-public:
+  public:
     /*!
      * \param tickFunction pointer to a function returning the current
      * system time tick
@@ -51,7 +51,7 @@ public:
      */
     void start();
 
-private:
+  private:
     E_TICK_TYPE (*_tickFunction)();
     Task** _taskList;
     Task** _currentTask;

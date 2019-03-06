@@ -12,11 +12,12 @@
 
 using namespace EnAccess;
 
-void yieldFunction(void *sched) {
+void yieldFunction(void* sched)
+{
     ((Scheduler*)sched)->runTask();
 }
 
-int main(int argc, char * argv[])
+int main(int argc, char* argv[])
 {
     UnixSerial serial;
     Sim7x00CommDevice commDev(serial);
@@ -49,7 +50,7 @@ int main(int argc, char * argv[])
         bytesRead = bld.read((uint8_t*)buf, 40, 2000);
         buf[bytesRead] = '\0';
         printf("%s", buf);
-    } while(bytesRead);
+    } while (bytesRead);
 
     commDev.disconnect();
     while (!commDev.isIdle())

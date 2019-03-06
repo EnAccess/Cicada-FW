@@ -112,36 +112,48 @@ namespace EnAccess {
 
 class Task
 {
-public:
+  public:
     Task(uint16_t initialDelay = 0) :
         _delay(initialDelay),
         _lastRun(0)
     { }
 
     virtual ~Task() {}
-    
+
     /*!
      * Minimum delay before the task will run again.
      */
-    inline uint16_t delay() const {return _delay;}
+    inline uint16_t delay() const
+    {
+        return _delay;
+    }
 
     /*!
      * Set the minimum delay before the task will run again.
      * \param delay New delay
      */
-    inline void setDelay(uint16_t delay) {_delay = delay;}
+    inline void setDelay(uint16_t delay)
+    {
+        _delay = delay;
+    }
 
     /*!
      * Returns the time when this task was last executed
      * \return Time when this task was last executed
      */
 
-    inline E_TICK_TYPE lastRun() {return _lastRun;}
+    inline E_TICK_TYPE lastRun()
+    {
+        return _lastRun;
+    }
 
     /*!
-     * Update tick of last run with the global tick timer 
+     * Update tick of last run with the global tick timer
      */
-    inline void setLastRun(E_TICK_TYPE time) {_lastRun = time;}
+    inline void setLastRun(E_TICK_TYPE time)
+    {
+        _lastRun = time;
+    }
 
     /*!
      * The starting point for the task. The scheduler will call
@@ -155,7 +167,7 @@ public:
      */
     virtual void run() = 0;
 
-private:
+  private:
     /*
      * Doesn't make sense to copy an Task object
      */

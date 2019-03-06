@@ -6,7 +6,7 @@ using namespace EnAccess;
 
 class Task1 : public Task
 {
-public:
+  public:
     Task1() : m_wakeup(false)
     { }
 
@@ -17,7 +17,7 @@ public:
 
     virtual void run()
     {
-    E_BEGIN_TASK
+        E_BEGIN_TASK
 
         printf("Task 1 - step 1\n");
         E_REENTER_DELAY(2000);
@@ -27,27 +27,27 @@ public:
 
         printf("Task 1 - step 3\n");
 
-        while(true) {
+        while (true) {
             printf("Task 1 - in loop\n");
             E_REENTER_DELAY(1500);
         }
 
-    E_END_TASK
+        E_END_TASK
     }
 
-private:
+  private:
     bool m_wakeup;
 };
 
 class Task2 : public Task
 {
-public:
+  public:
     Task2(Task1& task1) : m_task1(task1)
     { }
 
     virtual void run()
     {
-    E_BEGIN_TASK
+        E_BEGIN_TASK
 
         printf("Task 2 - step 1\n");
         E_REENTER_DELAY(3000);
@@ -59,19 +59,19 @@ public:
         m_task1.wakeup();
         E_REENTER_DELAY(3000);
 
-        while(true) {
+        while (true) {
             printf("Task 2 - in loop\n");
             E_REENTER_DELAY(1000);
         }
 
-    E_END_TASK
+        E_END_TASK
     }
 
-private:
+  private:
     Task1& m_task1;
 };
 
-int main(int argc, char * argv[])
+int main(int argc, char* argv[])
 {
     Task1 task1;
     Task2 task2(task1);

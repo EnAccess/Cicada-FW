@@ -43,26 +43,23 @@ bool UnixSerial::open()
     struct termios config;
 
     _fd = ::open(_port, O_RDWR | O_NOCTTY | O_NDELAY);
-    if (_fd == -1)
-    {
+    if (_fd == -1) {
         return false;
     }
 
-    if (!isatty(_fd))
-    {
+    if (!isatty(_fd)) {
         close();
         return false;
     }
 
-        if(tcgetattr(_fd, &config) < 0)
-    {
+    if (tcgetattr(_fd, &config) < 0) {
         return false;
     }
 
     // Configuration example taken from
     // https://en.wikibooks.org/wiki/Serial_Programming/termios
     config.c_iflag &= ~(IGNBRK | BRKINT | ICRNL |
-                        INLCR | PARMRK | INPCK | ISTRIP | IXON);
+            INLCR | PARMRK | INPCK | ISTRIP | IXON);
     config.c_oflag = 0;
     config.c_lflag &= ~(ECHO | ECHONL | ICANON | IEXTEN | ISIG);
     config.c_cflag &= ~(CSIZE | PARENB);
@@ -70,13 +67,11 @@ bool UnixSerial::open()
     config.c_cc[VMIN]  = 1;
     config.c_cc[VTIME] = 0;
 
-    if(cfsetispeed(&config, _speed) < 0 || cfsetospeed(&config, _speed) < 0)
-    {
+    if (cfsetispeed(&config, _speed) < 0 || cfsetospeed(&config, _speed) < 0) {
         return false;
     }
 
-    if(tcsetattr(_fd, TCSAFLUSH, &config) < 0)
-    {
+    if (tcsetattr(_fd, TCSAFLUSH, &config) < 0) {
         return false;
     }
 
@@ -86,8 +81,7 @@ bool UnixSerial::open()
 
 bool UnixSerial::setSerialConfig(uint32_t baudRate, uint8_t dataBits)
 {
-    switch(baudRate)
-    {
+    switch (baudRate) {
     case 0:
         _speed = B0;
         break;
@@ -184,8 +178,7 @@ bool UnixSerial::setSerialConfig(uint32_t baudRate, uint8_t dataBits)
         return false;
     }
 
-    switch (dataBits)
-    {
+    switch (dataBits) {
     case 5:
         _dataBits = CS5;
         break;

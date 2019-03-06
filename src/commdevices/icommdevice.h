@@ -30,7 +30,7 @@ namespace EnAccess {
 
 class ICommDevice : public Task
 {
-public:
+  public:
     virtual ~ICommDevice() { }
 
     /*!
@@ -91,5 +91,5 @@ public:
 };
 
 }
-    
+
 #endif

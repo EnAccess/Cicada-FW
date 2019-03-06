@@ -31,7 +31,7 @@ namespace EnAccess {
 
 class MQTTCountdown
 {
-public:
+  public:
     /*!
      * Due to limitations of the MQTTClient API, it's not possible
      * to pass any arguments to the constructor. So, this class accesses
@@ -45,7 +45,7 @@ public:
     void countdown(int seconds);
     int left_ms();
 
-private:
+  private:
     E_TICK_TYPE _endTime;
 };
 

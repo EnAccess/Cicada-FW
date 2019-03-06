@@ -30,11 +30,11 @@ namespace EnAccess {
 
 class IIPCommDevice : public ICommDevice
 {
-public:
+  public:
     /*!
      * Set parameters for IP connection.
      * Need to be set before connect() is called.
-     * \param host Host to connect to. Needs to be valid for 
+     * \param host Host to connect to. Needs to be valid for
      * \param port port to connect to
      */
     virtual void setHostPort(const char* host, uint16_t port) = 0;

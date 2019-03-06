@@ -110,8 +110,7 @@ uint16_t BufferedSerial::readLine(char* data, uint16_t size)
 
     while (bytesAvailable() && c != '\n') {
         c = read();
-        if (readCount < size)
-        {
+        if (readCount < size) {
             data[readCount++] = c;
         }
     }
@@ -124,7 +123,7 @@ void BufferedSerial::flushReceiveBuffers()
     eDisableInterrupts();
     _readBuffer.flush();
     eEnableInterrupts();
-    
+
 }
 
 uint16_t BufferedSerial::bufferSize()
@@ -134,19 +133,15 @@ uint16_t BufferedSerial::bufferSize()
 
 void BufferedSerial::performReadWrite()
 {
-    if (_writeBuffer.availableData())
-    {
-        if (rawWrite(_writeBuffer.read()))
-        {
+    if (_writeBuffer.availableData()) {
+        if (rawWrite(_writeBuffer.read())) {
             _writeBuffer.pull();
         }
     }
 
-    if (rawBytesAvailable() && !_readBuffer.isFull())
-    {
+    if (rawBytesAvailable() && !_readBuffer.isFull()) {
         uint8_t data;
-        if (rawRead(data))
-        {
+        if (rawRead(data)) {
             _readBuffer.push(data);
         }
     }

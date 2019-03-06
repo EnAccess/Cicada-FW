@@ -32,7 +32,7 @@ using namespace EnAccess;
 Stm32Uart* Stm32Uart::instance[E_MULTITON_MAX_INSTANCES] = {NULL};
 
 Stm32Uart::Stm32Uart(USART_TypeDef* uartInstance, GPIO_TypeDef* uartPort,
-                       uint16_t txPin, uint16_t rxPin) :
+    uint16_t txPin, uint16_t rxPin) :
     _flags(0),
     _handle(),
     _uartPort(uartPort),
@@ -44,10 +44,8 @@ Stm32Uart::Stm32Uart(USART_TypeDef* uartInstance, GPIO_TypeDef* uartPort,
     _handle.Init.BaudRate = 115200;
     _handle.Init.WordLength = UART_WORDLENGTH_8B;
 
-    for (int i=0; i<E_MULTITON_MAX_INSTANCES; i++)
-    {
-        if (instance[i] == NULL)
-        {
+    for (int i = 0; i < E_MULTITON_MAX_INSTANCES; i++) {
+        if (instance[i] == NULL) {
             instance[i] = this;
             break;
         }
@@ -56,11 +54,9 @@ Stm32Uart::Stm32Uart(USART_TypeDef* uartInstance, GPIO_TypeDef* uartPort,
 
 Stm32Uart* Stm32Uart::getInstance(USART_TypeDef* uartInstance)
 {
-    for (int i=0; i<E_MULTITON_MAX_INSTANCES; i++)
-    {
+    for (int i = 0; i < E_MULTITON_MAX_INSTANCES; i++) {
         Stm32Uart* uart = instance[i];
-        if (uart != NULL && uart->_handle.Instance == uartInstance)
-        {
+        if (uart != NULL && uart->_handle.Instance == uartInstance) {
             return instance[i];
         }
     }
@@ -75,8 +71,7 @@ bool Stm32Uart::setSerialConfig(uint32_t baudRate, uint8_t dataBits)
 
     _handle.Init.BaudRate = baudRate;
 
-    switch (dataBits)
-    {
+    switch (dataBits) {
     case 8:
         _handle.Init.WordLength = UART_WORDLENGTH_8B;
         break;
@@ -187,8 +182,7 @@ uint16_t Stm32Uart::rawBytesAvailable() const
 
 bool Stm32Uart::rawRead(uint8_t& data)
 {
-    if (__HAL_UART_GET_FLAG(&_handle, UART_FLAG_RXNE))
-    {
+    if (__HAL_UART_GET_FLAG(&_handle, UART_FLAG_RXNE)) {
         data = (uint8_t)READ_REG(_handle.Instance->DR);
         return true;
     }
@@ -198,8 +192,7 @@ bool Stm32Uart::rawRead(uint8_t& data)
 
 bool Stm32Uart::rawWrite(uint8_t data)
 {
-    if (__HAL_UART_GET_FLAG(&_handle, UART_FLAG_TXE))
-    {
+    if (__HAL_UART_GET_FLAG(&_handle, UART_FLAG_TXE)) {
         WRITE_REG(_handle.Instance->DR, (uint16_t)data);
         return true;
     }

@@ -28,23 +28,44 @@
 
 class NoplatformSerial : public DefaultBufferedSerial
 {
-public:
-    bool open() { return false; }
+  public:
+    bool open()
+    {
+        return false;
+    }
 
-    bool isOpen() { return false; }
+    bool isOpen()
+    {
+        return false;
+    }
 
-    bool setSerialConfig(uint32_t baudRate, uint8_t dataBits) { return false; }
+    bool setSerialConfig(uint32_t baudRate, uint8_t dataBits)
+    {
+        return false;
+    }
 
     void close() { }
 
-    const char* portName() const { return NULL; }
+    const char* portName() const
+    {
+        return NULL;
+    }
 
-protected:
-    uint16_t rawBytesAvailable() const { return 0; }
+  protected:
+    uint16_t rawBytesAvailable() const
+    {
+        return 0;
+    }
 
-    uint16_t rawRead(uint8_t* data, uint16_t maxSize) { return 0; }
+    uint16_t rawRead(uint8_t* data, uint16_t maxSize)
+    {
+        return 0;
+    }
 
-    uint16_t rawWrite(const uint8_t* data, uint16_t size) { return 0; }
+    uint16_t rawWrite(const uint8_t* data, uint16_t size)
+    {
+        return 0;
+    }
 };
 
 #endif

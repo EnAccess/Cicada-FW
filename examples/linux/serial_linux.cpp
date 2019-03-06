@@ -13,7 +13,7 @@ using namespace EnAccess;
 
 class SerialTask : public Task
 {
-public:
+  public:
     SerialTask(BufferedSerial& serial) :
         m_serial(serial),
         m_i(0)
@@ -21,16 +21,14 @@ public:
 
     virtual void run()
     {
-    E_BEGIN_TASK
+        E_BEGIN_TASK
 
-        if (!m_serial.setSerialConfig(115200, 8))
-        {
+        if (!m_serial.setSerialConfig(115200, 8)) {
             printf("Error setting serial configuration\n");
             exit(1);
         }
 
-        if (!m_serial.open())
-        {
+        if (!m_serial.open()) {
             printf("Error opening serial port %s\n", m_serial.portName());
             exit(1);
         }
@@ -40,8 +38,7 @@ public:
         else
             printf("Serial port open\n");
 
-        for (m_i=0; m_i<100; m_i++)
-        {
+        for (m_i = 0; m_i < 100; m_i++) {
             {
                 const char* send_str = "AT\r\n";
                 printf("Sending command: %s", send_str);
@@ -69,15 +66,15 @@ public:
 
         printf("Serial port closed\n");
 
-    E_END_TASK
+        E_END_TASK
     }
 
-private:
+  private:
     BufferedSerial& m_serial;
     int m_i;
 };
 
-int main(int argc, char * argv[])
+int main(int argc, char* argv[])
 {
     UnixSerial serial;
     SerialTask task(serial);

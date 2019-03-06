@@ -32,7 +32,7 @@ namespace EnAccess {
 
 class Sim7x00CommDevice : public IIPCommDevice
 {
-public:
+  public:
     Sim7x00CommDevice(IBufferedSerial& serial);
 
     virtual void setHostPort(const char* host, uint16_t port);
@@ -54,12 +54,11 @@ public:
     virtual uint16_t read(uint8_t* data, uint16_t maxSize);
 
     virtual uint16_t write(const uint8_t* data, uint16_t size);
- 
+
     virtual void run();
 
-private:
-    enum ReplyState
-    {
+  private:
+    enum ReplyState {
         noReply,
         normalReply,
         expectConnect,
@@ -68,8 +67,7 @@ private:
         ciprxget4,
         ciprxget2
     };
-    enum SendState
-    {
+    enum SendState {
         notConnected,
         serialError,
         dnsError,

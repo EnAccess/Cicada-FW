@@ -37,10 +37,10 @@ namespace EnAccess {
 template <uint16_t BUFFER_SIZE>
 class LineCircularBuffer : public CircularBuffer<char, BUFFER_SIZE>
 {
-public:
+  public:
     LineCircularBuffer() :
         _bufferedLines(0)
-        { }
+    { }
 
     using CircularBuffer<char, BUFFER_SIZE>::push;
 
@@ -48,8 +48,7 @@ public:
     {
         CircularBuffer<char, BUFFER_SIZE>::push(data);
 
-        if (data == '\n')
-        {
+        if (data == '\n') {
             _bufferedLines++;
         }
     }
@@ -60,8 +59,7 @@ public:
     {
         char data = CircularBuffer<char, BUFFER_SIZE>::pull();
 
-        if (data == '\n')
-        {
+        if (data == '\n') {
             _bufferedLines--;
         }
 
@@ -89,8 +87,7 @@ public:
 
         while (!CircularBuffer<char, BUFFER_SIZE>::isEmpty() && c != '\n') {
             c = pull();
-            if (readCount < size)
-            {
+            if (readCount < size) {
                 data[readCount++] = c;
             }
         }
@@ -98,7 +95,7 @@ public:
         return readCount;
     }
 
-private:
+  private:
     uint16_t _bufferedLines;
 };
 

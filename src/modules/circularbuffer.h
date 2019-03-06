@@ -37,7 +37,7 @@ namespace EnAccess {
 template <typename T, uint16_t BUFFER_SIZE>
 class CircularBuffer
 {
-public:
+  public:
     CircularBuffer() :
         _writeHead(0),
         _readHead(0),
@@ -184,7 +184,7 @@ public:
         return BUFFER_SIZE;
     }
 
-private:
+  private:
     uint16_t _writeHead;
     uint16_t _readHead;
     uint16_t _availableData;

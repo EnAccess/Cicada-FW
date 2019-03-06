@@ -41,7 +41,7 @@ namespace EnAccess {
 
 class UnixSerial : public BufferedSerialTask
 {
-public:
+  public:
     /*!
      * Construct a new UnixSerial object with the given serial port,
      * for example /dev/ttyUSB0. The String is not copied and must
@@ -52,22 +52,28 @@ public:
 
     virtual bool open();
 
-    inline virtual bool isOpen() {return _isOpen;}
+    inline virtual bool isOpen()
+    {
+        return _isOpen;
+    }
 
     virtual bool setSerialConfig(uint32_t baudRate, uint8_t dataBits);
 
     virtual void close();
 
-    inline const char* portName() const { return _port; }
+    inline const char* portName() const
+    {
+        return _port;
+    }
 
-protected:
+  protected:
     virtual uint16_t rawBytesAvailable() const;
 
     virtual bool rawRead(uint8_t& data);
 
     virtual bool rawWrite(uint8_t data);
 
-private:
+  private:
     bool _isOpen;
     const char* _port;
     int _fd;

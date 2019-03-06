@@ -30,7 +30,7 @@ namespace EnAccess {
 
 class IBufferedSerial : public ISerial
 {
-public:
+  public:
     /*!
      * Number of bytes available in the reading buffer.
      * \return Number of bytes available for reading
@@ -96,5 +96,5 @@ public:
 };
 
 }
-    
+
 #endif
