@@ -21,18 +21,18 @@
  *
  */
 
-#include <cstdint>
 #include "stm32uart.h"
 #include "irq.h"
+#include <cstdint>
 
 using namespace EnAccess;
 
 #define FLAG_ISOPEN (1 << 0)
 
-Stm32Uart* Stm32Uart::instance[E_MULTITON_MAX_INSTANCES] = {NULL};
+Stm32Uart* Stm32Uart::instance[E_MULTITON_MAX_INSTANCES] = { NULL };
 
-Stm32Uart::Stm32Uart(USART_TypeDef* uartInstance, GPIO_TypeDef* uartPort,
-    uint16_t txPin, uint16_t rxPin) :
+Stm32Uart::Stm32Uart(
+    USART_TypeDef* uartInstance, GPIO_TypeDef* uartPort, uint16_t txPin, uint16_t rxPin) :
     _flags(0),
     _handle(),
     _uartPort(uartPort),
@@ -124,7 +124,7 @@ bool Stm32Uart::open()
         __HAL_RCC_GPIOG_CLK_ENABLE();
 
     // Configure GPIO pins
-    GPIO_InitTypeDef gpio = {0};
+    GPIO_InitTypeDef gpio = { 0 };
     gpio.Pin = _txPin;
     gpio.Mode = GPIO_MODE_AF_PP;
     gpio.Pull = GPIO_NOPULL;

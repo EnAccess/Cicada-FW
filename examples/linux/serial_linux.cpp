@@ -2,22 +2,19 @@
  * Example code for serial communication
  */
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
 #include "scheduler.h"
-#include "unixserial.h"
 #include "tick.h"
+#include "unixserial.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 using namespace EnAccess;
 
 class SerialTask : public Task
 {
   public:
-    SerialTask(BufferedSerial& serial) :
-        m_serial(serial),
-        m_i(0)
-    { }
+    SerialTask(BufferedSerial& serial) : m_serial(serial), m_i(0) {}
 
     virtual void run()
     {
@@ -42,8 +39,7 @@ class SerialTask : public Task
             {
                 const char* send_str = "AT\r\n";
                 printf("Sending command: %s", send_str);
-                int bytesWritten =
-                    m_serial.write(send_str, strlen(send_str));
+                int bytesWritten = m_serial.write(send_str, strlen(send_str));
                 printf("%d bytes written\n", bytesWritten);
             }
 
@@ -79,7 +75,7 @@ int main(int argc, char* argv[])
     UnixSerial serial;
     SerialTask task(serial);
 
-    Task* taskList[] = {&task, &serial, NULL};
+    Task* taskList[] = { &task, &serial, NULL };
 
     Scheduler s(&eTickFunction, taskList);
     s.start();

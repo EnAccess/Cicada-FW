@@ -78,7 +78,7 @@ TEST(CircularBufferTest, MaximumBufferSize)
     uint8_t dataOut[SIZE];
     uint8_t dataExpected[SIZE];
 
-    for (int i=0; i<SIZE; i++) {
+    for (int i = 0; i < SIZE; i++) {
         dataExpected[i] = i % 255;
         buffer.push(dataExpected[i]);
     }
@@ -111,7 +111,7 @@ TEST(CircularBufferTest, WriteReadMultipleTimes)
     uint8_t writeLen = buffer.push(dataInFirst, SIZE);
     uint8_t availLen = buffer.availableData();
     uint8_t readLen = buffer.pull(dataOutFirst, SIZE);
-    
+
     CHECK_EQUAL(SIZE, writeLen);
     CHECK_EQUAL(SIZE, availLen);
     CHECK_EQUAL(SIZE, readLen);
@@ -120,7 +120,7 @@ TEST(CircularBufferTest, WriteReadMultipleTimes)
     writeLen = buffer.push(dataInSecond, SIZE);
     availLen = buffer.availableData();
     readLen = buffer.pull(dataOutSecond, SIZE);
-    
+
     CHECK_EQUAL(SIZE, writeLen);
     CHECK_EQUAL(SIZE, availLen);
     CHECK_EQUAL(SIZE, readLen);

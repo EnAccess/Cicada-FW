@@ -24,8 +24,8 @@
 #ifndef EMQTTCOUNTDOWN_H
 #define EMQTTCOUNTDOWN_H
 
-#include <cstdint>
 #include "defines.h"
+#include <cstdint>
 
 namespace EnAccess {
 
@@ -48,7 +48,6 @@ class MQTTCountdown
   private:
     E_TICK_TYPE _endTime;
 };
-
 }
 
 #endif

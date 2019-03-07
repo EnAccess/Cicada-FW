@@ -21,13 +21,12 @@
  *
  */
 
-#include "tick.h"
 #include "mqttcountdown.h"
+#include "tick.h"
 
 using namespace EnAccess;
 
-MQTTCountdown::MQTTCountdown()
-{ }
+MQTTCountdown::MQTTCountdown() {}
 
 MQTTCountdown::MQTTCountdown(int ms)
 {

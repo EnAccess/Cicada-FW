@@ -5,17 +5,17 @@
 
 #define MQTTCLIENT_QOS2 1
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <stdint.h>
-#include <MQTTClient.h>
-#include "scheduler.h"
-#include "unixserial.h"
-#include "sim7x00.h"
 #include "blockingcommdev.h"
-#include "tick.h"
 #include "mqttcountdown.h"
+#include "scheduler.h"
+#include "sim7x00.h"
+#include "tick.h"
+#include "unixserial.h"
+#include <MQTTClient.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 using namespace EnAccess;
 
@@ -30,11 +30,10 @@ void messageArrived(MQTT::MessageData& md)
 {
     MQTT::Message& message = md.message;
 
-    printf("Message %d arrived: qos %d, retained %d, dup %d, packetid %d\n",
-        ++arrivedcount, message.qos, message.retained, message.dup, message.id);
+    printf("Message %d arrived: qos %d, retained %d, dup %d, packetid %d\n", ++arrivedcount,
+        message.qos, message.retained, message.dup, message.id);
     printf("Payload %.*s\n", (int)message.payloadlen, (char*)message.payload);
 }
-
 
 // Most of the code taken from MQTT hello.cpp
 int main(int argc, char* argv[])
@@ -42,7 +41,7 @@ int main(int argc, char* argv[])
     UnixSerial serial;
     Sim7x00CommDevice commDev(serial);
 
-    Task* taskList[] = {&commDev, &serial, NULL};
+    Task* taskList[] = { &commDev, &serial, NULL };
 
     Scheduler s(&eTickFunction, taskList);
 
@@ -50,8 +49,8 @@ int main(int argc, char* argv[])
 
     const char* topic = "mbed-sample";
 
-    MQTT::Client<BlockingCommDevice, MQTTCountdown> client =
-        MQTT::Client<BlockingCommDevice, MQTTCountdown>(bld);
+    MQTT::Client<BlockingCommDevice, MQTTCountdown> client
+        = MQTT::Client<BlockingCommDevice, MQTTCountdown>(bld);
 
     const char* hostname = "iot.eclipse.org";
     int port = 1883;
@@ -89,7 +88,8 @@ int main(int argc, char* argv[])
     rc = client.publish(topic, message);
     if (rc != 0)
         printf("Error %d from sending QoS 0 message\n", rc);
-    else while (arrivedcount == 0)
+    else
+        while (arrivedcount == 0)
             client.yield(100);
 
     // QoS 1
@@ -100,7 +100,8 @@ int main(int argc, char* argv[])
     rc = client.publish(topic, message);
     if (rc != 0)
         printf("Error %d from sending QoS 1 message\n", rc);
-    else while (arrivedcount == 1)
+    else
+        while (arrivedcount == 1)
             client.yield(100);
 
     // QoS 2

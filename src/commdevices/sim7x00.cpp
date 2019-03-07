@@ -21,27 +21,27 @@
  *
  */
 
+#include "sim7x00.h"
 #include <cstddef>
 #include <cstdint>
-#include <cstring>
 #include <cstdio>
-#include "sim7x00.h"
+#include <cstring>
 
 using namespace EnAccess;
 
-#define LINE_MAX_LENGTH     60
+#define LINE_MAX_LENGTH 60
 #define MIN_SPACE_AVAILABLE 22
 
-#define OK_STR_LENGTH        2
-#define LINE_END_STR_LENGTH  2
+#define OK_STR_LENGTH 2
+#define LINE_END_STR_LENGTH 2
 #define QUOTE_END_STR_LENGTH 3
 
-#define CONNECT_PENDING    (1 << 0)
-#define RESET_PENDING      (1 << 1)
-#define DATA_PENDING       (1 << 2)
+#define CONNECT_PENDING (1 << 0)
+#define RESET_PENDING (1 << 1)
+#define DATA_PENDING (1 << 2)
 #define DISCONNECT_PENDING (1 << 3)
-#define IP_CONNECTED       (1 << 4)
-#define LINE_READ          (1 << 5)
+#define IP_CONNECTED (1 << 4)
+#define LINE_READ (1 << 5)
 
 const char* Sim7x00CommDevice::_okStr = "OK";
 const char* Sim7x00CommDevice::_lineEndStr = "\r\n";
@@ -59,7 +59,7 @@ Sim7x00CommDevice::Sim7x00CommDevice(IBufferedSerial& serial) :
     _bytesToWrite(0),
     _bytesToReceive(0),
     _bytesToRead(0)
-{ }
+{}
 
 void Sim7x00CommDevice::setHostPort(const char* host, uint16_t port)
 {
@@ -89,8 +89,7 @@ void Sim7x00CommDevice::disconnect()
 
 bool Sim7x00CommDevice::isConnected()
 {
-    return _sendState >= connected &&
-        _sendState < ipUnconnected && (_stateBooleans & IP_CONNECTED);
+    return _sendState >= connected && _sendState < ipUnconnected && (_stateBooleans & IP_CONNECTED);
 }
 
 bool Sim7x00CommDevice::isIdle()
@@ -150,14 +149,14 @@ bool Sim7x00CommDevice::handleConnect(SendState nextState)
     return false;
 }
 
-#define SEND_COMMAND(cmd, expectedReply, nextState)             \
-    {                                                           \
-        const char sendStr[] = cmd;                             \
-        _serial.write(sendStr, sizeof(sendStr) - 1);            \
-        _serial.write(_lineEndStr, LINE_END_STR_LENGTH);        \
-        _waitForReply = expectedReply;                          \
-        _sendState = nextState;                                 \
-        break;                                                  \
+#define SEND_COMMAND(cmd, expectedReply, nextState)                                                \
+    {                                                                                              \
+        const char sendStr[] = cmd;                                                                \
+        _serial.write(sendStr, sizeof(sendStr) - 1);                                               \
+        _serial.write(_lineEndStr, LINE_END_STR_LENGTH);                                           \
+        _waitForReply = expectedReply;                                                             \
+        _sendState = nextState;                                                                    \
+        break;                                                                                     \
     }
 
 void Sim7x00CommDevice::run()
@@ -422,10 +421,8 @@ void Sim7x00CommDevice::run()
         if (_writeBuffer.availableData()) {
             if (_serial.spaceAvailable() >= MIN_SPACE_AVAILABLE) {
                 _bytesToWrite = _writeBuffer.availableData();
-                if (_bytesToWrite >
-                    _serial.spaceAvailable() - MIN_SPACE_AVAILABLE) {
-                    _bytesToWrite =
-                        _serial.spaceAvailable() - MIN_SPACE_AVAILABLE;
+                if (_bytesToWrite > _serial.spaceAvailable() - MIN_SPACE_AVAILABLE) {
+                    _bytesToWrite = _serial.spaceAvailable() - MIN_SPACE_AVAILABLE;
                 }
 
                 _stateBooleans &= ~LINE_READ;
@@ -449,7 +446,7 @@ void Sim7x00CommDevice::run()
         }
         break;
 
-    // States after connecting
+        // States after connecting
 
     case sendCipsend: {
         char data;
@@ -475,8 +472,7 @@ void Sim7x00CommDevice::run()
             break;
 
         if (_bytesToReceive > 0) {
-            if (_serial.spaceAvailable() > 8 &&
-                _readBuffer.availableSpace() > 0) {
+            if (_serial.spaceAvailable() > 8 && _readBuffer.availableSpace() > 0) {
                 int bytesToReceive = _serial.spaceAvailable() - 8;
                 if (bytesToReceive > _bytesToReceive)
                     bytesToReceive = _bytesToReceive;

@@ -2,23 +2,20 @@
  * Example code for IP communication
  */
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
 #include "scheduler.h"
-#include "unixserial.h"
 #include "sim7x00.h"
 #include "tick.h"
+#include "unixserial.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 using namespace EnAccess;
 
 class IPCommTask : public Task
 {
   public:
-    IPCommTask(Sim7x00CommDevice& commDev) :
-        m_commDev(commDev),
-        m_i(0)
-    { }
+    IPCommTask(Sim7x00CommDevice& commDev) : m_commDev(commDev), m_i(0) {}
 
     virtual void run()
     {
@@ -33,11 +30,10 @@ class IPCommTask : public Task
         printf("*** Connected! ***\n");
 
         {
-            const char str[] =
-                "GET / HTTP/1.1\r\n"
-                "Host: wttr.in\r\n"
-                "User-Agent: curl\r\n"
-                "Connection: close\r\n\r\n";
+            const char str[] = "GET / HTTP/1.1\r\n"
+                               "Host: wttr.in\r\n"
+                               "User-Agent: curl\r\n"
+                               "Connection: close\r\n\r\n";
             m_commDev.write((uint8_t*)str, sizeof(str) - 1);
         }
 
@@ -73,7 +69,7 @@ int main(int argc, char* argv[])
     Sim7x00CommDevice commDev(serial);
     IPCommTask task(commDev);
 
-    Task* taskList[] = {&task, &commDev, &serial, NULL};
+    Task* taskList[] = { &task, &commDev, &serial, NULL };
 
     Scheduler s(&eTickFunction, taskList);
     s.start();

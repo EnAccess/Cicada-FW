@@ -2,13 +2,13 @@
  * Example code for IP communication in blocking mode
  */
 
-#include <cstdint>
-#include <cstdio>
-#include "scheduler.h"
-#include "unixserial.h"
 #include "blockingcommdev.h"
+#include "scheduler.h"
 #include "sim7x00.h"
 #include "tick.h"
+#include "unixserial.h"
+#include <cstdint>
+#include <cstdio>
 
 using namespace EnAccess;
 
@@ -22,7 +22,7 @@ int main(int argc, char* argv[])
     UnixSerial serial;
     Sim7x00CommDevice commDev(serial);
 
-    Task* taskList[] = {&commDev, &serial, NULL};
+    Task* taskList[] = { &commDev, &serial, NULL };
 
     Scheduler s(&eTickFunction, taskList);
 
@@ -37,11 +37,10 @@ int main(int argc, char* argv[])
 
     printf("*** Connected! ***\n");
 
-    const char str[] =
-        "GET / HTTP/1.1\r\n"
-        "Host: wttr.in\r\n"
-        "User-Agent: curl\r\n"
-        "Connection: close\r\n\r\n";
+    const char str[] = "GET / HTTP/1.1\r\n"
+                       "Host: wttr.in\r\n"
+                       "User-Agent: curl\r\n"
+                       "Connection: close\r\n\r\n";
     bld.write((uint8_t*)str, sizeof(str) - 1, 2000);
 
     int bytesRead;

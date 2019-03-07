@@ -21,8 +21,8 @@
  *
  */
 
-#include <time.h>
 #include "tick.h"
+#include <time.h>
 
 E_TICK_TYPE eTickFunction()
 {
@@ -31,7 +31,7 @@ E_TICK_TYPE eTickFunction()
 
     clock_gettime(CLOCK_MONOTONIC, &spec);
 
-    ms  = spec.tv_sec * 1000;
+    ms = spec.tv_sec * 1000;
     ms += spec.tv_nsec / 1.0e6;
 
     return (E_TICK_TYPE)ms;

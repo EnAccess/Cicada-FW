@@ -1,14 +1,13 @@
-#include <stdio.h>
-#include "tick.h"
 #include "scheduler.h"
+#include "tick.h"
+#include <stdio.h>
 
 using namespace EnAccess;
 
 class Task1 : public Task
 {
   public:
-    Task1() : m_wakeup(false)
-    { }
+    Task1() : m_wakeup(false) {}
 
     void wakeup()
     {
@@ -42,8 +41,7 @@ class Task1 : public Task
 class Task2 : public Task
 {
   public:
-    Task2(Task1& task1) : m_task1(task1)
-    { }
+    Task2(Task1& task1) : m_task1(task1) {}
 
     virtual void run()
     {
@@ -76,7 +74,7 @@ int main(int argc, char* argv[])
     Task1 task1;
     Task2 task2(task1);
 
-    Task* taskList[] = {&task1, &task2, NULL};
+    Task* taskList[] = { &task1, &task2, NULL };
 
     Scheduler s(&eTickFunction, taskList);
     s.start();

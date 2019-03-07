@@ -21,20 +21,18 @@
  *
  */
 
-#include <cstdint>
 #include "blockingcommdev.h"
+#include <cstdint>
 
 using namespace EnAccess;
 
-BlockingCommDevice::BlockingCommDevice(ICommDevice& dev,
-    E_TICK_TYPE (*tickFunction)(void),
-    void (*yieldFunction)(void*),
-    void* yieldUserData) :
+BlockingCommDevice::BlockingCommDevice(ICommDevice& dev, E_TICK_TYPE (*tickFunction)(void),
+    void (*yieldFunction)(void*), void* yieldUserData) :
     _commDev(dev),
     _tickFunction(tickFunction),
     _yieldFunction(yieldFunction),
     _yieldUserData(yieldUserData)
-{ }
+{}
 
 int BlockingCommDevice::read(unsigned char* buffer, int len, int timeout)
 {

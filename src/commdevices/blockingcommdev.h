@@ -24,9 +24,9 @@
 #ifndef EBLOCKINGCOMMDEV_H
 #define EBLOCKINGCOMMDEV_H
 
-#include <cstddef>
 #include "defines.h"
 #include "icommdevice.h"
+#include <cstddef>
 
 namespace EnAccess {
 
@@ -49,10 +49,8 @@ class BlockingCommDevice
      * while waiting for buffers. This is usually the operating system's
      * yield() or a user defined function to process other tasks.
      */
-    BlockingCommDevice(ICommDevice& dev,
-        E_TICK_TYPE (*tickFunction)(void),
-        void (*yieldFunction)(void*),
-        void* yieldUserData = NULL);
+    BlockingCommDevice(ICommDevice& dev, E_TICK_TYPE (*tickFunction)(void),
+        void (*yieldFunction)(void*), void* yieldUserData = NULL);
 
     /*!
      * Blocking read.
@@ -70,7 +68,6 @@ class BlockingCommDevice
     void (*_yieldFunction)(void*);
     void* _yieldUserData;
 };
-
 }
 
 #endif

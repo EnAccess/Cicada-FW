@@ -24,11 +24,11 @@
 #ifndef EBUFFEREDSERIAL_H
 #define EBUFFEREDSERIAL_H
 
-#include "ibufferedserial.h"
-#include "task.h"
 #include "circularbuffer.h"
-#include "linecircularbuffer.h"
 #include "defines.h"
+#include "ibufferedserial.h"
+#include "linecircularbuffer.h"
+#include "task.h"
 
 namespace EnAccess {
 
@@ -75,7 +75,6 @@ class BufferedSerialTask : public BufferedSerial, public Task
         performReadWrite();
     }
 };
-
 }
 
 #endif

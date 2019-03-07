@@ -21,8 +21,8 @@
  *
  */
 
-#include <cstddef>
 #include "scheduler.h"
+#include <cstddef>
 
 using namespace EnAccess;
 
@@ -30,13 +30,13 @@ Scheduler::Scheduler(E_TICK_TYPE (*tickFunction)(), Task** taskList) :
     _tickFunction(tickFunction),
     _taskList(taskList),
     _currentTask(taskList)
-{ }
+{}
 
 void Scheduler::runTask()
 {
     E_TICK_TYPE tick = _tickFunction();
-    if ((*_currentTask)->delay() == 0 ||
-        tick - (*_currentTask)->lastRun() >= (*_currentTask)->delay()) {
+    if ((*_currentTask)->delay() == 0
+        || tick - (*_currentTask)->lastRun() >= (*_currentTask)->delay()) {
         (*_currentTask)->setLastRun(tick);
         (*_currentTask)->run();
     }
@@ -48,5 +48,6 @@ void Scheduler::runTask()
 
 void Scheduler::start()
 {
-    for (;;) runTask();
+    for (;;)
+        runTask();
 }

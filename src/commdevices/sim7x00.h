@@ -24,9 +24,9 @@
 #ifndef E_SIM7x00_H
 #define E_SIM7x00_H
 
-#include <stdint.h>
 #include "bufferedserial.h"
 #include "iipcommdevice.h"
+#include <stdint.h>
 
 namespace EnAccess {
 
@@ -58,15 +58,7 @@ class Sim7x00CommDevice : public IIPCommDevice
     virtual void run();
 
   private:
-    enum ReplyState {
-        noReply,
-        normalReply,
-        expectConnect,
-        netopen,
-        cdnsgip,
-        ciprxget4,
-        ciprxget2
-    };
+    enum ReplyState { noReply, normalReply, expectConnect, netopen, cdnsgip, ciprxget4, ciprxget2 };
     enum SendState {
         notConnected,
         serialError,
@@ -116,7 +108,6 @@ class Sim7x00CommDevice : public IIPCommDevice
     bool handleDisconnect(SendState nextState);
     bool handleConnect(SendState nextState);
 };
-
 }
 
 #endif

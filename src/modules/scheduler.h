@@ -56,7 +56,6 @@ class Scheduler
     Task** _taskList;
     Task** _currentTask;
 };
-
 }
 
 #endif

@@ -24,9 +24,9 @@
 #ifndef ETERMIOS_H
 #define ETERMIOS_H
 
-#include <termios.h>
-#include <stdint.h>
 #include "bufferedserial.h"
+#include <stdint.h>
+#include <termios.h>
 
 /*!
  * \class UnixSerial
@@ -80,7 +80,6 @@ class UnixSerial : public BufferedSerialTask
     speed_t _speed;
     tcflag_t _dataBits;
 };
-
 }
 
 #endif

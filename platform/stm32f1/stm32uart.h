@@ -24,16 +24,15 @@
 #ifndef ESTM32UART_H
 #define ESTM32UART_H
 
-#include "stm32f1xx_hal.h"
 #include "bufferedserial.h"
+#include "stm32f1xx_hal.h"
 
 namespace EnAccess {
 
 class Stm32Uart : public BufferedSerial
 {
   public:
-    Stm32Uart(USART_TypeDef* uartInstance = USART3,
-        GPIO_TypeDef* uartPort = GPIOB,
+    Stm32Uart(USART_TypeDef* uartInstance = USART3, GPIO_TypeDef* uartPort = GPIOB,
         uint16_t txPin = GPIO_PIN_10, uint16_t rxPin = GPIO_PIN_11);
 
     static Stm32Uart* getInstance(USART_TypeDef* uartInstance);
@@ -65,7 +64,6 @@ class Stm32Uart : public BufferedSerial
     uint16_t _rxPin;
     IRQn_Type _uartInterruptInstance;
 };
-
 }
 
 #endif

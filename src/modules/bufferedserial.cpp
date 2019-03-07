@@ -21,14 +21,13 @@
  *
  */
 
-#include <cstdint>
-#include "irq.h"
 #include "bufferedserial.h"
+#include "irq.h"
+#include <cstdint>
 
 using namespace EnAccess;
 
-BufferedSerial::BufferedSerial()
-{ }
+BufferedSerial::BufferedSerial() {}
 
 uint16_t BufferedSerial::bytesAvailable() const
 {
@@ -97,7 +96,7 @@ void BufferedSerial::write(char data)
 bool BufferedSerial::canReadLine() const
 {
     eDisableInterrupts();
-    uint16_t lines =  _readBuffer.numBufferedLines();
+    uint16_t lines = _readBuffer.numBufferedLines();
     eEnableInterrupts();
 
     return lines > 0;
@@ -123,7 +122,6 @@ void BufferedSerial::flushReceiveBuffers()
     eDisableInterrupts();
     _readBuffer.flush();
     eEnableInterrupts();
-
 }
 
 uint16_t BufferedSerial::bufferSize()

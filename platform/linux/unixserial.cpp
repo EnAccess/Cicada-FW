@@ -21,11 +21,11 @@
  *
  */
 
-#include <termios.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <sys/ioctl.h>
 #include "unixserial.h"
+#include <fcntl.h>
+#include <sys/ioctl.h>
+#include <termios.h>
+#include <unistd.h>
 
 using namespace EnAccess;
 
@@ -35,8 +35,7 @@ UnixSerial::UnixSerial(const char* port) :
     _fd(-1),
     _speed(B115200),
     _dataBits(CS8)
-{
-}
+{}
 
 bool UnixSerial::open()
 {
@@ -58,13 +57,12 @@ bool UnixSerial::open()
 
     // Configuration example taken from
     // https://en.wikibooks.org/wiki/Serial_Programming/termios
-    config.c_iflag &= ~(IGNBRK | BRKINT | ICRNL |
-            INLCR | PARMRK | INPCK | ISTRIP | IXON);
+    config.c_iflag &= ~(IGNBRK | BRKINT | ICRNL | INLCR | PARMRK | INPCK | ISTRIP | IXON);
     config.c_oflag = 0;
     config.c_lflag &= ~(ECHO | ECHONL | ICANON | IEXTEN | ISIG);
     config.c_cflag &= ~(CSIZE | PARENB);
     config.c_cflag |= _dataBits;
-    config.c_cc[VMIN]  = 1;
+    config.c_cc[VMIN] = 1;
     config.c_cc[VTIME] = 0;
 
     if (cfsetispeed(&config, _speed) < 0 || cfsetospeed(&config, _speed) < 0) {
