@@ -75,7 +75,7 @@ run_tests = executable(
 )
 
 # Setup custom build commands
-run_target('lint',      command: [ 'astyle', '--options=./codingstyle.txt', '-r', 'src/*.cpp', 'src/*.h', 'platform/*.cpp', 'platform/*.h', 'examples/*.cpp' ])
+run_target('lint',      command: [ 'clang-format', '-verbose', '-style=file', '-i', src_files, platform_src_files, test_src_files ])
 run_target('ut',        command: [ run_tests, '-c' ], depends: run_tests)
 
 message('''
