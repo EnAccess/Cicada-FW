@@ -25,8 +25,8 @@ BreakBeforeBraces: Custom
 BraceWrapping:
  AfterClass:            true
  AfterFunction:         true
- AfterNamespace:        true
- AfterExternBlock:      true
+ AfterNamespace:        false
+ AfterExternBlock:      false
  AfterControlStatement: false
  AfterEnum:             false
  AfterObjCDeclaration:  false
@@ -44,7 +44,7 @@ BreakConstructorInitializersBeforeComma: false
 BreakConstructorInitializers: AfterColon
 BreakAfterJavaFieldAnnotations: false
 BreakStringLiterals: true
-ColumnLimit:     0
+ColumnLimit:     100
 CommentPragmas:  '^ IWYU pragma:'
 CompactNamespaces: false
 ConstructorInitializerAllOnOneLineOrOnePerLine: true
@@ -68,7 +68,7 @@ IncludeCategories:
  - Regex:           '.*'
    Priority:        1
 IncludeIsMainRegex: '(Test)?$'
-IndentCaseLabels: true
+IndentCaseLabels: false
 IndentPPDirectives: None
 IndentWidth:     4
 IndentWrappedFunctionNames: false
@@ -78,7 +78,7 @@ KeepEmptyLinesAtTheStartOfBlocks: true
 MacroBlockBegin: ''
 MacroBlockEnd:   ''
 MaxEmptyLinesToKeep: 1
-NamespaceIndentation: All
+NamespaceIndentation: Inner
 PenaltyBreakAssignment: 2
 PenaltyBreakBeforeFirstCallParameter: 19
 PenaltyBreakComment: 300
