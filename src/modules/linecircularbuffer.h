@@ -24,6 +24,7 @@
 #ifndef LINE_CIRCULAR_BUFFER_H
 #define LINE_CIRCULAR_BUFFER_H
 
+#include "circularbuffer.h"
 #include <cstdint>
 
 namespace EnAccess {
@@ -42,7 +43,19 @@ class LineCircularBuffer : public CircularBuffer<char, BUFFER_SIZE>
         _bufferedLines(0)
     { }
 
-    using CircularBuffer<char, BUFFER_SIZE>::push;
+    uint16_t push(const char* data, uint16_t size)
+    {
+        if (size > CircularBuffer<char, BUFFER_SIZE>::availableSpace())
+            size = CircularBuffer<char, BUFFER_SIZE>::availableSpace();
+
+        uint16_t writeCount = 0;
+
+        while (writeCount < size) {
+            push(data[writeCount++]);
+        }
+
+        return writeCount;
+    }
 
     void push(char data)
     {
@@ -53,7 +66,19 @@ class LineCircularBuffer : public CircularBuffer<char, BUFFER_SIZE>
         }
     }
 
-    using CircularBuffer<char, BUFFER_SIZE>::pull;
+    virtual uint16_t pull(char* data, uint16_t size)
+    {
+        if (size > CircularBuffer<char, BUFFER_SIZE>::availableData())
+            size = CircularBuffer<char, BUFFER_SIZE>::availableData();
+
+        uint16_t readCount = 0;
+
+        while (readCount < size) {
+            data[readCount++] = pull();
+        }
+
+        return readCount;
+    }
 
     char pull()
     {
