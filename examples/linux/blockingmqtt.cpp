@@ -5,17 +5,19 @@
 
 #define MQTTCLIENT_QOS2 1
 
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "blockingcommdev.h"
 #include "mqttcountdown.h"
 #include "scheduler.h"
 #include "sim7x00.h"
 #include "tick.h"
 #include "unixserial.h"
+
 #include <MQTTClient.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 using namespace EnAccess;
 

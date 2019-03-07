@@ -9,7 +9,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdint.h>
-#include <MQTTClient.h>
+
 #include "scheduler.h"
 #include "stm32uart.h"
 #include "sim7x00.h"
@@ -17,6 +17,8 @@
 #include "tick.h"
 #include "mqttcountdown.h"
 #include "printf.h"
+
+#include <MQTTClient.h>
 
 using namespace EnAccess;
 
