@@ -24,6 +24,21 @@ subdir('src')
 src_inc   = get_variable('src_inc')
 src_files = get_variable('src_files')
 
+# Add platform specific sources and compiler/linker arguments
+mcu_args = []
+target_c_args = []
+target_cpp_args = []
+target_link_args = []
+target_deps = []
+platform_src_files = []
+platform_src_inc = []
+bin_suffix = []
+if (meson.is_cross_build() != true)
+    subdir('platform/linux')
+else
+    subdir('platform/stm32f1')
+endif
+
 # Add embedded printf dependancy
 embedded_printf    = subproject('printf')
 embedded_prinf_dep = embedded_printf.get_variable('embedded_prinf_dep')

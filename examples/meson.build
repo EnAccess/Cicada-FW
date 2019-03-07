@@ -1,33 +1,6 @@
 #  TODO: figure out best way to handle compilation for each platform
 #  Can we do this based on the cross build file? For linux too, even though it may be native for some?
 
-
-# Platform specific compiler/linker arguments
-mcu_args = []
-target_c_args = []
-target_cpp_args = []
-target_link_args = []
-target_deps = []
-platform_src_files = []
-platform_src_inc = []
-bin_suffix = ''
-
-if (meson.is_cross_build() != true)
-    bin_suffix = []
-    platform_src_files = files(['../platform/linux/tick_linux.cpp', '../platform/linux/unixserial.cpp'])
-    platform_src_inc = include_directories(['../platform/linux'])
-else
-    bin_suffix = 'elf'
-    platform_src_files = files(['../platform/stm32f1/tick_stm32.cpp', '../platform/stm32f1/stm32uart.cpp'])
-    platform_src_inc = include_directories(['../platform/stm32f1'])
-
-    stm32_proj = subproject('STM32Cube')
-    mcu = 'STM32F103xE'
-    mcu_args = stm32_proj.get_variable('mcu_args')
-    target_link_args = stm32_proj.get_variable('stm32_link_args')
-    target_deps = stm32_proj.get_variable('stm32_dep')
-endif
-
 ###################################
 #  LINUX SPECIFIC EXAMPLES HERE
 ###################################
