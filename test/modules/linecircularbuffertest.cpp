@@ -1,0 +1,34 @@
+#include "CppUTest/TestHarness.h"
+#include "CppUTestExt/MockSupport.h"
+
+#include <string.h>
+
+#include "linecircularbuffer.h"
+
+using namespace EnAccess;
+
+TEST_GROUP(LineCircularBufferTest){};
+
+TEST(LineCircularBufferTest, CountBufferedLines)
+{
+    LineCircularBuffer<255> buffer;
+
+    const char* line1 = "Hello world!\n";
+    const char* line2 = "Another line\nYet another line\n";
+
+    buffer.push(line1, strlen(line1));
+    buffer.push(line2, strlen(line2));
+
+    uint8_t linesBeforePull = buffer.numBufferedLines();
+    for (int i = 0; i < 20; i++)
+        buffer.pull();
+    uint8_t linesAfterPull = buffer.numBufferedLines();
+    char pulledLine[20];
+    buffer.readLine(pulledLine, 20);
+    buffer.readLine(pulledLine, 20);
+
+    CHECK_EQUAL(linesBeforePull, 3);
+    CHECK_EQUAL(linesAfterPull, 2);
+    CHECK_EQUAL(buffer.numBufferedLines(), 0);
+    STRCMP_EQUAL(pulledLine, "Yet another line\n");
+}
