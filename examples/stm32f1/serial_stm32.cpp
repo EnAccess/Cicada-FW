@@ -35,8 +35,7 @@ class SerialTask : public Task
         for (m_i = 0; m_i < 100; m_i++) {
             {
                 const char* send_str = "AT\r\n";
-                int bytesWritten =
-                    m_serial.write(send_str, strlen(send_str));
+                m_serial.write(send_str, strlen(send_str));
             }
 
             E_REENTER_COND_DELAY(m_serial.bytesAvailable(), 100);
