@@ -145,6 +145,18 @@ if (meson.is_cross_build() == true)
         link_args           : [ mcu_args, target_link_args ]
     )
 
+    mqttsequence = executable(
+        'mqttsequence',
+        [ src_files, platform_src_files ],
+        './stm32f1/mqttsequence.cpp',
+        include_directories : [ src_inc, platform_src_inc ],
+        dependencies        : [ target_deps, embedded_prinf_dep, eclipse_paho_mqtt_dep ],
+        name_suffix         : bin_suffix,
+        c_args              : [ mcu_args, target_c_args],
+        cpp_args            : [ mcu_args, target_cpp_args ],
+        link_args           : [ mcu_args, target_link_args ]
+    )
+
     custom_target(
         'blinky_bin',
         output           : [ 'blinky_stm.bin' ],
@@ -197,6 +209,15 @@ if (meson.is_cross_build() == true)
         command          : [ objcopy, '-O', 'binary', '-S', 'examples/blockingmqtt_stm32.elf',
                             'examples/blockingmqtt_stm32.bin' ],
         depends          : [ blockingmqtt_stm32 ]
+    )
+
+    custom_target(
+        'mqttsequence',
+        output           : [ 'mqttsequence.bin' ],
+        build_by_default : true,
+        command          : [ objcopy, '-O', 'binary', '-S', 'examples/mqttsequence.elf',
+                            'examples/mqttsequence.bin' ],
+        depends          : [ mqttsequence ]
     )
 
 endif
