@@ -25,7 +25,8 @@ TEST(LineCircularBufferTest, CountBufferedLines)
     uint8_t linesAfterPull = buffer.numBufferedLines();
     char pulledLine[20];
     buffer.readLine(pulledLine, 20);
-    buffer.readLine(pulledLine, 20);
+    int pulledLineLength = buffer.readLine(pulledLine, 20);
+    pulledLine[pulledLineLength] = '\0';
 
     CHECK_EQUAL(linesBeforePull, 3);
     CHECK_EQUAL(linesAfterPull, 2);
