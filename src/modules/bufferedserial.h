@@ -70,6 +70,7 @@ class BufferedSerial : public IBufferedSerial
 
 class BufferedSerialTask : public BufferedSerial, public Task
 {
+  public:
     inline void run()
     {
         performReadWrite();
