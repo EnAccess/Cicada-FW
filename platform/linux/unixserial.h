@@ -28,6 +28,8 @@
 #include <stdint.h>
 #include <termios.h>
 
+namespace EnAccess {
+
 /*!
  * \class UnixSerial
  *
@@ -36,8 +38,6 @@
  * it's implementation is very slow (reading/writing
  * one byte at a time).
  */
-
-namespace EnAccess {
 
 class UnixSerial : public BufferedSerialTask
 {

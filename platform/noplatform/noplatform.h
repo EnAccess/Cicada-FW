@@ -26,7 +26,9 @@
 
 #include "bufferedserial.h"
 
-class NoplatformSerial : public DefaultBufferedSerial
+namespace EnAccess {
+
+class NoplatformSerial : public BufferedSerial
 {
   public:
     bool open()
@@ -67,5 +69,7 @@ class NoplatformSerial : public DefaultBufferedSerial
         return 0;
     }
 };
+
+}
 
 #endif
