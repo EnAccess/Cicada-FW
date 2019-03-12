@@ -33,10 +33,15 @@ namespace EnAccess {
 /*!
  * \class UnixSerial
  *
- * Serial driver for Linux/Unix tty serial devices.
- * This class is meant for testing porpose only, since
- * it's implementation is very slow (reading/writing
- * one byte at a time).
+ * Serial driver for Unix tty serial devices, runs on Linux
+ * and OS X.
+ *
+ * This class is meant for testing porpose only. It can be used
+ * to connect to serial devices from a normal PC without the need
+ * for an actual microcontroller hardware.
+ *
+ * It's implementation is very inefficient, reading/writing
+ * one byte only at each system call. Not meant for production.
  */
 
 class UnixSerial : public BufferedSerialTask

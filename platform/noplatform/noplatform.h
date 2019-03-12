@@ -28,6 +28,13 @@
 
 namespace EnAccess {
 
+/*! \class NoplatformSerial
+ *
+ * Implementation of the ISerial interface which does nothing.
+ * This is useful to allow compilation on platform where no
+ * serial drivers is available yet.
+ */
+
 class NoplatformSerial : public BufferedSerial
 {
   public:

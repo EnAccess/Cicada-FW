@@ -28,6 +28,13 @@
 
 namespace EnAccess {
 
+/*!
+ * \class IBufferedSerial
+ *
+ * Interface for buffered serial access. The BufferedSerial class
+ * implements this interface.
+ */
+
 class IBufferedSerial : public ISerial
 {
   public:

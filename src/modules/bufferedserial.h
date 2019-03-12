@@ -32,6 +32,13 @@
 
 namespace EnAccess {
 
+/*!
+ * Base class for serial devices. The buffering is handled by this
+ * class, as well as reading/writing to/from the buffers. When adding
+ * a new serial device, inherit from this class. You need to implement
+ * the pure virtual functions from ISerial.
+ */
+
 class BufferedSerial : public IBufferedSerial
 {
   public:
@@ -68,9 +75,22 @@ class BufferedSerial : public IBufferedSerial
     LineCircularBuffer<E_SERIAL_BUFFERSIZE> _writeBuffer;
 };
 
+/*!
+ * \class BufferedSerialTask
+ *
+ * Turns BufferedSerial into a Task. Normally, performReadWrite() would
+ * be called from an interrupt handler as soon as new data is available
+ * from the serial hardware. On platforms where an interrupt is not available
+ * and the serial hardware needs to be polled instead (like Unix termios),
+ * this class can be used to do the polling in a Task and and it to
+ * the Scheduler.
+ */
 class BufferedSerialTask : public BufferedSerial, public Task
 {
   public:
+    /*!
+     * Calls BufferedSerial::performReadWrite().
+     */
     inline void run()
     {
         performReadWrite();

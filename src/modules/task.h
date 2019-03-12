@@ -21,6 +21,11 @@
  *
  */
 
+/*!
+ * \file task.h
+ * Task class and macros.
+ */
+
 #ifndef ETASK_H
 #define ETASK_H
 
@@ -109,6 +114,38 @@
     if (!(COND)) return;                                        \
 
 namespace EnAccess {
+
+/*!
+ * \class Task
+ * Base class for tasks which need to be called in regular intervals.
+ * To create a tasks, inherit from this class and implement it's run()
+ * function, which contains the code to be called in regular intervals.
+ * To actually call the run() function in regular intervals, use the
+ * Scheduler class.
+ * To ease state machine creation, a series of macros in task.h
+ * can assist creating the required switch/case code.
+ *
+ * \see task.h
+ *
+ * Here is a simple example of a Task's run() implementation:
+ * ```
+ * virtual void run()
+ * {
+ *     E_BEGIN_TASK
+ *
+ *     // Do something
+ *     printf("Doing something\n");
+ *
+ *     // Return from run, reenter here after 1 second
+ *     E_REENTER_DELAY(1000);
+ *
+ *     // After a second, so something else
+ *     printf("Doing something else\n");
+ *
+ *     E_END_TASK
+ * }
+ * ```
+ */
 
 class Task
 {

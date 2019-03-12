@@ -28,6 +28,28 @@
 
 namespace EnAccess {
 
+/*!
+ * \class Scheduler
+ *
+ * Simple cooperative scheduler to run instances of Task. To use Scheduler and Task,
+ * do the following:
+ *
+ * 1. Inherit from Task and implement run(), which contains the actual code
+ * you want to execute in regular intervals.
+ * 2. Create a NULL-terminated array with pointers to your tasks:
+ * ```
+ * Task* taskList[] = { &task1, &task2, NULL };
+ * ```
+ * 3. Create a Scheduler, which takes the system tick function (usually the global
+ * eTickFunction()) and the task list as parameters in the constructor:
+ * ```
+ * Scheduler s(&eTickFunction, taskList);
+ * ```
+ * 4. Call `s.start()` to run the main loop. This function runs in an indefinite
+ * loop and never returns. Alternatively, you can also call `s.runTask()`
+ * in your own loop.
+ */
+
 class Scheduler
 {
   public:

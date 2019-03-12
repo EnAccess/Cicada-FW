@@ -28,6 +28,17 @@
 
 namespace EnAccess {
 
+/*!
+ * \class ICommDevice
+ *
+ * Interface for communication devices, like 4G/GSM cellular modems
+ * or WiFi modules. Drivers for these devices must implement this
+ * interface. All methods in this class have to be **non-blocking**.
+ * The actual processing and communication with the hardware is done
+ * in the driver's run() method, which will be called in regular intervals
+ * by the Scheduler.
+ */
+
 class ICommDevice : public Task
 {
   public:
@@ -72,7 +83,11 @@ class ICommDevice : public Task
     virtual uint16_t spaceAvailable() const = 0;
 
     /*!
-     * Reads data from the device.
+     * Reads data from the device. This method is non-blocking and only
+     * copies data already in the receive buffer. If no data is
+     * currently available, the method does not copy anything and will
+     * return 0. Filling up the read buffer is done in the modem
+     * driver's run() function.
      * \param data Buffer to store data. Must be large enough to store
      * maxSize bytes.
      * \param maxSize Maximum number of bytes to store into data. The actual
@@ -82,10 +97,15 @@ class ICommDevice : public Task
     virtual uint16_t read(uint8_t* data, uint16_t maxSize) = 0;
 
     /*!
-     * Writes data to the device.
+     * Writes data to the device. This method is non-blocking and
+     * only copies data to the internal send buffer. The data will be
+     * transmitted later from the modem driver's run() function. If there
+     * is not enough space in the send buffer, this function will copy only
+     * as many data as it has space available, and returns the number
+     * of bytes acutally copied.
      * \param data Buffer with data written to the device
      * \param size Number of bytes to write
-     * \return Actual number of bytes written
+     * \return Actual number of bytes copied into the transmit buffer.
      */
     virtual uint16_t write(const uint8_t* data, uint16_t size) = 0;
 };

@@ -30,13 +30,24 @@
 
 namespace EnAccess {
 
+/*!
+ * Driver for the Simcom SIM7x00 series of 4G cellular modems.
+ */
+
 class Sim7x00CommDevice : public IIPCommDevice
 {
   public:
+    /*!
+     * \param serial Serial driver for the port the modem is connected to.
+     */
     Sim7x00CommDevice(IBufferedSerial& serial);
 
     virtual void setHostPort(const char* host, uint16_t port);
 
+    /*!
+     * Set's the cellular network APN.
+     * \param apn The network APN
+     */
     virtual void setApn(const char* apn);
 
     virtual bool connect();
@@ -55,6 +66,9 @@ class Sim7x00CommDevice : public IIPCommDevice
 
     virtual uint16_t write(const uint8_t* data, uint16_t size);
 
+    /*!
+     * Actually performs communication with the modem.
+     */
     virtual void run();
 
   private:

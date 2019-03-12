@@ -26,13 +26,14 @@
 
 namespace EnAccess {
 
-enum EConnectionStatus {
-    notConnected,
-    connecting,
-    connected,
-    connectionError
-};
-
+/*!
+ * \class ISerial
+ *
+ * Interface for raw (unbuffered) access to the serial hardware. rawRead() and
+ * rawWrite() shall be implemented to read/write from the according hardware
+ * register. The IBufferedSerial / BufferedSerial classes access those
+ * method to perform read/write on a higher level.
+ */
 class ISerial
 {
   public:

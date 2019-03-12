@@ -29,14 +29,20 @@
 
 namespace EnAccess {
 
+/*!
+ * \class MQTTCountdown
+ *
+ * Implements the countdown ad required by the Paho MQTT client.
+ *
+ * *NOTE:* Due to limitations of the MQTTClient API, it's not possible
+ * to pass any arguments to the constructor. So, this class needs access
+ * to the global timer tick function.
+ */
+
 class MQTTCountdown
 {
   public:
-    /*!
-     * Due to limitations of the MQTTClient API, it's not possible
-     * to pass any arguments to the constructor. So, this class accesses
-     * the global timer tick function directly.
-     */
+
     MQTTCountdown();
     MQTTCountdown(int ms);
 
