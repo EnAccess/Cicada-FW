@@ -43,7 +43,7 @@ class LineCircularBuffer : public CircularBuffer<char, BUFFER_SIZE>
         _bufferedLines(0)
     { }
 
-    uint16_t push(const char* data, uint16_t size)
+    uint16_t push(const char* data, uint16_t size) override
     {
         if (size > CircularBuffer<char, BUFFER_SIZE>::availableSpace())
             size = CircularBuffer<char, BUFFER_SIZE>::availableSpace();
@@ -57,7 +57,7 @@ class LineCircularBuffer : public CircularBuffer<char, BUFFER_SIZE>
         return writeCount;
     }
 
-    void push(char data)
+    void push(char data) override
     {
         CircularBuffer<char, BUFFER_SIZE>::push(data);
 
@@ -66,7 +66,7 @@ class LineCircularBuffer : public CircularBuffer<char, BUFFER_SIZE>
         }
     }
 
-    virtual uint16_t pull(char* data, uint16_t size)
+    virtual uint16_t pull(char* data, uint16_t size) override
     {
         if (size > CircularBuffer<char, BUFFER_SIZE>::availableData())
             size = CircularBuffer<char, BUFFER_SIZE>::availableData();
@@ -80,7 +80,7 @@ class LineCircularBuffer : public CircularBuffer<char, BUFFER_SIZE>
         return readCount;
     }
 
-    char pull()
+    char pull() override
     {
         char data = CircularBuffer<char, BUFFER_SIZE>::pull();
 
