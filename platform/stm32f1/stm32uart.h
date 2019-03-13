@@ -29,6 +29,25 @@
 
 namespace EnAccess {
 
+/*!
+ * UART driver for STM32 micro controllers, using HAL.
+ *
+ * *NOTE:* If you use more than one UART port in your program, you need to set
+ * the preprocessor define `E_MULTITON_MAX_INSTANCES` to the number of ports
+ * used. You can set this macro with the -D compiler argument, for example
+ * `-DE_MULTITON_MAX_INSTANCES=2`.
+ *
+ * In the UART's IRQ handler, get the instance with `Stm32Uart::getInstance()`
+ * and call it's `handleInterrupt()` function. Example:
+ * ```
+ *     void USART3_IRQHandler()
+ *     {
+ *         static Stm32Uart* instance = Stm32Uart::getInstance(USART3);
+ *         instance->handleInterrupt();
+ *     }
+ * ```
+ */
+
 class Stm32Uart : public BufferedSerial
 {
   public:
