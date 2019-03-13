@@ -61,7 +61,7 @@ class BufferedSerial : public IBufferedSerial
      * Actually perform read/write to the underlying
      * raw serial device.
      */
-    virtual void performReadWrite();
+    virtual void transferToAndFromBuffer();
 
   protected:
     LineCircularBuffer<E_SERIAL_BUFFERSIZE> _readBuffer;
@@ -72,7 +72,7 @@ class BufferedSerialTask : public BufferedSerial, public Task
 {
     inline void run()
     {
-        performReadWrite();
+        transferToAndFromBuffer();
     }
 };
 }
