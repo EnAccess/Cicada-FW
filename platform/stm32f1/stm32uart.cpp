@@ -218,7 +218,7 @@ void Stm32Uart::write(char data)
 
 void Stm32Uart::handleInterrupt()
 {
-    performReadWrite();
+    transferToAndFromBuffer();
 
     if (!_writeBuffer.availableData())
         CLEAR_BIT(_handle.Instance->CR1, USART_CR1_TXEIE);
