@@ -157,6 +157,18 @@ if (meson.is_cross_build() == true)
         link_args           : [ mcu_args, target_link_args ]
     )
 
+    simplemqtt = executable(
+        'simplemqtt',
+        [ src_files, platform_src_files ],
+        './stm32f1/simplemqtt.cpp',
+        include_directories : [ src_inc, platform_src_inc ],
+        dependencies        : [ target_deps, embedded_prinf_dep, eclipse_paho_mqtt_dep ],
+        name_suffix         : bin_suffix,
+        c_args              : [ mcu_args, target_c_args],
+        cpp_args            : [ mcu_args, target_cpp_args ],
+        link_args           : [ mcu_args, target_link_args ]
+    )
+
     custom_target(
         'blinky_bin',
         output           : [ 'blinky_stm.bin' ],
@@ -218,6 +230,15 @@ if (meson.is_cross_build() == true)
         command          : [ objcopy, '-O', 'binary', '-S', 'examples/mqttsequence.elf',
                             'examples/mqttsequence.bin' ],
         depends          : [ mqttsequence ]
+    )
+
+    custom_target(
+        'simplemqtt',
+        output           : [ 'simplemqtt.bin' ],
+        build_by_default : true,
+        command          : [ objcopy, '-O', 'binary', '-S', 'examples/simplemqtt.elf',
+                            'examples/simplemqtt.bin' ],
+        depends          : [ simplemqtt ]
     )
 
 endif
