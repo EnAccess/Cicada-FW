@@ -9,7 +9,7 @@ using namespace EnAccess;
 
 TEST_GROUP(LineCircularBufferTest){};
 
-TEST(LineCircularBufferTest, CountBufferedLines)
+TEST(LineCircularBufferTest, ShouldDetectLineBreaksAndReadIndividualLines)
 {
     LineCircularBuffer<255> buffer;
 

@@ -66,7 +66,7 @@ TEST_GROUP(BufferedSerialTest)
     };
 };
 
-TEST(BufferedSerialTest, TestRead)
+TEST(BufferedSerialTest, ShouldReadDataAfterTransferFromUnderlyingMockSerial)
 {
     BufferedSerialMock bs;
     const uint8_t SIZE = 20;
@@ -76,7 +76,7 @@ TEST(BufferedSerialTest, TestRead)
     bs._inBuffer.push(dataIn, SIZE);
 
     for (int i = 0; i < 100; i++)
-        bs.performReadWrite();
+        bs.transferToAndFromBuffer();
 
     uint8_t readLen = bs.read(dataOut, SIZE);
 
@@ -84,7 +84,7 @@ TEST(BufferedSerialTest, TestRead)
     STRNCMP_EQUAL(dataIn, dataOut, SIZE);
 }
 
-TEST(BufferedSerialTest, TestWrite)
+TEST(BufferedSerialTest, ShouldHaveDataInMockSerialAfterWrite)
 {
     BufferedSerialMock bs;
     const uint8_t SIZE = 20;
@@ -94,14 +94,14 @@ TEST(BufferedSerialTest, TestWrite)
     bs.write(dataIn, SIZE);
 
     for (int i = 0; i < 100; i++)
-        bs.performReadWrite();
+        bs.transferToAndFromBuffer();
 
     bs._outBuffer.pull(dataOut, SIZE);
 
     STRNCMP_EQUAL(dataIn, dataOut, SIZE);
 }
 
-TEST(BufferedSerialTest, ShouldReadLines)
+TEST(BufferedSerialTest, ShouldDetectLineBreaksAndReadIndividualLines)
 {
     BufferedSerialMock bs;
     const uint8_t SIZE = 21;
@@ -111,7 +111,7 @@ TEST(BufferedSerialTest, ShouldReadLines)
     bs._inBuffer.push(dataIn, SIZE);
 
     for (int i = 0; i < 100; i++)
-        bs.performReadWrite();
+        bs.transferToAndFromBuffer();
 
     int outLen = bs.readLine(dataOut, SIZE);
     dataOut[outLen] = '\0';
