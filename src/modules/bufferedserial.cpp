@@ -129,7 +129,7 @@ uint16_t BufferedSerial::bufferSize()
     return _writeBuffer.size();
 }
 
-void BufferedSerial::performReadWrite()
+void BufferedSerial::transferToAndFromBuffer()
 {
     if (_writeBuffer.availableData()) {
         if (rawWrite(_writeBuffer.read())) {

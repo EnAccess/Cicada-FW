@@ -44,31 +44,31 @@ class BufferedSerial : public IBufferedSerial
   public:
     BufferedSerial();
 
-    virtual uint16_t bytesAvailable() const;
+    virtual uint16_t bytesAvailable() const override;
 
-    virtual uint16_t spaceAvailable() const;
+    virtual uint16_t spaceAvailable() const override;
 
-    virtual uint16_t read(char* data, uint16_t size);
+    virtual uint16_t read(char* data, uint16_t size) override;
 
-    virtual char read();
+    virtual char read() override;
 
-    virtual uint16_t write(const char* data, uint16_t size);
+    virtual uint16_t write(const char* data, uint16_t size) override;
 
-    virtual void write(char data);
+    virtual void write(char data) override;
 
-    virtual bool canReadLine() const;
+    virtual bool canReadLine() const override;
 
-    virtual uint16_t readLine(char* data, uint16_t size);
+    virtual uint16_t readLine(char* data, uint16_t size) override;
 
-    virtual void flushReceiveBuffers();
+    virtual void flushReceiveBuffers() override;
 
-    virtual uint16_t bufferSize();
+    virtual uint16_t bufferSize() override;
 
     /*!
      * Actually perform read/write to the underlying
      * raw serial device.
      */
-    virtual void performReadWrite();
+    virtual void transferToAndFromBuffer();
 
   protected:
     LineCircularBuffer<E_SERIAL_BUFFERSIZE> _readBuffer;
@@ -93,7 +93,7 @@ class BufferedSerialTask : public BufferedSerial, public Task
      */
     inline void run()
     {
-        performReadWrite();
+        transferToAndFromBuffer();
     }
 };
 }

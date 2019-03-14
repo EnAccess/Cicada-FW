@@ -38,13 +38,13 @@ TEST_GROUP(BufferedSerialTest)
 
         uint16_t rawBytesAvailable() const
         {
-            return _inBuffer.availableData();
+            return _inBufferMock.availableData();
         }
 
         bool rawRead(uint8_t& data)
         {
-            if (!_inBuffer.isEmpty()) {
-                data = _inBuffer.pull();
+            if (!_inBufferMock.isEmpty()) {
+                data = _inBufferMock.pull();
                 return true;
             }
 
@@ -53,30 +53,30 @@ TEST_GROUP(BufferedSerialTest)
 
         virtual bool rawWrite(uint8_t data)
         {
-            if (!_outBuffer.isFull()) {
-                _outBuffer.push(data);
+            if (!_outBufferMock.isFull()) {
+                _outBufferMock.push(data);
                 return true;
             }
 
             return false;
         }
 
-        CircularBuffer<char, 120> _inBuffer;
-        CircularBuffer<char, 120> _outBuffer;
+        CircularBuffer<char, 120> _inBufferMock;
+        CircularBuffer<char, 120> _outBufferMock;
     };
 };
 
-TEST(BufferedSerialTest, TestRead)
+TEST(BufferedSerialTest, ShouldReadDataAfterTransferFromUnderlyingMockSerial)
 {
     BufferedSerialMock bs;
     const uint8_t SIZE = 20;
     char dataIn[SIZE] = "123456789 987654321";
     char dataOut[SIZE];
 
-    bs._inBuffer.push(dataIn, SIZE);
+    bs._inBufferMock.push(dataIn, SIZE);
 
     for (int i = 0; i < 100; i++)
-        bs.performReadWrite();
+        bs.transferToAndFromBuffer();
 
     uint8_t readLen = bs.read(dataOut, SIZE);
 
@@ -84,7 +84,7 @@ TEST(BufferedSerialTest, TestRead)
     STRNCMP_EQUAL(dataIn, dataOut, SIZE);
 }
 
-TEST(BufferedSerialTest, TestWrite)
+TEST(BufferedSerialTest, ShouldHaveDataInMockSerialAfterWrite)
 {
     BufferedSerialMock bs;
     const uint8_t SIZE = 20;
@@ -94,24 +94,24 @@ TEST(BufferedSerialTest, TestWrite)
     bs.write(dataIn, SIZE);
 
     for (int i = 0; i < 100; i++)
-        bs.performReadWrite();
+        bs.transferToAndFromBuffer();
 
-    bs._outBuffer.pull(dataOut, SIZE);
+    bs._outBufferMock.pull(dataOut, SIZE);
 
     STRNCMP_EQUAL(dataIn, dataOut, SIZE);
 }
 
-TEST(BufferedSerialTest, ShouldReadLines)
+TEST(BufferedSerialTest, ShouldDetectLineBreaksAndReadIndividualLines)
 {
     BufferedSerialMock bs;
     const uint8_t SIZE = 21;
     char dataIn[SIZE] = "A line\nAnother line\n";
     char dataOut[SIZE];
 
-    bs._inBuffer.push(dataIn, SIZE);
+    bs._inBufferMock.push(dataIn, SIZE);
 
     for (int i = 0; i < 100; i++)
-        bs.performReadWrite();
+        bs.transferToAndFromBuffer();
 
     int outLen = bs.readLine(dataOut, SIZE);
     dataOut[outLen] = '\0';
