@@ -27,7 +27,7 @@
 #define EIRQ_H
 
 #if defined TARGET_STM32
-#include "stm32f103xe.h"
+#include "stm32f103xb.h"
 #define eDisableInterrupts()  __disable_irq()
 #define eEnableInterrupts() __enable_irq()
 

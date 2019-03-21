@@ -51,8 +51,8 @@ namespace EnAccess {
 class Stm32Uart : public BufferedSerial
 {
   public:
-    Stm32Uart(USART_TypeDef* uartInstance = USART3, GPIO_TypeDef* uartPort = GPIOB,
-        uint16_t txPin = GPIO_PIN_10, uint16_t rxPin = GPIO_PIN_11);
+    Stm32Uart(USART_TypeDef* uartInstance = USART2, GPIO_TypeDef* uartPort = GPIOA,
+        uint16_t txPin = GPIO_PIN_2, uint16_t rxPin = GPIO_PIN_3);
 
     static Stm32Uart* getInstance(USART_TypeDef* uartInstance);
 

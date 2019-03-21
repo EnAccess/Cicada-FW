@@ -55,7 +55,7 @@ int main(int argc, char* argv[])
     System_Config();
 
     // Set up serial port
-    Stm32Uart serial(UART4, GPIOC);
+    Stm32Uart serial(USART1, GPIOA, GPIO_PIN_9, GPIO_PIN_10);
 
     // Set up modem driver connected to serial port
     Sim7x00CommDevice commDev(serial);
@@ -108,9 +108,9 @@ extern "C"
         HAL_IncTick();
     }
 
-    void UART4_IRQHandler()
+    void USART1_IRQHandler()
     {
-        static volatile Stm32Uart* instance = Stm32Uart::getInstance(UART4);
+        static volatile Stm32Uart* instance = Stm32Uart::getInstance(USART1);
         instance->handleInterrupt();
     }
 }

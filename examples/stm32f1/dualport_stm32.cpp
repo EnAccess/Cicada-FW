@@ -11,9 +11,6 @@
 
 using namespace EnAccess;
 
-#define LED_Pin GPIO_PIN_8
-#define LED_GPIO_Port GPIOA
-
 static void SystemClock_Config(void);
 
 class SerialTask : public Task
@@ -68,22 +65,8 @@ int main(int argc, char* argv[])
     HAL_Init();
     SystemClock_Config();
 
-    /* GPIO Port Clock Enable */
-    __HAL_RCC_GPIOA_CLK_ENABLE();
-
-    /*Configure GPIO pin Output Level */
-    HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
-
-    /*Configure GPIO pin : LED_Pin */
-    GPIO_InitTypeDef GPIO_InitStruct = {0};
-    GPIO_InitStruct.Pin = LED_Pin;
-    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-    HAL_GPIO_Init(LED_GPIO_Port, &GPIO_InitStruct);
-
-    Stm32Uart debug(USART3, GPIOB);
-    Stm32Uart serial(UART4, GPIOC);
+    Stm32Uart debug;
+    Stm32Uart serial(USART1, GPIOA, GPIO_PIN_9, GPIO_PIN_10);
     SerialTask task(serial);
 
     Task* taskList[] = {&task, NULL};
@@ -131,15 +114,15 @@ extern "C"
         HAL_IncTick();
     }
 
-    void USART3_IRQHandler()
+    void USART1_IRQHandler()
     {
-        static volatile Stm32Uart* instance = Stm32Uart::getInstance(USART3);
+        static volatile Stm32Uart* instance = Stm32Uart::getInstance(USART1);
         instance->handleInterrupt();
     }
 
-    void UART4_IRQHandler()
+    void USART2_IRQHandler()
     {
-        static volatile Stm32Uart* instance = Stm32Uart::getInstance(UART4);
+        static volatile Stm32Uart* instance = Stm32Uart::getInstance(USART2);
         instance->handleInterrupt();
     }
 
@@ -147,7 +130,7 @@ extern "C"
     {
         static Stm32Uart* serial = NULL;
         if (!serial) {
-            serial = Stm32Uart::getInstance(USART3);
+            serial = Stm32Uart::getInstance(USART2);
         }
         serial->write(c);
     }

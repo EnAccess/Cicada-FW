@@ -97,12 +97,16 @@ bool Stm32Uart::open()
     } else if (_handle.Instance == USART3) {
         __HAL_RCC_USART3_CLK_ENABLE();
         _uartInterruptInstance = USART3_IRQn;
+#ifdef UART4
     } else if (_handle.Instance == UART4) {
         __HAL_RCC_UART4_CLK_ENABLE();
         _uartInterruptInstance = UART4_IRQn;
+#endif
+#ifdef UART5
     } else if (_handle.Instance == UART5) {
         __HAL_RCC_UART5_CLK_ENABLE();
         _uartInterruptInstance = UART5_IRQn;
+#endif
     } else {
         return false;
     }
@@ -118,10 +122,14 @@ bool Stm32Uart::open()
         __HAL_RCC_GPIOD_CLK_ENABLE();
     else if (_uartPort == GPIOE)
         __HAL_RCC_GPIOE_CLK_ENABLE();
+#ifdef GPIOF
     else if (_uartPort == GPIOF)
         __HAL_RCC_GPIOF_CLK_ENABLE();
+#endif
+#ifdef GPIOG
     else if (_uartPort == GPIOG)
         __HAL_RCC_GPIOG_CLK_ENABLE();
+#endif
 
     // Configure GPIO pins
     GPIO_InitTypeDef gpio = { 0 };

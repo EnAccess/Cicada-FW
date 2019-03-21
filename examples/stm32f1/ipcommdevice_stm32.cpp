@@ -28,6 +28,8 @@ class IPCommTask : public Task
     {
         E_BEGIN_TASK
 
+        printf("Conneting ...\n");
+
         m_commDev.setApn("internet");
         m_commDev.setHostPort("wttr.in", 80);
         m_commDev.connect();
@@ -77,8 +79,8 @@ int main(int argc, char* argv[])
     HAL_Init();
     SystemClock_Config();
 
-    Stm32Uart debug(USART3, GPIOB);
-    Stm32Uart serial(UART4, GPIOC);
+    Stm32Uart debug;
+    Stm32Uart serial(USART1, GPIOA, GPIO_PIN_9, GPIO_PIN_10);
     Sim7x00CommDevice commDev(serial);
     IPCommTask task(commDev);
 
@@ -124,15 +126,15 @@ extern "C"
         HAL_IncTick();
     }
 
-    void USART3_IRQHandler()
+    void USART1_IRQHandler()
     {
-        static volatile Stm32Uart* instance = Stm32Uart::getInstance(USART3);
+        static volatile Stm32Uart* instance = Stm32Uart::getInstance(USART1);
         instance->handleInterrupt();
     }
 
-    void UART4_IRQHandler()
+    void USART2_IRQHandler()
     {
-        static volatile Stm32Uart* instance = Stm32Uart::getInstance(UART4);
+        static volatile Stm32Uart* instance = Stm32Uart::getInstance(USART2);
         instance->handleInterrupt();
     }
 
@@ -140,7 +142,7 @@ extern "C"
     {
         static Stm32Uart* serial = NULL;
         if (!serial) {
-            serial = Stm32Uart::getInstance(USART3);
+            serial = Stm32Uart::getInstance(USART2);
         }
         serial->write(c);
     }

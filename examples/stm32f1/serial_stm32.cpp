@@ -108,9 +108,9 @@ extern "C"
         HAL_IncTick();
     }
 
-    void USART3_IRQHandler()
+    void USART2_IRQHandler()
     {
-        static volatile Stm32Uart* instance = Stm32Uart::getInstance(USART3);
+        static volatile Stm32Uart* instance = Stm32Uart::getInstance(USART2);
         instance->handleInterrupt();
     }
 }
