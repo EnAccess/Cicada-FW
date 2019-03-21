@@ -26,6 +26,7 @@ src_files = get_variable('src_files')
 
 # Add platform specific sources and compiler/linker arguments
 mcu_args = []
+target_inc = []
 target_c_args = []
 target_cpp_args = []
 target_link_args = []
@@ -35,17 +36,42 @@ platform_src_inc = []
 bin_suffix = []
 if (meson.is_cross_build() != true)
     subdir('platform/linux')
+    examples_list = ['scheduler', 'serial_linux', 'ipcommdevice',
+                     'blocking', 'blockingmqtt' ]
+    examples_dir = 'linux'
 else
     subdir('platform/stm32f1')
+    examples_list = ['blinky_stm32', 'serial_stm32', 'printf_stm32',
+                     'dualport_stm32', 'ipcommdevice_stm32',
+                     'blockingmqtt_stm32', 'mqttsequence', 'simplemqtt']
+    examples_dir = 'stm32f1'
 endif
 
 # Add embedded printf dependancy
 embedded_printf    = subproject('printf')
-embedded_prinf_dep = embedded_printf.get_variable('embedded_prinf_dep')
+embedded_printf_dep = embedded_printf.get_variable('embedded_printf_dep')
+embedded_printf_inc = embedded_printf.get_variable('embedded_printf_inc')
 
 # Add mqtt dependancy
 eclipse_paho_mqtt     = subproject('paho.mqtt.embedded-c')
 eclipse_paho_mqtt_dep = eclipse_paho_mqtt.get_variable('eclipse_paho_mqtt_dep')
+eclipse_paho_mqtt_inc = eclipse_paho_mqtt.get_variable('eclipse_paho_mqtt_inc')
+
+# Actually build library
+enaccess_lib = static_library(
+    'EnAccess',
+    [ src_files, platform_src_files ],
+    include_directories : [ src_inc, platform_src_inc, target_inc  ],
+    dependencies        : [ embedded_printf_dep, eclipse_paho_mqtt_dep ],
+    c_args              : [ mcu_args, target_c_args ],
+    cpp_args            : [ mcu_args, target_cpp_args ],
+    link_args           : [ mcu_args, target_link_args ],
+    pic                 : false
+)
+enaccess_dep = declare_dependency(
+    include_directories : [ src_inc, platform_src_inc ],
+    link_with           : enaccess_lib
+)
 
 # Setup examples
 subdir('examples')
