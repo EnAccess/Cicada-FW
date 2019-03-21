@@ -134,7 +134,7 @@ extern "C"
 
     void UART4_IRQHandler()
     {
-        static Stm32Uart* instance = Stm32Uart::getInstance(UART4);
+        static volatile Stm32Uart* instance = Stm32Uart::getInstance(UART4);
         instance->handleInterrupt();
     }
 }

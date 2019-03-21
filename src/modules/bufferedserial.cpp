@@ -129,7 +129,7 @@ uint16_t BufferedSerial::bufferSize()
     return _writeBuffer.size();
 }
 
-void BufferedSerial::transferToAndFromBuffer()
+void BufferedSerial::transferToAndFromBuffer() volatile
 {
     if (_writeBuffer.availableData()) {
         if (rawWrite(_writeBuffer.read())) {

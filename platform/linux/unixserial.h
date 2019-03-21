@@ -72,11 +72,11 @@ class UnixSerial : public BufferedSerialTask
     }
 
   protected:
-    virtual uint16_t rawBytesAvailable() const;
+    virtual uint16_t rawBytesAvailable() const volatile override;
 
-    virtual bool rawRead(uint8_t& data);
+    virtual bool rawRead(uint8_t& data) volatile override;
 
-    virtual bool rawWrite(uint8_t data);
+    virtual bool rawWrite(uint8_t data) volatile override;
 
   private:
     bool _isOpen;

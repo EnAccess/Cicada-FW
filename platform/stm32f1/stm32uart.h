@@ -56,18 +56,18 @@ class Stm32Uart : public BufferedSerial
 
     static Stm32Uart* getInstance(USART_TypeDef* uartInstance);
 
-    bool open();
-    bool isOpen();
-    bool setSerialConfig(uint32_t baudRate, uint8_t dataBits);
-    void close();
-    const char* portName() const;
-    uint16_t write(const char* data, uint16_t size);
-    void write(char data);
-    bool rawRead(uint8_t& data);
-    bool rawWrite(uint8_t data);
-    uint16_t rawBytesAvailable() const;
+    virtual bool open() override;
+    virtual bool isOpen() override;
+    virtual bool setSerialConfig(uint32_t baudRate, uint8_t dataBits) override;
+    virtual void close() override;
+    virtual const char* portName() const override;
+    virtual uint16_t write(const char* data, uint16_t size) override;
+    virtual void write(char data) override;
+    virtual bool rawRead(uint8_t& data) volatile override;
+    virtual bool rawWrite(uint8_t data) volatile override;
+    virtual uint16_t rawBytesAvailable() const volatile override;
 
-    void handleInterrupt();
+    void handleInterrupt() volatile;
 
   private:
     // Private constructors to avoid copying
@@ -76,8 +76,9 @@ class Stm32Uart : public BufferedSerial
 
     static Stm32Uart* instance[E_MULTITON_MAX_INSTANCES];
 
-    uint8_t _flags;
     UART_HandleTypeDef _handle;
+
+    uint8_t _flags;
     GPIO_TypeDef* _uartPort;
     uint16_t _txPin;
     uint16_t _rxPin;

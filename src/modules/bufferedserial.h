@@ -68,11 +68,11 @@ class BufferedSerial : public IBufferedSerial
      * Actually perform read/write to the underlying
      * raw serial device.
      */
-    virtual void transferToAndFromBuffer();
+    virtual void transferToAndFromBuffer() volatile;
 
   protected:
-    LineCircularBuffer<E_SERIAL_BUFFERSIZE> _readBuffer;
-    LineCircularBuffer<E_SERIAL_BUFFERSIZE> _writeBuffer;
+    volatile LineCircularBuffer<E_SERIAL_BUFFERSIZE> _readBuffer;
+    volatile LineCircularBuffer<E_SERIAL_BUFFERSIZE> _writeBuffer;
 };
 
 /*!

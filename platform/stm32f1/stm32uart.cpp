@@ -33,8 +33,8 @@ Stm32Uart* Stm32Uart::instance[E_MULTITON_MAX_INSTANCES] = { NULL };
 
 Stm32Uart::Stm32Uart(
     USART_TypeDef* uartInstance, GPIO_TypeDef* uartPort, uint16_t txPin, uint16_t rxPin) :
-    _flags(0),
     _handle(),
+    _flags(0),
     _uartPort(uartPort),
     _txPin(txPin),
     _rxPin(rxPin),
@@ -175,12 +175,12 @@ const char* Stm32Uart::portName() const
     return NULL;
 }
 
-uint16_t Stm32Uart::rawBytesAvailable() const
+uint16_t Stm32Uart::rawBytesAvailable() const volatile
 {
     return __HAL_UART_GET_FLAG(&_handle, UART_FLAG_RXNE) ? 1 : 0;
 }
 
-bool Stm32Uart::rawRead(uint8_t& data)
+bool Stm32Uart::rawRead(uint8_t& data) volatile
 {
     if (__HAL_UART_GET_FLAG(&_handle, UART_FLAG_RXNE)) {
         data = (uint8_t)READ_REG(_handle.Instance->DR);
@@ -190,7 +190,7 @@ bool Stm32Uart::rawRead(uint8_t& data)
     return false;
 }
 
-bool Stm32Uart::rawWrite(uint8_t data)
+bool Stm32Uart::rawWrite(uint8_t data) volatile
 {
     if (__HAL_UART_GET_FLAG(&_handle, UART_FLAG_TXE)) {
         WRITE_REG(_handle.Instance->DR, (uint16_t)data);
@@ -216,7 +216,7 @@ void Stm32Uart::write(char data)
     SET_BIT(_handle.Instance->CR1, USART_CR1_TXEIE);
 }
 
-void Stm32Uart::handleInterrupt()
+void Stm32Uart::handleInterrupt() volatile
 {
     transferToAndFromBuffer();
 

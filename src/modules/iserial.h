@@ -75,7 +75,7 @@ class ISerial
      * Number of bytes available for reading.
      * \return Number of bytes available for reading
      */
-    virtual uint16_t rawBytesAvailable() const = 0;
+    virtual uint16_t rawBytesAvailable() volatile const = 0;
 
     /*!
      * Reads one byte of data from the device. If there is no
@@ -83,14 +83,14 @@ class ISerial
      * \param data Place to store data read
      * \return true if read was successful, false otherwise
      */
-    virtual bool rawRead(uint8_t& data) = 0;
+    virtual bool rawRead(uint8_t& data) volatile = 0;
 
     /*!
      * Writes one byte of data to the device.
      * \param data byte to be written
      * \return true if write was successful, false otherwise
      */
-    virtual bool rawWrite(uint8_t data) = 0;
+    virtual bool rawWrite(uint8_t data) volatile = 0;
 };
 
 }

@@ -110,7 +110,7 @@ extern "C"
 
     void USART3_IRQHandler()
     {
-        static Stm32Uart* instance = Stm32Uart::getInstance(USART3);
+        static volatile Stm32Uart* instance = Stm32Uart::getInstance(USART3);
         instance->handleInterrupt();
     }
 }
