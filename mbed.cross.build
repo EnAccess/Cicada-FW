@@ -11,8 +11,8 @@ strip   = 'arm-none-eabi-strip'
 gdb     = 'arm-none-eabi-gdb'
 
 [properties]
-enaccess_build_target = 'stm32f1'
-cpp_args = ['-DTARGET_STM32']
+enaccess_build_target = 'mbed'
+cpp_args = ['-DTARGET_MBED']
 
 [host_machine]
 system     = 'none'

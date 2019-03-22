@@ -10,7 +10,7 @@ foreach example : examples_list
         link_args           : [ mcu_args, target_link_args ]
     )
 
-    if (meson.is_cross_build() == true)
+    if (enaccess_build_target == 'stm32f1')
         custom_target(
             example,
             output           : [ example + '.bin' ],

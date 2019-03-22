@@ -34,17 +34,24 @@ target_deps = []
 platform_src_files = []
 platform_src_inc = []
 bin_suffix = []
+enaccess_build_target = meson.get_cross_property('enaccess_build_target')
 if (meson.is_cross_build() != true)
     subdir('platform/linux')
     examples_list = ['scheduler', 'serial_linux', 'ipcommdevice',
                      'blocking', 'blockingmqtt' ]
     examples_dir = 'linux'
-else
+elif (enaccess_build_target == 'stm32f1')
     subdir('platform/stm32f1')
     examples_list = ['blinky_stm32', 'serial_stm32', 'printf_stm32',
                      'dualport_stm32', 'ipcommdevice_stm32',
                      'blockingmqtt_stm32', 'mqttsequence', 'simplemqtt']
     examples_dir = 'stm32f1'
+elif (enaccess_build_target == 'mbed')
+    subdir('platform/mbed')
+    examples_list = []
+    examples_dir = []
+else
+    error('Unsupported build target')
 endif
 
 # Add embedded printf dependancy
