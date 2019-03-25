@@ -36,11 +36,6 @@ TEST_GROUP(BufferedSerialTest)
             return NULL;
         }
 
-        uint16_t rawBytesAvailable() const
-        {
-            return _inBufferMock.availableData();
-        }
-
         bool rawRead(uint8_t& data)
         {
             if (!_inBufferMock.isEmpty()) {

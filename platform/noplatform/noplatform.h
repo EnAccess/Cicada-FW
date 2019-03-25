@@ -61,11 +61,6 @@ class NoplatformSerial : public BufferedSerial
     }
 
   protected:
-    uint16_t rawBytesAvailable() const
-    {
-        return 0;
-    }
-
     uint16_t rawRead(uint8_t* data, uint16_t maxSize)
     {
         return 0;

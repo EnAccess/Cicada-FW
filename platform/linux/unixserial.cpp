@@ -206,17 +206,6 @@ void UnixSerial::close()
     _fd = -1;
 }
 
-uint16_t UnixSerial::rawBytesAvailable() const
-{
-    if (_fd < 0)
-        return 0;
-
-    int bytes;
-    ioctl(_fd, FIONREAD, &bytes);
-
-    return bytes > UINT16_MAX ? UINT16_MAX : bytes;
-}
-
 bool UnixSerial::rawRead(uint8_t& data)
 {
     return ::read(_fd, &data, 1) == 1;

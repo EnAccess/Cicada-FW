@@ -65,7 +65,6 @@ class Stm32Uart : public BufferedSerial
     void write(char data);
     bool rawRead(uint8_t& data);
     bool rawWrite(uint8_t data);
-    uint16_t rawBytesAvailable() const;
 
     void handleInterrupt();
 

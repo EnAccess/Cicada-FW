@@ -72,12 +72,6 @@ class ISerial
 
   protected:
     /*!
-     * Number of bytes available for reading.
-     * \return Number of bytes available for reading
-     */
-    virtual uint16_t rawBytesAvailable() const = 0;
-
-    /*!
      * Reads one byte of data from the device. If there is no
      * data to read, the returned result is undefined.
      * \param data Place to store data read

@@ -183,11 +183,6 @@ const char* Stm32Uart::portName() const
     return NULL;
 }
 
-uint16_t Stm32Uart::rawBytesAvailable() const
-{
-    return __HAL_UART_GET_FLAG(&_handle, UART_FLAG_RXNE) ? 1 : 0;
-}
-
 bool Stm32Uart::rawRead(uint8_t& data)
 {
     if (__HAL_UART_GET_FLAG(&_handle, UART_FLAG_RXNE)) {
