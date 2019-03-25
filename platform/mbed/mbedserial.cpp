@@ -21,5 +21,56 @@
  *
  */
 
-#include "drivers/RawSerial.h"
 #include "mbedserial.h"
+#include "platform/Callback.h"
+
+using namespace EnAccess;
+
+MbedSerial::MbedSerial(PinName tx, PinName rx, int baud) :
+    _rawSerial(tx, rx, baud)
+{
+    _rawSerial.attach(mbed::callback(this, &MbedSerial::transferToAndFromBuffer));
+}
+
+bool MbedSerial::open()
+{
+    return true;
+}
+
+bool MbedSerial::isOpen()
+{
+    return true;
+}
+
+bool MbedSerial::setSerialConfig(uint32_t baudRate, uint8_t dataBits)
+{
+    return false;
+}
+
+void MbedSerial::close()
+{ }
+
+const char* MbedSerial::portName() const
+{
+    return NULL;
+}
+
+bool MbedSerial::rawRead(uint8_t& data)
+{
+    if (_rawSerial.readable()) {
+        data = _rawSerial.getc();
+        return true;
+    }
+
+    return false;
+}
+
+bool MbedSerial::rawWrite(uint8_t data)
+{
+    if (_rawSerial.writeable()) {
+        _rawSerial.putc(data);
+        return true;
+    }
+
+    return false;
+}

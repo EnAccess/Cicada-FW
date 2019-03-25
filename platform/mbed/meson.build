@@ -11,7 +11,8 @@ mcu_args = ['-Wall', '-Wextra', '-Wno-unused-parameter',
             '-fno-exceptions', '-fno-builtin', '-ffunction-sections',
             '-fdata-sections', '-funsigned-char', '-MMD',
             '-fno-delete-null-pointer-checks', '-fomit-frame-pointer',
-            '-Os', '-g1', '-mcpu=@0@'.format(host_machine.cpu()), '-mthumb']
+            '-Os', '-g1', '-mcpu=@0@'.format(host_machine.cpu()), '-mthumb',
+            '-DDEVICE_SERIAL=1', '-DMBED_CONF_PLATFORM_DEFAULT_SERIAL_BAUD_RATE=115200']
 target_inc = include_directories([
     '../../../ARMmbed-mbed-os',
     '../../../ARMmbed-mbed-os/platform',
