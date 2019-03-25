@@ -54,7 +54,7 @@ class CircularBuffer
      * \param size number of elements in data
      */
     //TODO: Check if virtual is appropriate
-    virtual uint16_t push(const T* data, uint16_t size) volatile
+    virtual uint16_t push(const T* data, uint16_t size)
     {
         if (size > availableSpace())
             size = availableSpace();
@@ -77,7 +77,7 @@ class CircularBuffer
      * will be overwritten.
      * \param data Element to push into the buffer
      */
-    virtual void push(T data) volatile
+    virtual void push(T data)
     {
         _buffer[_writeHead] = data;
         incrementOrResetHead(_writeHead);
@@ -91,7 +91,7 @@ class CircularBuffer
      * \param size Maximum size to pull
      * \return Actual number of elements pulled from the buffer
      */
-    virtual uint16_t pull(T* data, uint16_t size) volatile
+    virtual uint16_t pull(T* data, uint16_t size)
     {
         if (size > availableData())
             size = availableData();
@@ -113,7 +113,7 @@ class CircularBuffer
      * be returned.
      * \return The element pulled from the buffer
      */
-    virtual T pull() volatile
+    virtual T pull()
     {
         T data = _buffer[_readHead];
         incrementOrResetHead(_readHead);
@@ -129,7 +129,7 @@ class CircularBuffer
      * in which case old data will be returned.
      * \return The element read from the buffer
      */
-    virtual T read() volatile
+    virtual T read()
     {
         return _buffer[_readHead];
     }
@@ -137,7 +137,7 @@ class CircularBuffer
     /*!
      * Empties the buffer by resetting all counters to zero.
      */
-    virtual void flush() volatile
+    virtual void flush()
     {
         _writeHead = 0;
         _readHead = 0;
@@ -147,7 +147,7 @@ class CircularBuffer
     /*!
      * \return true if the buffer is empty, false if there is data in it
      */
-    virtual bool isEmpty() const volatile
+    virtual bool isEmpty() const
     {
         return _availableData == 0;
     }
@@ -155,7 +155,7 @@ class CircularBuffer
     /*!
      * \return true if the buffer is full, false if there is still space
      */
-    virtual bool isFull() const volatile
+    virtual bool isFull() const
     {
         return _availableData == BUFFER_SIZE;
     }
@@ -163,7 +163,7 @@ class CircularBuffer
     /*!
      * \return Number of available elements in the buffer
      */
-    virtual uint16_t availableData() const volatile
+    virtual uint16_t availableData() const
     {
         return _availableData;
     }
@@ -171,7 +171,7 @@ class CircularBuffer
     /*!
      * \return Number of available space in the buffer
      */
-    virtual uint16_t availableSpace() const volatile
+    virtual uint16_t availableSpace() const
     {
         return BUFFER_SIZE - _availableData;
     }
@@ -179,18 +179,18 @@ class CircularBuffer
     /*!
      * \return size of the buffer, which was specified at compile time
      */
-    virtual uint16_t size() const volatile
+    virtual uint16_t size() const
     {
         return BUFFER_SIZE;
     }
 
   private:
-    volatile uint16_t _writeHead;
-    volatile uint16_t _readHead;
-    volatile uint16_t _availableData;
-    volatile T _buffer[BUFFER_SIZE];
+    uint16_t _writeHead;
+    uint16_t _readHead;
+    uint16_t _availableData;
+    T _buffer[BUFFER_SIZE];
 
-    void incrementOrResetHead(volatile uint16_t& head) volatile
+    void incrementOrResetHead(uint16_t& head)
     {
         head++;
         if (head >= BUFFER_SIZE)

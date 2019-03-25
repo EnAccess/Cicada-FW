@@ -206,7 +206,7 @@ void UnixSerial::close()
     _fd = -1;
 }
 
-uint16_t UnixSerial::rawBytesAvailable() const volatile
+uint16_t UnixSerial::rawBytesAvailable() const
 {
     if (_fd < 0)
         return 0;
@@ -217,12 +217,12 @@ uint16_t UnixSerial::rawBytesAvailable() const volatile
     return bytes > UINT16_MAX ? UINT16_MAX : bytes;
 }
 
-bool UnixSerial::rawRead(uint8_t& data) volatile
+bool UnixSerial::rawRead(uint8_t& data)
 {
     return ::read(_fd, &data, 1) == 1;
 }
 
-bool UnixSerial::rawWrite(uint8_t data) volatile
+bool UnixSerial::rawWrite(uint8_t data)
 {
     return ::write(_fd, &data, 1) == 1;
 }

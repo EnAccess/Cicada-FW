@@ -43,7 +43,7 @@ class LineCircularBuffer : public CircularBuffer<char, BUFFER_SIZE>
         _bufferedLines(0)
     { }
 
-    uint16_t push(const char* data, uint16_t size) volatile override
+    uint16_t push(const char* data, uint16_t size) override
     {
         if (size > CircularBuffer<char, BUFFER_SIZE>::availableSpace())
             size = CircularBuffer<char, BUFFER_SIZE>::availableSpace();
@@ -57,7 +57,7 @@ class LineCircularBuffer : public CircularBuffer<char, BUFFER_SIZE>
         return writeCount;
     }
 
-    void push(char data) volatile override
+    void push(char data) override
     {
         CircularBuffer<char, BUFFER_SIZE>::push(data);
 
@@ -66,7 +66,7 @@ class LineCircularBuffer : public CircularBuffer<char, BUFFER_SIZE>
         }
     }
 
-    virtual uint16_t pull(char* data, uint16_t size) volatile override
+    virtual uint16_t pull(char* data, uint16_t size) override
     {
         if (size > CircularBuffer<char, BUFFER_SIZE>::availableData())
             size = CircularBuffer<char, BUFFER_SIZE>::availableData();
@@ -80,7 +80,7 @@ class LineCircularBuffer : public CircularBuffer<char, BUFFER_SIZE>
         return readCount;
     }
 
-    char pull() volatile override
+    char pull() override
     {
         char data = CircularBuffer<char, BUFFER_SIZE>::pull();
 
@@ -94,7 +94,7 @@ class LineCircularBuffer : public CircularBuffer<char, BUFFER_SIZE>
     /*!
      * \return Number of lines currently in the buffer
      */
-    inline uint16_t numBufferedLines() volatile const
+    inline uint16_t numBufferedLines() const
     {
         return _bufferedLines;
     }
@@ -105,7 +105,7 @@ class LineCircularBuffer : public CircularBuffer<char, BUFFER_SIZE>
      * \param size Available space in data
      * \return Actual number of characters pulled from the buffer
      */
-    uint16_t readLine(char* data, uint16_t size) volatile
+    uint16_t readLine(char* data, uint16_t size)
     {
         uint16_t readCount = 0;
         char c = '\0';
@@ -121,7 +121,7 @@ class LineCircularBuffer : public CircularBuffer<char, BUFFER_SIZE>
     }
 
   private:
-    volatile uint16_t _bufferedLines;
+    uint16_t _bufferedLines;
 };
 
 }
