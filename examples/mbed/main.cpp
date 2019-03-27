@@ -13,8 +13,7 @@
 
 using namespace EnAccess;
 
-Thread blinkThread(osPriorityNormal, 512);
-Thread enAccessThread(osPriorityNormal, 7168);
+Thread enAccessThread(osPriorityNormal, 8192);
 
 class IPCommTask : public Task
 {
@@ -97,6 +96,7 @@ void blinkLed()
 
 int main()
 {
-    blinkThread.start(callback(blinkLed));
     enAccessThread.start(callback(runEnAccess));
+
+    blinkLed();
 }
