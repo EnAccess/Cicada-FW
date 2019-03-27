@@ -1,0 +1,4 @@
+This example can be compiled using Mbed's own build system.
+To compile, run:
+
+> mbed compile -t GCC_ARM --profile debug.json
