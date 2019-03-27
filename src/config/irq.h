@@ -31,6 +31,11 @@
 #define eDisableInterrupts()  __disable_irq()
 #define eEnableInterrupts() __enable_irq()
 
+#elif defined __MBED__
+#include "mbed.h"
+#define eDisableInterrupts()  __disable_irq()
+#define eEnableInterrupts() __enable_irq()
+
 #else
 #define eDisableInterrupts() { }
 #define eEnableInterrupts() { }
