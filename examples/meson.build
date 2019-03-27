@@ -10,14 +10,16 @@ foreach example : examples_list
         link_args           : [ mcu_args, target_link_args ]
     )
 
-    if (enaccess_build_target == 'stm32f1')
-        custom_target(
-            example,
-            output           : [ example + '.bin' ],
-            build_by_default : true,
-            command          : [ objcopy, '-O', 'binary', '-S', 'examples/' + example + '.elf',
+    if (meson.is_cross_build() == true)
+        if (enaccess_build_target == 'stm32f1')
+            custom_target(
+                example,
+                output           : [ example + '.bin' ],
+                build_by_default : true,
+                command          : [ objcopy, '-O', 'binary', '-S', 'examples/' + example + '.elf',
                                 'examples/' + example + '.bin' ],
-            depends          : [ example_exec ]
-        )
+                depends          : [ example_exec ]
+            )
+        endif
     endif
 endforeach
