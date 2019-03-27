@@ -26,10 +26,11 @@
 
 using namespace EnAccess;
 
-MbedSerial::MbedSerial(PinName tx, PinName rx, int baud) :
-    _rawSerial(tx, rx, baud)
+MbedSerial::MbedSerial(PinName tx, PinName rx) :
+    _rawSerial(tx, rx, 115200)
 {
-    _rawSerial.attach(mbed::callback(this, &MbedSerial::transferToAndFromBuffer));
+    _rawSerial.attach(mbed::callback(this, &MbedSerial::handleInterrupt),
+                      RawSerial::RxIrq);
 }
 
 bool MbedSerial::open()
@@ -44,7 +45,10 @@ bool MbedSerial::isOpen()
 
 bool MbedSerial::setSerialConfig(uint32_t baudRate, uint8_t dataBits)
 {
-    return false;
+    _rawSerial.baud(baudRate);
+    _rawSerial.format(dataBits);
+
+    return true;
 }
 
 void MbedSerial::close()
@@ -53,6 +57,21 @@ void MbedSerial::close()
 const char* MbedSerial::portName() const
 {
     return NULL;
+}
+
+uint16_t MbedSerial::write(const char* data, uint16_t size)
+{
+    uint16_t written = BufferedSerial::write(data, size);
+    _rawSerial.attach(mbed::callback(this, &MbedSerial::handleInterrupt),
+                      RawSerial::TxIrq);
+    return written;
+}
+
+void MbedSerial::write(char data)
+{
+    BufferedSerial::write(data);
+    _rawSerial.attach(mbed::callback(this, &MbedSerial::handleInterrupt),
+                      RawSerial::TxIrq);
 }
 
 bool MbedSerial::rawRead(uint8_t& data)
@@ -68,9 +87,19 @@ bool MbedSerial::rawRead(uint8_t& data)
 bool MbedSerial::rawWrite(uint8_t data)
 {
     if (_rawSerial.writeable()) {
-        _rawSerial.putc(data);
-        return true;
+        if (_rawSerial.putc(data) == data) {
+            return true;
+        }
     }
 
     return false;
+}
+
+void MbedSerial::handleInterrupt()
+{
+    transferToAndFromBuffer();
+
+    if (!_writeBuffer.availableData()) {
+        _rawSerial.attach(NULL, RawSerial::TxIrq);
+    }
 }

@@ -24,7 +24,7 @@
 #ifndef MBEDSERIAL_H
 #define MBEDSERIAL_H
 
-#include "drivers/RawSerial.h"
+#include "mbed.h"
 #include "bufferedserial.h"
 
 namespace EnAccess {
@@ -32,16 +32,20 @@ namespace EnAccess {
 class MbedSerial : public BufferedSerial
 {
   public:
-    MbedSerial(PinName tx = SERIAL_TX, PinName rx = SERIAL_RX,
-               int baud = MBED_CONF_PLATFORM_DEFAULT_SERIAL_BAUD_RATE);
+    MbedSerial(PinName tx = SERIAL_TX, PinName rx = SERIAL_RX);
 
     virtual bool open() override;
     virtual bool isOpen() override;
     virtual bool setSerialConfig(uint32_t baudRate, uint8_t dataBits) override;
     virtual void close() override;
     virtual const char* portName() const override;
+    virtual uint16_t write(const char* data, uint16_t size) override;
+    virtual void write(char data) override;
     virtual bool rawRead(uint8_t& data) override;
     virtual bool rawWrite(uint8_t data) override;
+
+    void handleInterrupt();
+    void handleInterrupt2(int i);
 
   private:
     // Private constructors to avoid copying
