@@ -46,10 +46,6 @@ elif (enaccess_build_target == 'stm32f1')
                      'dualport_stm32', 'ipcommdevice_stm32',
                      'blockingmqtt_stm32', 'mqttsequence', 'simplemqtt']
     examples_dir = 'stm32f1'
-elif (enaccess_build_target == 'mbed')
-    subdir('platform/mbed')
-    examples_list = []
-    examples_dir = []
 else
     error('Unsupported build target')
 endif
