@@ -76,6 +76,17 @@ class IBufferedSerial : public ISerial
     virtual uint16_t write(const char* data, uint16_t size) = 0;
 
     /*!
+     * Writes a zero-terminated string to the write buffer,
+     * but *without* the terminating zero byte.
+     * \param data Buffer with string copied to the write buffer.
+     * If there is not enough space in the write buffer, the string
+     * will be concatenated and the actual number of bytes written
+     * is returned.
+     * \return Actual number of characters written
+     */
+    virtual uint16_t write(const char* data) = 0;
+
+    /*!
      * Writes a singla char to the buffer.
      * \param data Character to write
      */

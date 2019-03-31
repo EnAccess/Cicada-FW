@@ -86,6 +86,19 @@ uint16_t BufferedSerial::write(const char* data, uint16_t size)
     return writeCount;
 }
 
+uint16_t BufferedSerial::write(const char* data)
+{
+    uint16_t space = spaceAvailable();
+
+    uint16_t writeCount = 0;
+
+    while (data[writeCount] != '\0' && writeCount < space) {
+        write(data[writeCount++]);
+    }
+
+    return writeCount;
+}
+
 void BufferedSerial::write(char data)
 {
     eDisableInterrupts();
