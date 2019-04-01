@@ -203,19 +203,8 @@ bool Stm32Uart::rawWrite(uint8_t data)
     return false;
 }
 
-uint16_t Stm32Uart::write(const char* data, uint16_t size)
+void Stm32Uart::startTransmit()
 {
-    uint16_t written = BufferedSerial::write(data, size);
-
-    SET_BIT(_handle.Instance->CR1, USART_CR1_TXEIE);
-
-    return written;
-}
-
-void Stm32Uart::write(char data)
-{
-    BufferedSerial::write(data);
-
     SET_BIT(_handle.Instance->CR1, USART_CR1_TXEIE);
 }
 

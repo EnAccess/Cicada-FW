@@ -39,13 +39,11 @@ class MbedSerial : public BufferedSerial
     virtual bool setSerialConfig(uint32_t baudRate, uint8_t dataBits) override;
     virtual void close() override;
     virtual const char* portName() const override;
-    virtual uint16_t write(const char* data, uint16_t size) override;
-    virtual void write(char data) override;
     virtual bool rawRead(uint8_t& data) override;
     virtual bool rawWrite(uint8_t data) override;
+    virtual void startTransmit() override;
 
     void handleInterrupt();
-    void handleInterrupt2(int i);
 
   private:
     // Private constructors to avoid copying

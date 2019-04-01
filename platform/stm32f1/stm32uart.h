@@ -61,10 +61,9 @@ class Stm32Uart : public BufferedSerial
     bool setSerialConfig(uint32_t baudRate, uint8_t dataBits);
     void close();
     const char* portName() const;
-    uint16_t write(const char* data, uint16_t size);
-    void write(char data);
     bool rawRead(uint8_t& data);
     bool rawWrite(uint8_t data);
+    void startTransmit();
 
     void handleInterrupt();
 

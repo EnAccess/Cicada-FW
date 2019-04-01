@@ -59,21 +59,6 @@ const char* MbedSerial::portName() const
     return NULL;
 }
 
-uint16_t MbedSerial::write(const char* data, uint16_t size)
-{
-    uint16_t written = BufferedSerial::write(data, size);
-    _rawSerial.attach(mbed::callback(this, &MbedSerial::handleInterrupt),
-                      RawSerial::TxIrq);
-    return written;
-}
-
-void MbedSerial::write(char data)
-{
-    BufferedSerial::write(data);
-    _rawSerial.attach(mbed::callback(this, &MbedSerial::handleInterrupt),
-                      RawSerial::TxIrq);
-}
-
 bool MbedSerial::rawRead(uint8_t& data)
 {
     if (_rawSerial.readable()) {
@@ -93,6 +78,12 @@ bool MbedSerial::rawWrite(uint8_t data)
     }
 
     return false;
+}
+
+void MbedSerial::startTransmit()
+{
+    _rawSerial.attach(mbed::callback(this, &MbedSerial::handleInterrupt),
+                      RawSerial::TxIrq);
 }
 
 void MbedSerial::handleInterrupt()
