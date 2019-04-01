@@ -85,6 +85,12 @@ class ISerial
      * \return true if write was successful, false otherwise
      */
     virtual bool rawWrite(uint8_t data) = 0;
+
+    /*!
+     * Starts transmission. This would usually set the according
+     * interrupt bits and/or install callbacks and interrupt handlers.
+     */
+    virtual void startTransmit() = 0;
 };
 
 }
