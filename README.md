@@ -1,58 +1,97 @@
-# IoT Communications Library
-- HW & FW supporting a range of devices 4G, 3G, 2G, Wifi
-- MQTT messaging protocol
+# EnAccess cellular library
 
-### Toolchain 
-- meson
-- ninja
+The EnAccess library is an easy to use embedded library for IOT communication using a
+cellular modem. It's focus is in transmission of MQTT packages using the
+Eclipse Paho MQTT Embedded C/C++ library, but it can be used for general
+IP communication as well. The library is platform agnostic and runs either on a
+bare metal microcontroller, as well as on top of an embedded OS.
+Dialing up the cellular modem, opening an IP channel and sending a MQTT packet
+can be done in less than 50 lines of code.
 
-### Unit Tests
+It's easy to add support for a new microcontroller or embedded os. There is also
+support for Unix (Linux, OS X) to test code on a PC without to need of having
+access to actual microcontroller hardware.
+
+## Supported microcontrollers:
+- STM32F1 with HAL
+
+## Supported cellular modems:
+- Simcom SIM7x00
+
+## Build and test
+
+### Build toolchain
+- Meson + Ninja
+
+### Unit tests
 - CppUnit
 
-### Code Guidelines & Linter
-- https://github.com/isocpp/CppCoreGuidelines
-- clang-format linter
-
-### Dependancies
+### Build setup
+To setup build dependencies, do:
 `git submodule init`
 `git submodule update`
 
-meson
-ninja
-python
-clang-format
-docker?
+### Native build (for testing an a host PC):
+Run `meson <builddirectory>` to generate build files. Finally, change
+to the builddirectory and run `ninja`.
 
-### Build
-- should the build be separate for each example project?
-- one main build in the root for unit tests
+### Cross build (for microcontrollers):
+Run `meson <builddirectory> --cross-file <crossfile>`
 
-`meson build`
-`meson build --cross-file stm32.cross.build`
+Example:
+`meson stm32build --cross-file stm32.cross.build`
 
-`cd build`
-`ninja`
+## Getting started
+The following code shows a simple example for STM32 which dials up the modem,
+connects to a host and sends an MQTT packet:
+```
+int main(int argc, char* argv[])
+{
+    // System configuration for microcontroller
+    System_Config();
 
-### Documentation
-- doxygen
+    // Set up serial port
+    Stm32Uart serial(UART4, GPIOC);
 
-### Directory Structure
-- root
-    - examples
-        - platform
-            - os
-    - dep
-        - library_name
-            - src
-    - src
-        - Config
-        - CommmDevices
-        - Modules
-        - Platform     <-- i don't think this belongs here
-    - test
-        - should match the src directory
+    // Set up modem driver
+    Sim7x00CommDevice commDev(serial);
 
+    // Set up task scheduler to call the modem driver's run() function
+    Task* taskList[] = {&commDev, NULL};
+    Scheduler s(&eTickFunction, taskList);
 
-# Notes
-- consider splitting out dependancy folder into src & examples. if i was implementing this library i want to be able to import the src dir, have access to all required depedancies but exclude any that are platform specific.
-- move platform folder our of src and into examples, see note above. I don't think any platform specific code should be in the src dir.
+    // Set up MQTT client
+    BlockingCommDevice bld(commDev, eTickFunction, yieldFunction, &s);
+    MQTT::Client<BlockingCommDevice, MQTTCountdown> client =
+        MQTT::Client<BlockingCommDevice, MQTTCountdown>(bld);
+
+    // Dial up modem and connect to IP host
+    commDev.setApn("internet");
+    commDev.setHostPort("test.mosquitto.org", 1883);
+    commDev.connect();
+    while (!commDev.isConnected()) {
+        yieldFunction(&s);
+    }
+
+    // Connect MQTT client
+    MQTTPacket_connectData data = MQTTPacket_connectData_initializer;
+    data.MQTTVersion = 3;
+    data.clientID.cstring = (char*)"enaccess";
+    client.connect(data);
+
+    // Send a message
+    MQTT::Message message;
+    message.qos = MQTT::QOS0;
+    message.payload = (void*)"Hello World!";
+    message.payloadlen = 13;
+    client.publish("enaccess/test", message);
+
+    // Disconnect everything
+    client.disconnect();
+    commDev.disconnect();
+    while (!commDev.isIdle()) {
+        yieldFunction(&s);
+    }
+}
+```
+See `examples/` directory for full example code.
