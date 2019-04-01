@@ -54,6 +54,8 @@ class BufferedSerial : public IBufferedSerial
 
     virtual uint16_t write(const char* data, uint16_t size) override;
 
+    virtual uint16_t write(const char* data) override;
+
     virtual void write(char data) override;
 
     virtual bool canReadLine() const override;
