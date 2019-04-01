@@ -18,6 +18,29 @@ access to actual microcontroller hardware.
 ## Supported cellular modems:
 - Simcom SIM7x00
 
+## Build and test
+
+### Build toolchain
+- Meson + Ninja
+
+### Unit tests
+- CppUnit
+
+### Build setup
+To setup build dependencies, do:
+`git submodule init`
+`git submodule update`
+
+### Native build (for testing an a host PC):
+Run `meson <builddirectory>` to generate build files. Finally, change
+to the builddirectory and run `ninja`.
+
+### Cross build (for microcontrollers):
+Run `meson <builddirectory> --cross-file <crossfile>`
+
+Example:
+`meson stm32build --cross-file stm32.cross.build`
+
 ## Getting started
 The following code shows a simple example for STM32 which dials up the modem,
 connects to a host and sends an MQTT packet:
