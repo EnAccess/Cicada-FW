@@ -80,8 +80,10 @@ uint16_t BufferedSerial::write(const char* data, uint16_t size)
     uint16_t writeCount = 0;
 
     while (writeCount < size) {
-        write(data[writeCount++]);
+        copyToBuffer(data[writeCount++]);
     }
+
+    startTransmit();
 
     return writeCount;
 }
@@ -93,13 +95,21 @@ uint16_t BufferedSerial::write(const char* data)
     uint16_t writeCount = 0;
 
     while (data[writeCount] != '\0' && writeCount < space) {
-        write(data[writeCount++]);
+        copyToBuffer(data[writeCount++]);
     }
+
+    startTransmit();
 
     return writeCount;
 }
 
 void BufferedSerial::write(char data)
+{
+    copyToBuffer(data);
+    startTransmit();
+}
+
+void BufferedSerial::copyToBuffer(char data)
 {
     eDisableInterrupts();
     _writeBuffer.push(data);
@@ -150,7 +160,7 @@ void BufferedSerial::transferToAndFromBuffer()
         }
     }
 
-    if (rawBytesAvailable() && !_readBuffer.isFull()) {
+    if (!_readBuffer.isFull()) {
         uint8_t data;
         if (rawRead(data)) {
             _readBuffer.push(data);

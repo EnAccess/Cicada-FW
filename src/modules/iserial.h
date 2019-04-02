@@ -72,12 +72,6 @@ class ISerial
 
   protected:
     /*!
-     * Number of bytes available for reading.
-     * \return Number of bytes available for reading
-     */
-    virtual uint16_t rawBytesAvailable() const = 0;
-
-    /*!
      * Reads one byte of data from the device. If there is no
      * data to read, the returned result is undefined.
      * \param data Place to store data read
@@ -91,6 +85,12 @@ class ISerial
      * \return true if write was successful, false otherwise
      */
     virtual bool rawWrite(uint8_t data) = 0;
+
+    /*!
+     * Starts transmission. This would usually set the according
+     * interrupt bits and/or install callbacks and interrupt handlers.
+     */
+    virtual void startTransmit() = 0;
 };
 
 }

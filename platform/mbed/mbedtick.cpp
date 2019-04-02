@@ -21,27 +21,35 @@
  *
  */
 
-#ifndef EDEFINES_H
-#define EDEFINES_H
+#include "mbed.h"
+#include "tick.h"
 
-#ifndef E_MULTITON_MAX_INSTANCES
-#define E_MULTITON_MAX_INSTANCES 2
-#endif
+class EnaccessTicker : public Ticker
+{
+  public:
+    EnaccessTicker() :
+        _millis(0)
+    {
+        attach_us(mbed::callback(this, &EnaccessTicker::increase), 1000);
+    }
+ 
+    void increase()
+    {
+        _millis++;
+    }
+ 
+    E_TICK_TYPE read()
+    {
+        return _millis;
+    }
+ 
+  private:
+    E_TICK_TYPE _millis;
+};
 
-#ifndef E_TICK_TYPE
-#define E_TICK_TYPE uint32_t
-#endif
+static EnaccessTicker g_ticker;
 
-#ifndef E_SERIAL_BUFFERSIZE
-#define E_SERIAL_BUFFERSIZE 1504
-#endif
-
-#ifndef E_NETWORK_BUFFERSIZE
-#define E_NETWORK_BUFFERSIZE 1200
-#endif
-
-#ifndef E_INTERRUPT_PRIORITY
-#define E_INTERRUPT_PRIORITY 1
-#endif
-
-#endif
+E_TICK_TYPE eTickFunction()
+{
+    return g_ticker.read();
+}

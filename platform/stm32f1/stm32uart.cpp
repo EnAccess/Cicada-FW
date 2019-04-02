@@ -97,12 +97,16 @@ bool Stm32Uart::open()
     } else if (_handle.Instance == USART3) {
         __HAL_RCC_USART3_CLK_ENABLE();
         _uartInterruptInstance = USART3_IRQn;
+#ifdef UART4
     } else if (_handle.Instance == UART4) {
         __HAL_RCC_UART4_CLK_ENABLE();
         _uartInterruptInstance = UART4_IRQn;
+#endif
+#ifdef UART5
     } else if (_handle.Instance == UART5) {
         __HAL_RCC_UART5_CLK_ENABLE();
         _uartInterruptInstance = UART5_IRQn;
+#endif
     } else {
         return false;
     }
@@ -118,10 +122,14 @@ bool Stm32Uart::open()
         __HAL_RCC_GPIOD_CLK_ENABLE();
     else if (_uartPort == GPIOE)
         __HAL_RCC_GPIOE_CLK_ENABLE();
+#ifdef GPIOF
     else if (_uartPort == GPIOF)
         __HAL_RCC_GPIOF_CLK_ENABLE();
+#endif
+#ifdef GPIOG
     else if (_uartPort == GPIOG)
         __HAL_RCC_GPIOG_CLK_ENABLE();
+#endif
 
     // Configure GPIO pins
     GPIO_InitTypeDef gpio = { 0 };
@@ -175,11 +183,6 @@ const char* Stm32Uart::portName() const
     return NULL;
 }
 
-uint16_t Stm32Uart::rawBytesAvailable() const
-{
-    return __HAL_UART_GET_FLAG(&_handle, UART_FLAG_RXNE) ? 1 : 0;
-}
-
 bool Stm32Uart::rawRead(uint8_t& data)
 {
     if (__HAL_UART_GET_FLAG(&_handle, UART_FLAG_RXNE)) {
@@ -200,19 +203,8 @@ bool Stm32Uart::rawWrite(uint8_t data)
     return false;
 }
 
-uint16_t Stm32Uart::write(const char* data, uint16_t size)
+void Stm32Uart::startTransmit()
 {
-    uint16_t written = BufferedSerial::write(data, size);
-
-    SET_BIT(_handle.Instance->CR1, USART_CR1_TXEIE);
-
-    return written;
-}
-
-void Stm32Uart::write(char data)
-{
-    BufferedSerial::write(data);
-
     SET_BIT(_handle.Instance->CR1, USART_CR1_TXEIE);
 }
 

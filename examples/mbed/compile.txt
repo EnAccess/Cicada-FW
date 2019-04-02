@@ -1,0 +1,9 @@
+This example can be compiled using Mbed's own build system.
+
+First, to download mbed sources required for compiling, run:
+
+> mbed deploy
+
+To actually compile the example, run:
+
+> mbed compile -t GCC_ARM --profile debug.json

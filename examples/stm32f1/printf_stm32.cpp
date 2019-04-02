@@ -11,8 +11,6 @@
 
 using namespace EnAccess;
 
-#define USE_UART USART3
-
 static void SystemClock_Config(void);
 
 class SerialTask : public Task
@@ -58,7 +56,7 @@ int main(int argc, char* argv[])
     HAL_Init();
     SystemClock_Config();
 
-    Stm32Uart serial(USE_UART, GPIOB);
+    Stm32Uart serial;
     SerialTask task(serial);
 
     Task* taskList[] = {&task, NULL};
@@ -102,18 +100,17 @@ extern "C"
         HAL_IncTick();
     }
 
-    void USART3_IRQHandler()
+    void USART2_IRQHandler()
     {
-        Stm32Uart* instance = Stm32Uart::getInstance(USE_UART);
-        if (instance)
-            instance->handleInterrupt();
+        static Stm32Uart* instance = Stm32Uart::getInstance(USART2);
+        instance->handleInterrupt();
     }
 
     void _putchar(char c)
     {
         static Stm32Uart* serial = NULL;
         if (!serial) {
-            serial = Stm32Uart::getInstance(USE_UART);
+            serial = Stm32Uart::getInstance(USART2);
         }
         serial->write(c);
     }

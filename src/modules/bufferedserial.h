@@ -75,6 +75,9 @@ class BufferedSerial : public IBufferedSerial
   protected:
     LineCircularBuffer<E_SERIAL_BUFFERSIZE> _readBuffer;
     LineCircularBuffer<E_SERIAL_BUFFERSIZE> _writeBuffer;
+
+  private:
+    void copyToBuffer(char data);
 };
 
 /*!

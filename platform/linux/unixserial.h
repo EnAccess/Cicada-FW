@@ -72,11 +72,11 @@ class UnixSerial : public BufferedSerialTask
     }
 
   protected:
-    virtual uint16_t rawBytesAvailable() const;
-
     virtual bool rawRead(uint8_t& data);
 
     virtual bool rawWrite(uint8_t data);
+
+    virtual void startTransmit() { }
 
   private:
     bool _isOpen;

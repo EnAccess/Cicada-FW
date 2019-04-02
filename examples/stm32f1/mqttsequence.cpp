@@ -39,7 +39,7 @@ int main(int argc, char* argv[])
     HAL_Init();
     SystemClock_Config();
 
-    Stm32Uart serial(UART4, GPIOC);
+    Stm32Uart serial(USART1, GPIOA, GPIO_PIN_9, GPIO_PIN_10);
     Sim7x00CommDevice commDev(serial);
 
     Task* taskList[] = {&commDev, NULL};
@@ -132,9 +132,9 @@ extern "C"
         HAL_IncTick();
     }
 
-    void UART4_IRQHandler()
+    void USART1_IRQHandler()
     {
-        static Stm32Uart* instance = Stm32Uart::getInstance(UART4);
+        static Stm32Uart* instance = Stm32Uart::getInstance(USART1);
         instance->handleInterrupt();
     }
 }

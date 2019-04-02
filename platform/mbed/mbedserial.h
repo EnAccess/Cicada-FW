@@ -21,27 +21,37 @@
  *
  */
 
-#ifndef EDEFINES_H
-#define EDEFINES_H
+#ifndef MBEDSERIAL_H
+#define MBEDSERIAL_H
 
-#ifndef E_MULTITON_MAX_INSTANCES
-#define E_MULTITON_MAX_INSTANCES 2
-#endif
+#include "mbed.h"
+#include "bufferedserial.h"
 
-#ifndef E_TICK_TYPE
-#define E_TICK_TYPE uint32_t
-#endif
+namespace EnAccess {
 
-#ifndef E_SERIAL_BUFFERSIZE
-#define E_SERIAL_BUFFERSIZE 1504
-#endif
+class MbedSerial : public BufferedSerial
+{
+  public:
+    MbedSerial(PinName tx = SERIAL_TX, PinName rx = SERIAL_RX);
 
-#ifndef E_NETWORK_BUFFERSIZE
-#define E_NETWORK_BUFFERSIZE 1200
-#endif
+    virtual bool open() override;
+    virtual bool isOpen() override;
+    virtual bool setSerialConfig(uint32_t baudRate, uint8_t dataBits) override;
+    virtual void close() override;
+    virtual const char* portName() const override;
+    virtual bool rawRead(uint8_t& data) override;
+    virtual bool rawWrite(uint8_t data) override;
+    virtual void startTransmit() override;
 
-#ifndef E_INTERRUPT_PRIORITY
-#define E_INTERRUPT_PRIORITY 1
-#endif
+    void handleInterrupt();
+
+  private:
+    // Private constructors to avoid copying
+    MbedSerial(const MbedSerial&);
+    MbedSerial& operator=(const MbedSerial&);
+
+    mbed::RawSerial _rawSerial;
+};
+}
 
 #endif
