@@ -3,7 +3,8 @@ You can download the Mbed CLI here
 https://os.mbed.com/docs/mbed-os/v5.12/quick-start/offline-with-mbed-cli.html
 
 If running Windows:
-- run these git commands before continuing (might need to run in admin termina)
+- run these git commands before continuing (might need to run
+  in admin terminal)
 > git config core.symlinks true
 > git reset --hard
 
