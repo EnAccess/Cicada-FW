@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include "scheduler.h"
 #include "stm32uart.h"
-#include "sim7x00.h"
+#include "sim800.h"
 #include "tick.h"
 #include "stm32f1xx_hal.h"
 #include "printf.h"
@@ -19,7 +19,7 @@ static void SystemClock_Config(void);
 class IPCommTask : public Task
 {
   public:
-    IPCommTask(Sim7x00CommDevice& commDev) :
+    IPCommTask(Sim800CommDevice& commDev) :
         m_commDev(commDev),
         m_i(0)
     { }
@@ -69,7 +69,7 @@ class IPCommTask : public Task
     }
 
   private:
-    Sim7x00CommDevice& m_commDev;
+    Sim800CommDevice& m_commDev;
     int m_i;
 };
 
@@ -81,7 +81,7 @@ int main(int argc, char* argv[])
 
     Stm32Uart debug;
     Stm32Uart serial(USART1, GPIOA, GPIO_PIN_9, GPIO_PIN_10);
-    Sim7x00CommDevice commDev(serial);
+    Sim800CommDevice commDev(serial);
     IPCommTask task(commDev);
 
     Task* taskList[] = {&task, &commDev, NULL};

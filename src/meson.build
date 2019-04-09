@@ -7,6 +7,8 @@ src_inc = include_directories([
 src_files = files([
     'commdevices/sim7x00.h',
     'commdevices/sim7x00.cpp',
+    'commdevices/sim800.h',
+    'commdevices/sim800.cpp',
     'commdevices/blockingcommdev.h',
     'commdevices/blockingcommdev.cpp',
     'modules/bufferedserial.h',
