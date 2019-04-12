@@ -28,6 +28,8 @@
 #include "iipcommdevice.h"
 #include <stdint.h>
 
+#define LINE_MAX_LENGTH 60
+
 namespace EnAccess {
 
 /*!
@@ -95,7 +97,7 @@ class Sim800CommDevice : public IIPCommDevice
         sendCipstart,
         finalizeConnect,
         connected,
-        sendCipsend,
+        sendData,
         sendCiprxget4,
         sendCiprxget2,
         waitReceive,
@@ -109,6 +111,8 @@ class Sim800CommDevice : public IIPCommDevice
     IBufferedSerial& _serial;
     CircularBuffer<uint8_t, E_NETWORK_BUFFERSIZE> _readBuffer;
     CircularBuffer<uint8_t, E_NETWORK_BUFFERSIZE> _writeBuffer;
+    char _lineBuffer[LINE_MAX_LENGTH + 1];
+    uint8_t _lbFill;
     SendState _sendState;
     ReplyState _replyState;
     const char* _apn;

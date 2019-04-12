@@ -28,7 +28,7 @@ class IPCommTask : public Task
     {
         E_BEGIN_TASK
 
-        printf("Conneting ...\r\n");
+        printf("Connecting ...\r\n");
 
         m_commDev.setApn("internet");
         m_commDev.setHostPort("wttr.in", 80);
