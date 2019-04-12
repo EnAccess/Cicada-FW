@@ -28,7 +28,7 @@ class IPCommTask : public Task
     {
         E_BEGIN_TASK
 
-        printf("Conneting ...\n");
+        printf("Conneting ...\r\n");
 
         m_commDev.setApn("internet");
         m_commDev.setHostPort("wttr.in", 80);
@@ -36,7 +36,7 @@ class IPCommTask : public Task
 
         E_REENTER_COND(m_commDev.isConnected());
 
-        printf("*** Connected! ***\n");
+        printf("*** Connected! ***\r\n");
 
         {
             const char str[] =
@@ -53,17 +53,22 @@ class IPCommTask : public Task
             if (m_commDev.bytesAvailable()) {
                 char buf[41];
                 uint16_t bytesRead = m_commDev.read((uint8_t*)buf, 40);
-                buf[bytesRead] = '\0';
-                printf("%s", buf);
+                for (int i=0; i<bytesRead; i++)
+                {
+                    if (buf[i] == '\n') {
+                        _putchar('\r');
+                    }
+                    _putchar(buf[i]);
+                }
             } else {
-                E_REENTER_DELAY(10);
+                E_REENTER_DELAY(20);
             }
         }
 
         m_commDev.disconnect();
         E_REENTER_COND(m_commDev.isIdle());
 
-        printf("*** Disconnected ***\n");
+        printf("*** Disconnected ***\r\n");
 
         E_END_TASK
     }
@@ -78,6 +83,8 @@ int main(int argc, char* argv[])
     // System configuration
     HAL_Init();
     SystemClock_Config();
+
+    HAL_Delay(2000);
 
     Stm32Uart debug;
     Stm32Uart serial(USART1, GPIOA, GPIO_PIN_9, GPIO_PIN_10);

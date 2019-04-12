@@ -27,6 +27,8 @@
 #include <cstdio>
 #include <cstring>
 
+#include "printf.h"
+
 using namespace EnAccess;
 
 #define LINE_MAX_LENGTH 60
@@ -50,7 +52,7 @@ const char* Sim800CommDevice::_quoteEndStr = "\"\r\n";
 Sim800CommDevice::Sim800CommDevice(IBufferedSerial& serial) :
     _serial(serial),
     _sendState(notConnected),
-    _replyState(normalReply),
+    _replyState(defaultReply),
     _apn(NULL),
     _host(NULL),
     _port(0),
@@ -127,7 +129,6 @@ bool Sim800CommDevice::handleDisconnect(SendState nextState)
 {
     if (_stateBooleans & DISCONNECT_PENDING) {
         _stateBooleans &= ~DISCONNECT_PENDING;
-        _replyState = noReply;
         _sendState = nextState;
 
         return true;
@@ -140,7 +141,6 @@ bool Sim800CommDevice::handleConnect(SendState nextState)
 {
     if (_stateBooleans & CONNECT_PENDING) {
         _stateBooleans &= ~CONNECT_PENDING;
-        _replyState = noReply;
         _sendState = nextState;
 
         return true;
@@ -169,35 +169,12 @@ void Sim800CommDevice::run()
         return;
     }
 
-    // If a modem reset is pending, handle it
-    if (_stateBooleans & RESET_PENDING) {
-        _serial.flushReceiveBuffers();
-        _stateBooleans = LINE_READ;
-        _bytesToRead = 0;
-        _bytesToReceive = 0;
-        _bytesToWrite = 0;
-        if (_sendState >= connecting && _sendState <= receiving)
-            _sendState = connecting;
-        else
-            _sendState = notConnected;
-        const char str[] = "AT+CRESET";
-        _serial.write(str, sizeof(str) - 1);
-        _serial.write(_lineEndStr, LINE_END_STR_LENGTH);
-        _replyState = normalReply;
-        _waitForReply = "RDY";
-
-        setDelay(4000);
-
-        return;
-    }
-
     // Check if there is a reply from the modem
     if ((_stateBooleans & LINE_READ) && _serial.canReadLine()) {
         char data[LINE_MAX_LENGTH + 1];
         uint8_t size = _serial.readLine(data, LINE_MAX_LENGTH);
         data[size] = '\0';
 
-        /*
         if (_sendState < connected || _sendState > receiving)
         {
             if (_waitForReply)
@@ -209,17 +186,15 @@ void Sim800CommDevice::run()
                        "_waitForReply=NULL, data: %s",
                        _sendState, _replyState, data);
         }
-        */
 
         // If we sent a command, we process the reply here
         if (_waitForReply) {
             if (strncmp(data, _waitForReply, strlen(_waitForReply)) == 0) {
-                _replyState = normalReply;
                 _waitForReply = NULL;
             } else if (strncmp(data, "ERROR", 5) == 0) {
                 _stateBooleans |= RESET_PENDING;
 
-                _replyState = noReply;
+                _replyState = defaultReply;
                 _waitForReply = NULL;
                 return;
             }
@@ -227,22 +202,26 @@ void Sim800CommDevice::run()
 
         // Depending on the reply to expect, handle different cases
         switch (_replyState) {
-        case netopen:
-            if (strncmp(data, "+NETOPEN: 1", 11) == 0) {
-                setDelay(2000);
-                _sendState = sendCipstart;
-                _waitForReply = NULL;
-                _replyState = noReply;
-                return;
+        case cifsr:
+        {
+            // Validate IP address by checking for three dots
+            uint8_t i = 0, p = 0;
+            while (data[i]) {
+                if (data[i++] == '.')
+                    p++;
             }
-            break;
+            if (p == 3) {
+                _replyState = defaultReply;
+            }
+        }
+        break;
 
         case cdnsgip:
             if (strncmp(data, "+CDNSGIP: 1", 11) == 0) {
-                _replyState = normalReply;
-
                 char* tmpStr;
                 uint8_t i = 0, q = 0;
+
+                _replyState = defaultReply;
 
                 // Validate DNS reply string
                 while (data[i]) {
@@ -271,21 +250,22 @@ void Sim800CommDevice::run()
             break;
 
         case ciprxget4:
-            if (strncmp(data, "+CIPRXGET: 4,0,", 15) == 0) {
+            if (strncmp(data, "+CIPRXGET: 4,", 13) == 0) {
                 int bytesToReceive;
-                sscanf(data + 15, "%d", &bytesToReceive);
+                sscanf(data + 13, "%d", &bytesToReceive);
                 _bytesToReceive += bytesToReceive;
+                _replyState = defaultReply;
             }
             break;
 
         case ciprxget2:
-            if (strncmp(data, "+CIPRXGET: 2,0,", 15) == 0) {
+            if (strncmp(data, "+CIPRXGET: 2,", 13) == 0) {
                 int bytesToReceive;
-                sscanf(data + 15, "%d", &bytesToReceive);
+                sscanf(data + 13, "%d", &bytesToReceive);
                 _bytesToReceive -= bytesToReceive;
                 _bytesToRead += bytesToReceive;
                 _stateBooleans &= ~LINE_READ;
-                _replyState = noReply;
+                _replyState = defaultReply;
                 _sendState = receiving;
             }
             break;
@@ -296,9 +276,9 @@ void Sim800CommDevice::run()
 
         // In connected state, check for new data or IP connection close
         if (_sendState >= connected) {
-            if (strncmp(data, "+CIPRXGET: 1,0", 14) == 0) {
+            if (strncmp(data, "+CIPRXGET: 1", 12) == 0) {
                 _stateBooleans |= DATA_PENDING;
-            } else if (strncmp(data, "+IPCLOSE: 0,", 12) == 0) {
+            } else if (strncmp(data, "CLOSED,", 6) == 0) {
                 _stateBooleans &= ~IP_CONNECTED;
             }
         }
@@ -318,7 +298,7 @@ void Sim800CommDevice::run()
     }
 
     // Don't go on when waiting for a reply
-    if (_waitForReply)
+    if (_waitForReply || _replyState != defaultReply)
         return;
 
     // Don't go on if space in write buffer is low
@@ -335,7 +315,16 @@ void Sim800CommDevice::run()
     case connecting:
         setDelay(10);
         _stateBooleans |= LINE_READ;
-        SEND_COMMAND("ATE1", _okStr, sendCstt);
+        SEND_COMMAND("ATE1", _okStr, sendCipmode);
+
+    case sendCipmode:
+        SEND_COMMAND("AT+CIPMODE=0", _okStr, sendCiprxget);
+
+    case sendCiprxget:
+        SEND_COMMAND("AT+CIPRXGET=1", _okStr, sendCstt);
+
+    case sendCipsprt:
+        SEND_COMMAND("AT+CIPSPRT=0", _okStr, sendCstt);
 
     case sendCstt: {
         const char str[] = "AT+CSTT=\"";
@@ -351,24 +340,26 @@ void Sim800CommDevice::run()
     case sendCiicr:
         SEND_COMMAND("AT+CIICR", _okStr, sendCifsr);
 
-    case sendCifsr:
-        SEND_COMMAND("AT+CIFSR", _okStr, sendCipmode);
+    case sendCifsr: {
+        const char str[] = "AT+CIFSR";
+        _serial.write(str, sizeof(str) - 1);
+        _serial.write(_lineEndStr, LINE_END_STR_LENGTH);
 
-    case sendCipmode:
-        SEND_COMMAND("AT+CIPMODE=0", _okStr, sendCiprxget);
-
-    case sendCiprxget:
-        SEND_COMMAND("AT+CIPRXGET=1", _okStr, sendDnsQuery);
+        _replyState = cifsr;
+        _sendState = sendDnsQuery;
+        break;
+    }
 
     case sendDnsQuery: {
         if (_serial.spaceAvailable() < strlen(_host) + 20)
             break;
-        _replyState = cdnsgip;
+
         const char str[] = "AT+CDNSGIP=\"";
         _serial.write(str, sizeof(str) - 1);
         _serial.write(_host, strlen(_host));
         _serial.write(_quoteEndStr, QUOTE_END_STR_LENGTH);
 
+        _replyState = cdnsgip;
         _waitForReply = _okStr;
         _sendState = sendCipstart;
         break;
@@ -394,7 +385,7 @@ void Sim800CommDevice::run()
 
     case finalizeConnect:
         setDelay(0);
-        _replyState = normalReply;
+        _replyState = defaultReply;
         _sendState = connected;
         _stateBooleans |= IP_CONNECTED;
         break;
@@ -409,7 +400,7 @@ void Sim800CommDevice::run()
 
                 _stateBooleans &= ~LINE_READ;
 
-                const char str[] = "AT+CIPSEND=0,";
+                const char str[] = "AT+CIPSEND=";
                 char sizeStr[6];
 
                 sprintf(sizeStr, "%d", _bytesToWrite);
@@ -419,6 +410,8 @@ void Sim800CommDevice::run()
                 _serial.write(_lineEndStr, LINE_END_STR_LENGTH);
 
                 _sendState = sendCipsend;
+
+                setDelay(10);
             }
         } else if (_stateBooleans & DATA_PENDING) {
             _stateBooleans &= ~DATA_PENDING;
@@ -438,7 +431,7 @@ void Sim800CommDevice::run()
                     _serial.write(_writeBuffer.pull());
                 }
                 _stateBooleans |= LINE_READ;
-                _waitForReply = _okStr;
+                _waitForReply = "SEND OK";
                 _sendState = connected;
             }
         }
@@ -447,7 +440,7 @@ void Sim800CommDevice::run()
 
     case sendCiprxget4:
         _replyState = ciprxget4;
-        SEND_COMMAND("AT+CIPRXGET=4,0", _okStr, sendCiprxget2);
+        SEND_COMMAND("AT+CIPRXGET=4", _okStr, sendCiprxget2);
 
     case sendCiprxget2:
         if (handleDisconnect(sendCipclose))
@@ -461,7 +454,7 @@ void Sim800CommDevice::run()
                 if (bytesToReceive > _readBuffer.availableSpace())
                     bytesToReceive = _readBuffer.availableSpace();
 
-                const char str[] = "AT+CIPRXGET=2,0,";
+                const char str[] = "AT+CIPRXGET=2,";
                 char sizeStr[6];
                 sprintf(sizeStr, "%d", bytesToReceive);
                 _serial.write(str, sizeof(str) - 1);
@@ -471,10 +464,8 @@ void Sim800CommDevice::run()
                 _sendState = waitReceive;
             }
         } else if (_stateBooleans & IP_CONNECTED) {
-            _replyState = normalReply;
             _sendState = connected;
         } else {
-            _replyState = noReply;
             _sendState = ipUnconnected;
         }
 
@@ -491,7 +482,6 @@ void Sim800CommDevice::run()
                     _bytesToRead--;
                 }
                 _stateBooleans |= LINE_READ;
-                _replyState = normalReply;
                 _waitForReply = _okStr;
             }
         } else if (_bytesToReceive > 0) {
@@ -502,14 +492,22 @@ void Sim800CommDevice::run()
         break;
 
     case ipUnconnected:
-        if (handleDisconnect(sendCipclose))
+        if (handleDisconnect(finalizeDisconnect))
             break;
 
         handleConnect(sendCipstart);
         break;
 
     case sendCipclose:
-        SEND_COMMAND("AT+CIPCLOSE=0", "CLOSE OK", finalizeDisconnect);
+        if (_stateBooleans & IP_CONNECTED) {
+            SEND_COMMAND("AT+CIPCLOSE=0", "CLOSE OK", sendCipshut);
+        } else {
+            _sendState = sendCipshut;
+        }
+        break;
+
+    case sendCipshut:
+        SEND_COMMAND("AT+CIPSHUT", "SHUT OK", finalizeDisconnect);
 
     case finalizeDisconnect:
         _sendState = notConnected;

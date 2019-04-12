@@ -72,17 +72,25 @@ class Sim800CommDevice : public IIPCommDevice
     virtual void run();
 
   private:
-    enum ReplyState { noReply, normalReply, expectConnect, netopen, cdnsgip, ciprxget4, ciprxget2 };
+    enum ReplyState {
+        defaultReply,
+        cifsr,
+        cdnsgip,
+        ciprxget4,
+        ciprxget2
+    };
+
     enum SendState {
         notConnected,
         serialError,
         dnsError,
         connecting,
+        sendCipmode,
+        sendCiprxget,
+        sendCipsprt,
         sendCstt,
         sendCiicr,
         sendCifsr,
-        sendCipmode,
-        sendCiprxget,
         sendDnsQuery,
         sendCipstart,
         finalizeConnect,
@@ -94,6 +102,7 @@ class Sim800CommDevice : public IIPCommDevice
         receiving,
         ipUnconnected,
         sendCipclose,
+        sendCipshut,
         finalizeDisconnect
     };
 

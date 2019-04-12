@@ -12,7 +12,7 @@
 
 #include "scheduler.h"
 #include "stm32uart.h"
-#include "sim7x00.h"
+#include "sim800.h"
 #include "blockingcommdev.h"
 #include "tick.h"
 #include "mqttcountdown.h"
@@ -52,7 +52,7 @@ int main(int argc, char* argv[])
 
     Stm32Uart debug;
     Stm32Uart serial(USART1, GPIOA, GPIO_PIN_9, GPIO_PIN_10);
-    Sim7x00CommDevice commDev(serial);
+    Sim800CommDevice commDev(serial);
 
     debug.open();
 

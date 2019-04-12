@@ -45,8 +45,8 @@ else
     if (enaccess_build_target == 'stm32f1')
         subdir('platform/stm32f1')
         examples_list = ['blinky_stm32', 'serial_stm32', 'printf_stm32',
-                         'dualport_stm32', 'ipcommdevice_stm32',
-                         'blockingmqtt_stm32', 'mqttsequence', 'simplemqtt']
+                         'dualport_stm32', 'ipcommdevice_stm32', 'blockingmqtt_stm32',
+                         'mqttsequence', 'simplemqtt']
         examples_dir = 'stm32f1'
     else
         error('Unsupported build target')
