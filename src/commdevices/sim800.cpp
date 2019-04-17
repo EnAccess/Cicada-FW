@@ -25,6 +25,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <cstdio>
+#include <cstring>
 
 using namespace EnAccess;
 
@@ -50,7 +51,22 @@ void Sim800CommDevice::run()
 
         // Log the current modem states
         logStates(_sendState, _replyState);
-        
+
+        // Handle deactivated or error state
+        if (strncmp(_lineBuffer, "+PDP: DEACT", 11) == 0 ||
+            strncmp(_lineBuffer, "+CME ERROR", 10) == 0) {
+            _serial.flushReceiveBuffers();
+            _bytesToRead = 0;
+            _bytesToReceive = 0;
+            _bytesToWrite = 0;
+            _sendState = sendCipshut;
+            _replyState = okReply;
+            _waitForReply = NULL;
+            if (_connectState >= intermediate) {
+                connect();
+            }
+        }
+
         // If sent a command, process standard reply
         processStandardReply();
 
