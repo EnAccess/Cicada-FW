@@ -56,6 +56,11 @@ TEST_GROUP(BufferedSerialTest)
             return false;
         }
 
+        virtual void startTransmit()
+        {
+            mock().actualCall("startTransmit");
+        }
+
         CircularBuffer<char, 120> _inBufferMock;
         CircularBuffer<char, 120> _outBufferMock;
     };
@@ -85,6 +90,8 @@ TEST(BufferedSerialTest, ShouldHaveDataInMockSerialAfterWrite)
     const uint8_t SIZE = 20;
     char dataIn[SIZE] = "123456789 987654321";
     char dataOut[SIZE];
+
+    mock().expectOneCall("startTransmit");
 
     bs.write(dataIn, SIZE);
 
