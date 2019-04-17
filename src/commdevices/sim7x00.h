@@ -25,7 +25,7 @@
 #define E_SIM7x00_H
 
 #include "bufferedserial.h"
-#include "iipcommdevice.h"
+#include "simcommdevice.h"
 #include <stdint.h>
 
 namespace EnAccess {
@@ -34,7 +34,7 @@ namespace EnAccess {
  * Driver for the Simcom SIM7x00 series of 4G cellular modems.
  */
 
-class Sim7x00CommDevice : public IIPCommDevice
+class Sim7x00CommDevice : public SimCommDevice
 {
   public:
     /*!
@@ -42,37 +42,13 @@ class Sim7x00CommDevice : public IIPCommDevice
      */
     Sim7x00CommDevice(IBufferedSerial& serial);
 
-    virtual void setHostPort(const char* host, uint16_t port);
-
-    /*!
-     * Set's the cellular network APN.
-     * \param apn The network APN
-     */
-    virtual void setApn(const char* apn);
-
-    virtual bool connect();
-
-    virtual void disconnect();
-
-    virtual bool isConnected();
-
-    virtual bool isIdle();
-
-    virtual uint16_t bytesAvailable() const;
-
-    virtual uint16_t spaceAvailable() const;
-
-    virtual uint16_t read(uint8_t* data, uint16_t maxSize);
-
-    virtual uint16_t write(const uint8_t* data, uint16_t size);
-
     /*!
      * Actually performs communication with the modem.
      */
     virtual void run();
 
   private:
-    enum ReplyState { noReply, normalReply, expectConnect, netopen, cdnsgip, ciprxget4, ciprxget2 };
+    enum ReplyState { okReply, expectConnect, netopen, cdnsgip, ciprxget4, ciprxget2 };
     enum SendState {
         notConnected,
         serialError,
@@ -89,7 +65,7 @@ class Sim7x00CommDevice : public IIPCommDevice
         sendCipopen,
         finalizeConnect,
         connected,
-        sendCipsend,
+        sendData,
         sendCiprxget4,
         sendCiprxget2,
         waitReceive,
@@ -99,28 +75,6 @@ class Sim7x00CommDevice : public IIPCommDevice
         sendAth,
         finalizeDisconnect
     };
-
-    IBufferedSerial& _serial;
-    CircularBuffer<uint8_t, E_NETWORK_BUFFERSIZE> _readBuffer;
-    CircularBuffer<uint8_t, E_NETWORK_BUFFERSIZE> _writeBuffer;
-    SendState _sendState;
-    ReplyState _replyState;
-    const char* _apn;
-    const char* _host;
-    char _ip[16];
-    uint16_t _port;
-    const char* _waitForReply;
-    uint8_t _stateBooleans;
-    uint16_t _bytesToWrite;
-    uint16_t _bytesToReceive;
-    uint16_t _bytesToRead;
-
-    static const char* _okStr;
-    static const char* _lineEndStr;
-    static const char* _quoteEndStr;
-
-    bool handleDisconnect(SendState nextState);
-    bool handleConnect(SendState nextState);
 };
 }
 

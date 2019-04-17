@@ -21,66 +21,51 @@
  *
  */
 
-#ifndef E_SIM800_H
-#define E_SIM800_H
+#ifndef ECOMMDEVICE_H
+#define ECOMMDEVICE_H
 
+#include "task.h"
 #include "bufferedserial.h"
-#include "simcommdevice.h"
-#include <stdint.h>
+#include "circularbuffer.h"
+#include "iipcommdevice.h"
 
 namespace EnAccess {
 
-/*!
- * Driver for the Simcom SIM800 series of 2G cellular modems.
- */
-
-class Sim800CommDevice : public SimCommDevice
+class IPCommDevice : public IIPCommDevice, public Task
 {
   public:
-    /*!
-     * \param serial Serial driver for the port the modem is connected to.
-     */
-    Sim800CommDevice(IBufferedSerial& serial);
+    IPCommDevice();
+    virtual ~IPCommDevice() { }
 
-    /*!
-     * Actually performs communication with the modem.
-     */
-    virtual void run();
+    virtual void setHostPort(const char* host, uint16_t port);
+    virtual bool connect();
+    virtual void disconnect();
+    virtual bool isConnected();
+    virtual bool isIdle();
+    virtual uint16_t bytesAvailable() const;
+    virtual uint16_t spaceAvailable() const;
+    virtual uint16_t read(uint8_t* data, uint16_t maxSize);
+    virtual uint16_t write(const uint8_t* data, uint16_t size);
 
-  private:
-    enum ReplyState {
-        okReply,
-        cifsr,
-        cdnsgip,
-        ciprxget4,
-        ciprxget2
-    };
-
-    enum SendState {
+  protected:
+    enum ConnectState {
         notConnected,
-        serialError,
-        connecting,
-        sendCiprxget,
-        sendCipmux,
-        sendCipsprt,
-        sendCstt,
-        sendCiicr,
-        sendCifsr,
-        sendDnsQuery,
-        sendCipstart,
-        finalizeConnect,
+        intermediate,
         connected,
-        sendData,
-        sendCiprxget4,
-        sendCiprxget2,
-        waitReceive,
-        receiving,
-        ipUnconnected,
-        sendCipclose,
-        sendCipshut,
-        finalizeDisconnect
+        transmitting,
+        generalError,
+        dnsError,
     };
+
+    CircularBuffer<uint8_t, E_NETWORK_BUFFERSIZE> _readBuffer;
+    CircularBuffer<uint8_t, E_NETWORK_BUFFERSIZE> _writeBuffer;
+    const char* _host;
+    uint16_t _port;
+    uint8_t _stateBooleans;
+    ConnectState _connectState;
+    const char* _waitForReply;
 };
+
 }
 
 #endif

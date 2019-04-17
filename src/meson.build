@@ -5,6 +5,10 @@ src_inc = include_directories([
 ])
 
 src_files = files([
+    'commdevices/ipcommdevice.h',
+    'commdevices/ipcommdevice.cpp',
+    'commdevices/simcommdevice.h',
+    'commdevices/simcommdevice.cpp',
     'commdevices/sim7x00.h',
     'commdevices/sim7x00.cpp',
     'commdevices/sim800.h',

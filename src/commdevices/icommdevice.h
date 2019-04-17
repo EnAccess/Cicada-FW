@@ -24,7 +24,7 @@
 #ifndef EICOMMDEVICE_H
 #define EICOMMDEVICE_H
 
-#include "task.h"
+#include <cstdint>
 
 namespace EnAccess {
 
@@ -39,7 +39,7 @@ namespace EnAccess {
  * by the Scheduler.
  */
 
-class ICommDevice : public Task
+class ICommDevice
 {
   public:
     virtual ~ICommDevice() { }
