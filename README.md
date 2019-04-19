@@ -17,6 +17,7 @@ access to actual microcontroller hardware.
 
 ## Supported cellular modems:
 - Simcom SIM7x00
+- Simcom SIM800
 
 ## Build and test
 
@@ -53,7 +54,7 @@ int main(int argc, char* argv[])
     // Set up serial port
     Stm32Uart serial(UART4, GPIOC);
 
-    // Set up modem driver
+    // Set up modem driver, replace this with the driver you want
     Sim7x00CommDevice commDev(serial);
 
     // Set up task scheduler to call the modem driver's run() function
