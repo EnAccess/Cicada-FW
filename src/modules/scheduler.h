@@ -24,7 +24,7 @@
 #ifndef ESCHEDULER_H
 #define ESCHEDULER_H
 
-#include "task.h"
+#include "ctask.h"
 
 namespace EnAccess {
 

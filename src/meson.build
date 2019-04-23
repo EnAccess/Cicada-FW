@@ -20,5 +20,6 @@ src_files = files([
     'modules/mqttcountdown.h',
     'modules/mqttcountdown.cpp',
     'modules/scheduler.h',
-    'modules/scheduler.cpp'
+    'modules/scheduler.cpp',
+    'modules/ctask.h'
 ])
