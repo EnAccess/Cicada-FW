@@ -1,10 +1,14 @@
-# EnAccess cellular library
+# Cicada - IoT Communications Module for Energy Access
 
-The EnAccess library is an easy to use embedded library for IOT communication using a
-cellular modem. It's focus is in transmission of MQTT packages using the
-Eclipse Paho MQTT Embedded C/C++ library, but it can be used for general
-IP communication as well. The library is platform agnostic and runs either on a
-bare metal microcontroller, as well as on top of an embedded OS.
+An easy way to get production ready, bi-directional communications for your 
+IoT embedded device. 
+
+This repository contains the source code for 2G, 3G, 4G modems (and wifi in the 
+future). This library is platform agnostic, designed to be portable - including 
+examples for mbed, FreeRTOS, or bare metal. It's focus is in transmission of MQTT 
+packages using the Eclipse Paho MQTT Embedded C/C++ library, but it can be used 
+for general IP communication as well. 
+
 Dialing up the cellular modem, opening an IP channel and sending a MQTT packet
 can be done in less than 50 lines of code.
 
