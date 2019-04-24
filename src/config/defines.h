@@ -41,7 +41,7 @@
 #endif
 
 #ifndef E_INTERRUPT_PRIORITY
-#define E_INTERRUPT_PRIORITY 1
+#define E_INTERRUPT_PRIORITY 15
 #endif
 
 #endif
