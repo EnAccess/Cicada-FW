@@ -5,6 +5,6 @@ source_url = http://www.st.com/resource/en/firmware2/stm32cube_fw_f1_v170.zip
 source_filename = stm32cube_fw_f1_v170.zip
 source_hash = dc58871b048a435af739ac14cea7b4e4bd121bf7760474a78c4fe8f52918d704
 
-patch_url = https://raw.githubusercontent.com/EnAccess/gsm-module/master/subprojects/packagecache/stm32_patch.zip
+patch_url = https://raw.githubusercontent.com/EnAccess/Cicada/master/dep/packagecache/stm32_patch.zip
 patch_filename = stm32_patch.zip
-patch_hash = 1a1b2ef0048a066e51c84d9bc39e9f4a2e9955d814a69cc67828e712f84380bf
+patch_hash = 6b083158e030817c95245199051fe3ecc7f9a917aadfa787ba5bb2455f6d2f9f
