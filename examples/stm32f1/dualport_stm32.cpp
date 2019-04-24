@@ -1,5 +1,5 @@
 /*
- * Example code for serial communication on STM32
+ * Example code for serial communication on STM32 bare metal
  */
 
 #include <cstring>
