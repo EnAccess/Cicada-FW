@@ -158,6 +158,13 @@ extern "C"
         *pulIdleTaskStackSize = configMINIMAL_STACK_SIZE;
     }
 
+    void xPortSysTickHandler(void);
+    void SysTick_Handler()
+    {
+        HAL_IncTick();
+        xPortSysTickHandler();
+    }
+
     void USART1_IRQHandler()
     {
         static Stm32Uart* instance = Stm32Uart::getInstance(USART1);
