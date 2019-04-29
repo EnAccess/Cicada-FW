@@ -13,11 +13,19 @@ foreach example : examples_list
     if (meson.is_cross_build() == true)
         if (enaccess_build_target == 'stm32f1')
             custom_target(
-                example,
+                example + '.bin',
                 output           : [ example + '.bin' ],
                 build_by_default : true,
                 command          : [ objcopy, '-O', 'binary', '-S', 'examples/' + example + '.elf',
-                                'examples/' + example + '.bin' ],
+                                    'examples/' + example + '.bin' ],
+                depends          : [ example_exec ]
+            )
+            custom_target(
+                example + '.elf',
+                output           : [ example + '.hex' ],
+                build_by_default : true,
+                command          : [ objcopy, '-O', 'ihex', '-S', 'examples/' + example + '.elf',
+                                    'examples/' + example + '.hex' ],
                 depends          : [ example_exec ]
             )
         endif
