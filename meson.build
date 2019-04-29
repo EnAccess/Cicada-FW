@@ -44,10 +44,9 @@ else
     enaccess_build_target = meson.get_cross_property('enaccess_build_target')
     if (enaccess_build_target == 'stm32f1')
         subdir('platform/stm32f1')
-        examples_list = ['blinky_stm32', 'serial_stm32', 'printf_stm32',
+        examples_list = ['blinky', 'serial', 'printf', 'mqttsequence', 'simplemqtt',
                          'dualport_stm32', 'ipcommdevice_stm32', 'blockingmqtt_stm32',
-                         'mqttsequence', 'simplemqtt', 'dualport_freertos',
-                         'ipcommdevice_freertos', 'blockingmqtt_freertos']
+                         'dualport_freertos', 'ipcommdevice_freertos', 'blockingmqtt_freertos']
         examples_dir = 'stm32f1'
     else
         error('Unsupported build target')
