@@ -107,9 +107,11 @@ run_tests = executable(
     build_by_default    : false
 )
 
+# Unit test
+test('cpputest', run_tests)
+
 # Setup custom build commands
 run_target('lint',      command: [ 'clang-format', '-verbose', '-style=file', '-i', src_files, platform_src_files, test_src_files ])
-run_target('ut',        command: [ run_tests, '-c' ], depends: run_tests)
 run_target('doc',       command: [ 'doxygen', 'Doxyfile' ])
 
 message('''
