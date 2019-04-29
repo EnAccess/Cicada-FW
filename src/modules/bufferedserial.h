@@ -28,7 +28,7 @@
 #include "defines.h"
 #include "ibufferedserial.h"
 #include "linecircularbuffer.h"
-#include "task.h"
+#include "ctask.h"
 
 namespace EnAccess {
 

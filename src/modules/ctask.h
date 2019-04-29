@@ -22,7 +22,7 @@
  */
 
 /*!
- * \file task.h
+ * \file ctask.h
  * Task class and macros.
  */
 
@@ -122,10 +122,10 @@ namespace EnAccess {
  * function, which contains the code to be called in regular intervals.
  * To actually call the run() function in regular intervals, use the
  * Scheduler class.
- * To ease state machine creation, a series of macros in task.h
+ * To ease state machine creation, a series of macros in ctask.h
  * can assist creating the required switch/case code.
  *
- * \see task.h
+ * \see ctask.h
  *
  * Here is a simple example of a Task's run() implementation:
  * ```

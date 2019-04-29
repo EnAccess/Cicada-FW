@@ -24,7 +24,7 @@
 #ifndef ECOMMDEVICE_H
 #define ECOMMDEVICE_H
 
-#include "task.h"
+#include "ctask.h"
 #include "bufferedserial.h"
 #include "circularbuffer.h"
 #include "iipcommdevice.h"
