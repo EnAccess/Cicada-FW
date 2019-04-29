@@ -1,7 +1,7 @@
 foreach example : examples_list
     example_exec = executable(
         example,
-        examples_dir + '/' + example + '.cpp',
+        cicada_build_target + '/' + example + '.cpp',
         include_directories : [ eclipse_paho_mqtt_inc, embedded_printf_inc ],
         dependencies        : [ target_deps, enaccess_dep ],
         name_suffix         : bin_suffix,
@@ -11,7 +11,7 @@ foreach example : examples_list
     )
 
     if (meson.is_cross_build() == true)
-        if (enaccess_build_target == 'stm32f1')
+        if (cicada_build_target == 'stm32f1')
             custom_target(
                 example + '.bin',
                 output           : [ example + '.bin' ],

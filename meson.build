@@ -13,10 +13,6 @@ clangFormat  = find_program('clang-format',  required: false)
 
 if (meson.is_cross_build() == true)
     objcopy  = '@0@'.format(find_program('objcopy').path())
-    objdump  = '@0@'.format(find_program('objdump').path())
-    size     = '@0@'.format(find_program('size').path())
-    gdb      = '@0@'.format(find_program('gdb').path())
-    openocd  = '@0@'.format(find_program('openocd', required: false).path())
 endif
 
 # Add src 
@@ -36,21 +32,9 @@ platform_src_inc = []
 bin_suffix = []
 
 if (meson.is_cross_build() != true)
-    subdir('platform/linux')
-    examples_list = ['scheduler', 'serial_linux', 'ipcommdevice',
-                     'blocking', 'blockingmqtt' ]
-    examples_dir = 'linux'
+    cicada_build_target = 'linux'
 else
-    enaccess_build_target = meson.get_cross_property('enaccess_build_target')
-    if (enaccess_build_target == 'stm32f1')
-        subdir('platform/stm32f1')
-        examples_list = ['blinky', 'serial', 'printf', 'mqttsequence', 'simplemqtt',
-                         'dualport_stm32', 'ipcommdevice_stm32', 'blockingmqtt_stm32',
-                         'dualport_freertos', 'ipcommdevice_freertos', 'blockingmqtt_freertos']
-        examples_dir = 'stm32f1'
-    else
-        error('Unsupported build target')
-    endif
+    cicada_build_target = meson.get_cross_property('cicada_build_target')
 endif
 
 # Add embedded printf dependancy
@@ -64,6 +48,7 @@ eclipse_paho_mqtt_dep = eclipse_paho_mqtt.get_variable('eclipse_paho_mqtt_dep')
 eclipse_paho_mqtt_inc = eclipse_paho_mqtt.get_variable('eclipse_paho_mqtt_inc')
 
 # Actually build library
+subdir('platform/' + cicada_build_target)
 enaccess_lib = static_library(
     'EnAccess',
     [ src_files, platform_src_files ],
@@ -79,7 +64,8 @@ enaccess_dep = declare_dependency(
     link_with           : enaccess_lib
 )
 
-# Setup examples
+# Build examples
+subdir('examples/' + cicada_build_target)
 subdir('examples')
 
 # Add unit test src 
@@ -119,7 +105,6 @@ Build commands:
     ninja           compile
     ninja clean     clean
     ninja lint      prints a diff for files that do not match the style guide
-    ninja ut        run unit tests - note: `ninja test` is reserved and doesn't do anything
     ninja doc       create documentation with doxyen
 '''
 )
