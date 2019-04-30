@@ -15,9 +15,8 @@ if (meson.is_cross_build() == true)
     objcopy  = '@0@'.format(find_program('objcopy').path())
 endif
 
-# Add src 
-subdir('src')
-src_inc   = get_variable('src_inc')
+# Add library sources
+subdir('cicada')
 src_files = get_variable('src_files')
 
 # Add platform specific sources and compiler/linker arguments
@@ -28,7 +27,6 @@ target_cpp_args = []
 target_link_args = []
 target_deps = []
 platform_src_files = []
-platform_src_inc = []
 bin_suffix = []
 
 if (meson.is_cross_build() != true)
@@ -48,11 +46,11 @@ eclipse_paho_mqtt_dep = eclipse_paho_mqtt.get_variable('eclipse_paho_mqtt_dep')
 eclipse_paho_mqtt_inc = eclipse_paho_mqtt.get_variable('eclipse_paho_mqtt_inc')
 
 # Actually build library
-subdir('platform/' + cicada_build_target)
+subdir('cicada/platform/' + cicada_build_target)
 enaccess_lib = static_library(
     'EnAccess',
     [ src_files, platform_src_files ],
-    include_directories : [ src_inc, platform_src_inc, target_inc  ],
+    include_directories : [ target_inc  ],
     dependencies        : [ embedded_printf_dep, eclipse_paho_mqtt_dep ],
     c_args              : [ mcu_args, target_c_args ],
     cpp_args            : [ mcu_args, target_cpp_args ],
@@ -60,7 +58,6 @@ enaccess_lib = static_library(
     pic                 : false
 )
 enaccess_dep = declare_dependency(
-    include_directories : [ src_inc, platform_src_inc ],
     link_with           : enaccess_lib
 )
 
@@ -84,7 +81,7 @@ test_args = []
 run_tests = executable(
     'run_tests', 
     [ test_src_files, src_files, './test/main.cpp' ],
-    include_directories : [ test_src_inc, src_inc ],
+    include_directories : [ test_src_inc ],
     dependencies        : [ cpputest_dep ],
     c_args              : [ '-std=c11', test_args ],
     cpp_args            : [ '-std=c++11', test_args ],

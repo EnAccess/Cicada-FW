@@ -1,5 +1,5 @@
-#include "scheduler.h"
-#include "tick.h"
+#include "cicada/scheduler.h"
+#include "cicada/tick.h"
 #include <stdio.h>
 
 using namespace EnAccess;

@@ -1,0 +1,19 @@
+src_files = files([
+    'commdevices/ipcommdevice.h',
+    'commdevices/ipcommdevice.cpp',
+    'commdevices/simcommdevice.h',
+    'commdevices/simcommdevice.cpp',
+    'commdevices/sim7x00.h',
+    'commdevices/sim7x00.cpp',
+    'commdevices/sim800.h',
+    'commdevices/sim800.cpp',
+    'commdevices/blockingcommdev.h',
+    'commdevices/blockingcommdev.cpp',
+    'bufferedserial.h',
+    'bufferedserial.cpp',
+    'mqttcountdown.h',
+    'mqttcountdown.cpp',
+    'scheduler.h',
+    'scheduler.cpp',
+    'ctask.h'
+])

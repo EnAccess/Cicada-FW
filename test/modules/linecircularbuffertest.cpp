@@ -3,7 +3,7 @@
 
 #include <string.h>
 
-#include "linecircularbuffer.h"
+#include "cicada/linecircularbuffer.h"
 
 using namespace EnAccess;
 

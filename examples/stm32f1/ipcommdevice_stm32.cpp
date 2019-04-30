@@ -5,10 +5,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "scheduler.h"
-#include "stm32uart.h"
-#include "sim7x00.h"
-#include "tick.h"
+#include "cicada/scheduler.h"
+#include "cicada/platform/stm32f1/stm32uart.h"
+#include "cicada/commdevices/sim7x00.h"
+#include "cicada/tick.h"
 #include "stm32f1xx_hal.h"
 #include "printf.h"
 

@@ -1,7 +1,7 @@
 #include "CppUTest/TestHarness.h"
 #include "CppUTestExt/MockSupport.h"
 
-#include "bufferedserial.h"
+#include "cicada/bufferedserial.h"
 
 using namespace EnAccess;
 

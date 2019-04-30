@@ -2,11 +2,11 @@
  * Example code for IP communication in blocking mode
  */
 
-#include "blockingcommdev.h"
-#include "scheduler.h"
-#include "sim7x00.h"
-#include "tick.h"
-#include "unixserial.h"
+#include "cicada/commdevices/blockingcommdev.h"
+#include "cicada/scheduler.h"
+#include "cicada/tick.h"
+#include "cicada/commdevices/sim7x00.h"
+#include "cicada/platform/linux/unixserial.h"
 #include <cstdint>
 #include <cstdio>
 

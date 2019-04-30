@@ -4,12 +4,12 @@
 
 #include <string.h>
 
-#include "scheduler.h"
-#include "stm32uart.h"
-#include "sim7x00.h"
-#include "tick.h"
-#include "blockingcommdev.h"
-#include "mqttcountdown.h"
+#include "cicada/scheduler.h"
+#include "cicada/platform/stm32f1/stm32uart.h"
+#include "cicada/commdevices/sim7x00.h"
+#include "cicada/tick.h"
+#include "cicada/commdevices/blockingcommdev.h"
+#include "cicada/mqttcountdown.h"
 
 #include <MQTTClient.h>
 

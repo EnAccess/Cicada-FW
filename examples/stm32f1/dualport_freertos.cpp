@@ -7,7 +7,7 @@
 #include "stm32f1xx_hal.h"
 #include "FreeRTOS.h"
 #include "task.h"
-#include "stm32uart.h"
+#include "cicada/platform/stm32f1/stm32uart.h"
 #include "printf.h"
 
 #define STACK_SIZE 200

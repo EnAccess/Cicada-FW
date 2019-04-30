@@ -2,10 +2,10 @@
  * Example code for IP communication
  */
 
-#include "scheduler.h"
-#include "sim7x00.h"
-#include "tick.h"
-#include "unixserial.h"
+#include "cicada/scheduler.h"
+#include "cicada/commdevices/sim7x00.h"
+#include "cicada/tick.h"
+#include "cicada/platform/linux/unixserial.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

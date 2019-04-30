@@ -4,10 +4,10 @@
  */
 
 #include "mbed.h"
-#include "enaccess/mbed/mbedserial.h"
-#include "enaccess/src/modules/tick.h"
-#include "enaccess/src/commdevices/sim7x00.h"
-#include "enaccess/src/modules/scheduler.h"
+#include "cicada/platform/mbed/mbedserial.h"
+#include "cicada/tick.h"
+#include "cicada/commdevices/sim7x00.h"
+#include "cicada/scheduler.h"
 
 #define OS_MAINSTKSIZE 256
 
