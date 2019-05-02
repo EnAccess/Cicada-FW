@@ -26,13 +26,6 @@
 
 using namespace EnAccess;
 
-#define CONNECT_PENDING (1 << 0)
-#define RESET_PENDING (1 << 1)
-#define DATA_PENDING (1 << 2)
-#define DISCONNECT_PENDING (1 << 3)
-#define IP_CONNECTED (1 << 4)
-#define LINE_READ (1 << 5)
-
 IPCommDevice::IPCommDevice() :
     _host(NULL),
      _port(0),

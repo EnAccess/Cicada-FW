@@ -21,13 +21,21 @@
  *
  */
 
-#ifndef ECOMMDEVICE_H
-#define ECOMMDEVICE_H
+#ifndef IPCOMMDEVICE_H
+#define IPCOMMDEVICE_H
 
 #include "cicada/ctask.h"
 #include "cicada/bufferedserial.h"
 #include "cicada/circularbuffer.h"
 #include "cicada/commdevices/iipcommdevice.h"
+
+#define CONNECT_PENDING (1 << 0)
+#define RESET_PENDING (1 << 1)
+#define DATA_PENDING (1 << 2)
+#define DISCONNECT_PENDING (1 << 3)
+#define IP_CONNECTED (1 << 4)
+#define LINE_READ (1 << 5)
+#define SERIAL_LOCKED (1 << 6)
 
 namespace EnAccess {
 

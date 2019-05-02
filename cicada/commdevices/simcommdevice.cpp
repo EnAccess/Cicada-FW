@@ -24,6 +24,7 @@
 #include <cstddef>
 #include <cstdio>
 #include <cstring>
+#include "cicada/commdevices/ipcommdevice.h"
 #include "cicada/commdevices/simcommdevice.h"
 
 #define MIN_SPACE_AVAILABLE 22
@@ -56,6 +57,40 @@ bool SimCommDevice::connect()
         return false;
 
     return IPCommDevice::connect();
+}
+
+bool SimCommDevice::serialLock()
+{
+    if (_waitForReply || _replyState != 0)
+        return false;
+
+    _stateBooleans |= SERIAL_LOCKED;
+    return true;
+}
+
+void SimCommDevice::serialUnlock()
+{
+    _stateBooleans &= ~SERIAL_LOCKED;
+}
+
+uint16_t SimCommDevice::serialWrite(char* data)
+{
+    if (_stateBooleans & SERIAL_LOCKED)
+    {
+        return _serial.write(data);
+    }
+
+    return 0;
+}
+
+uint16_t SimCommDevice::serialRead(char* data, uint16_t maxSize)
+{
+    if (_stateBooleans & SERIAL_LOCKED)
+    {
+        return _serial.read(data, maxSize);
+    }
+
+    return 0;
 }
 
 bool SimCommDevice::fillLineBuffer()

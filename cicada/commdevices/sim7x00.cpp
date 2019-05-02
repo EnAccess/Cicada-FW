@@ -22,6 +22,7 @@
  */
 
 #include "cicada/commdevices/sim7x00.h"
+#include "cicada/commdevices/ipcommdevice.h"
 #include <cstddef>
 #include <cstdint>
 #include <cstdio>
@@ -42,6 +43,10 @@ void Sim7x00CommDevice::run()
         }
         return;
     }
+
+    // If the serial device is locked, don't go on
+    if (_stateBooleans & SERIAL_LOCKED)
+        return;
 
     // If a modem reset is pending, handle it
     if (_stateBooleans & RESET_PENDING) {

@@ -49,7 +49,7 @@ class Sim800CommDevice : public SimCommDevice
 
   private:
     enum ReplyState {
-        okReply,
+        okReply = 0,
         cifsr,
         cdnsgip,
         ciprxget4,

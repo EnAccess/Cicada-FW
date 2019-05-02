@@ -43,6 +43,10 @@ void Sim800CommDevice::run()
         return;
     }
 
+    // If the serial device is locked, don't go on
+    if (_stateBooleans & SERIAL_LOCKED)
+        return;
+
     // Buffer reply from the modem
     bool parseLine = fillLineBuffer();
 
