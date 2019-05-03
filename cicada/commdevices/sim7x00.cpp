@@ -112,6 +112,15 @@ void Sim7x00CommDevice::run()
             }
             break;
 
+        case cipopen:
+            if (_waitForReply != NULL) {
+                if (strncmp(_lineBuffer, "+CIPOPEN: 0,", 12) == 0) {
+                    _stateBooleans |= RESET_PENDING;
+                    _connectState = generalError;
+                }
+            }
+            break;
+
         case ciprxget4:
             if (parseCiprxget4()) {
                 _replyState = okReply;
@@ -232,6 +241,7 @@ void Sim7x00CommDevice::run()
     case sendCipopen: {
         SimCommDevice::sendCipstart("OPEN");
 
+        _replyState = cipopen;
         _waitForReply = "+CIPOPEN: 0,0";
         _sendState = finalizeConnect;
         break;

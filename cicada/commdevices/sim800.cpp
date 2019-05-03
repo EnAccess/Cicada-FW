@@ -105,6 +105,7 @@ void Sim800CommDevice::run()
         case cipstart:
             if (strncmp(_lineBuffer, "0, CONNECT FAIL", 15) == 0) {
                 _stateBooleans |= RESET_PENDING;
+                _connectState = generalError;
             }
             break;
 

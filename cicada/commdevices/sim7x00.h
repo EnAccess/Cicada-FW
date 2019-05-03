@@ -48,7 +48,15 @@ class Sim7x00CommDevice : public SimCommDevice
     virtual void run();
 
   private:
-    enum ReplyState { okReply = 0, expectConnect, netopen, cdnsgip, ciprxget4, ciprxget2 };
+    enum ReplyState {
+        okReply = 0,
+        expectConnect,
+        netopen,
+        cdnsgip,
+        cipopen,
+        ciprxget4,
+        ciprxget2
+    };
 
     enum SendState {
         notConnected,
