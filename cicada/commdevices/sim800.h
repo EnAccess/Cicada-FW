@@ -52,6 +52,7 @@ class Sim800CommDevice : public SimCommDevice
         okReply = 0,
         cifsr,
         cdnsgip,
+        cipstart,
         ciprxget4,
         ciprxget2
     };

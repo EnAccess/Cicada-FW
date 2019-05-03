@@ -80,7 +80,16 @@ void Sim7x00CommDevice::run()
         logStates(_sendState, _replyState);
 
         // If sent a command, process standard reply
-        processStandardReply();
+        if (_waitForReply) {
+            if (strncmp(_lineBuffer, _waitForReply, strlen(_waitForReply)) == 0) {
+                _waitForReply = NULL;
+            } else if (strncmp(_lineBuffer, "ERROR", 5) == 0) {
+                _stateBooleans |= RESET_PENDING;
+                _connectState = generalError;
+                _waitForReply = NULL;
+                return;
+            }
+        }
 
         // Process replies which need special treatment
         switch (_replyState) {

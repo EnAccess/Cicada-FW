@@ -85,7 +85,6 @@ class SimCommDevice : public IPCommDevice
   protected:
     bool fillLineBuffer();
     void logStates(int8_t sendState, int8_t replyState);
-    void processStandardReply();
     bool parseDnsReply();
     bool parseCiprxget4();
     bool parseCiprxget2();

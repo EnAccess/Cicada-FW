@@ -56,9 +56,11 @@ void Sim800CommDevice::run()
         // Log the current modem states
         logStates(_sendState, _replyState);
 
-        // Handle deactivated or error state
+        // Handle deactivated or error states
         if (strncmp(_lineBuffer, "+PDP: DEACT", 11) == 0 ||
-            strncmp(_lineBuffer, "+CME ERROR", 10) == 0) {
+            strncmp(_lineBuffer, "+CME ERROR", 10) == 0 ||
+            strncmp(_lineBuffer, "ERROR", 5) == 0 ||
+            (_stateBooleans & RESET_PENDING)) {
             _serial.flushReceiveBuffers();
             _bytesToRead = 0;
             _bytesToReceive = 0;
@@ -72,7 +74,11 @@ void Sim800CommDevice::run()
         }
 
         // If sent a command, process standard reply
-        processStandardReply();
+        if (_waitForReply) {
+            if (strncmp(_lineBuffer, _waitForReply, strlen(_waitForReply)) == 0) {
+                _waitForReply = NULL;
+            }
+        }
 
         // Process replies which need special treatment
         switch (_replyState) {
@@ -93,6 +99,12 @@ void Sim800CommDevice::run()
         case cdnsgip:
             if (parseDnsReply()) {
                 _replyState = okReply;
+            }
+            break;
+
+        case cipstart:
+            if (strncmp(_lineBuffer, "0, CONNECT FAIL", 15) == 0) {
+                _stateBooleans |= RESET_PENDING;
             }
             break;
 
@@ -199,6 +211,7 @@ void Sim800CommDevice::run()
     case sendCipstart:
         SimCommDevice::sendCipstart("START");
 
+        _replyState = cipstart;
         _waitForReply = "0, CONNECT OK";
         _sendState = finalizeConnect;
         break;

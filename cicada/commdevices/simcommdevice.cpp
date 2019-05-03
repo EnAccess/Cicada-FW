@@ -128,21 +128,6 @@ void SimCommDevice::logStates(int8_t sendState, int8_t replyState)
     */
 }
 
-void SimCommDevice::processStandardReply()
-{
-    // Process standard reply, set by _waitForReply string
-    if (_waitForReply) {
-        if (strncmp(_lineBuffer, _waitForReply, strlen(_waitForReply)) == 0) {
-            _waitForReply = NULL;
-        } else if (strncmp(_lineBuffer, "ERROR", 5) == 0) {
-            _stateBooleans |= RESET_PENDING;
-            _connectState = generalError;
-            _waitForReply = NULL;
-            return;
-        }
-    }
-}
-
 bool SimCommDevice::parseDnsReply()
 {
     if (strncmp(_lineBuffer, "+CDNSGIP: 1", 11) == 0) {
@@ -173,6 +158,8 @@ bool SimCommDevice::parseDnsReply()
         }
         strcpy(_ip, tmpStr);
         return true;
+    } else if (strncmp(_lineBuffer, "+CDNSGIP: 0", 11) == 0) {
+        _stateBooleans |= RESET_PENDING;
     }
 
     return false;
