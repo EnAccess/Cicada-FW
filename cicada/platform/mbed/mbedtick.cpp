@@ -24,6 +24,8 @@
 #include "mbed.h"
 #include "tick.h"
 
+namespace EnAccess {
+
 class EnaccessTicker : public Ticker
 {
   public:
@@ -48,8 +50,9 @@ class EnaccessTicker : public Ticker
 };
 
 static EnaccessTicker g_ticker;
+}
 
 E_TICK_TYPE eTickFunction()
 {
-    return g_ticker.read();
+    return EnAccess::g_ticker.read();
 }
