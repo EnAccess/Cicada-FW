@@ -54,5 +54,5 @@ static EnaccessTicker g_ticker;
 
 E_TICK_TYPE eTickFunction()
 {
-    return EnAccess::g_ticker.read();
+    return Cicada::g_ticker.read();
 }

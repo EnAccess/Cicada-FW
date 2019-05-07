@@ -1,6 +1,7 @@
 bin_suffix = 'elf'
 
 platform_src_files = files([
+    'irq_stm32.cpp',
     'tick_stm32.cpp',
     'stm32uart.h',
     'stm32uart.cpp'

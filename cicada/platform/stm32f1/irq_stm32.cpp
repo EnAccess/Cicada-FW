@@ -21,33 +21,15 @@
  *
  */
 
-// TODO: remove this global and let the user implement in their platform specific uart driver
+#include "stm32f1xx_hal.h"
+#include "cicada/irq.h"
 
-#ifndef EIRQ_H
-#define EIRQ_H
+void eDisableInterrupts()
+{
+    __disable_irq();
+}
 
-void eDisableInterrupts();
-void eEnableInterrupts();
-
-#endif
-
-/* #ifndef EIRQ_H */
-/* #define EIRQ_H */
-
-/* #if defined TARGET_STM32 */
-/* #include "stm32f103xb.h" */
-/* #define eDisableInterrupts()  __disable_irq() */
-/* #define eEnableInterrupts() __enable_irq() */
-
-/* #elif defined __MBED__ */
-/* #include "mbed.h" */
-/* #define eDisableInterrupts()  __disable_irq() */
-/* #define eEnableInterrupts() __enable_irq() */
-
-/* #else */
-/* #define eDisableInterrupts() { } */
-/* #define eEnableInterrupts() { } */
-
-/* #endif */
-
-/* #endif */
+void eEnableInterrupts()
+{
+    __enable_irq();
+}
