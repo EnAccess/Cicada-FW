@@ -20,7 +20,7 @@
 
 #include <MQTTClient.h>
 
-using namespace EnAccess;
+using namespace Cicada;
 
 static void SystemClock_Config(void);
 

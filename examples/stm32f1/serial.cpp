@@ -8,7 +8,7 @@
 #include "cicada/tick.h"
 #include "stm32f1xx_hal.h"
 
-using namespace EnAccess;
+using namespace Cicada;
 
 static void SystemClock_Config(void);
 

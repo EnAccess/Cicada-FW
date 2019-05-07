@@ -27,7 +27,7 @@
 #include <cstdio>
 #include <cstring>
 
-using namespace EnAccess;
+using namespace Cicada;
 
 Sim800CommDevice::Sim800CommDevice(IBufferedSerial& serial) :
     SimCommDevice(serial)

@@ -30,7 +30,7 @@
 #include "cicada/linecircularbuffer.h"
 #include "cicada/ctask.h"
 
-namespace EnAccess {
+namespace Cicada {
 
 /*!
  * Base class for serial devices. The buffering is handled by this

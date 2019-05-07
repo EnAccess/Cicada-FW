@@ -26,7 +26,7 @@
 
 #include "cicada/commdevices/icommdevice.h"
 
-namespace EnAccess {
+namespace Cicada {
 
 class IIPCommDevice : public ICommDevice
 {

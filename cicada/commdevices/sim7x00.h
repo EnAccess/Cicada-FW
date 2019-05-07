@@ -28,7 +28,7 @@
 #include "cicada/commdevices/simcommdevice.h"
 #include <stdint.h>
 
-namespace EnAccess {
+namespace Cicada {
 
 /*!
  * Driver for the Simcom SIM7x00 series of 4G cellular modems.

@@ -28,7 +28,7 @@
 #include "cicada/commdevices/icommdevice.h"
 #include <cstddef>
 
-namespace EnAccess {
+namespace Cicada {
 
 /*!
  *\class BlockingCommDevice

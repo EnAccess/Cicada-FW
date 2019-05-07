@@ -12,7 +12,7 @@
 
 #define STACK_SIZE 200
 
-using namespace EnAccess;
+using namespace Cicada;
 
 // Stack for FreeRTOS task
 StackType_t xStack[STACK_SIZE];

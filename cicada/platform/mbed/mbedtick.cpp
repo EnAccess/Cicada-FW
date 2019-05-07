@@ -24,7 +24,7 @@
 #include "mbed.h"
 #include "tick.h"
 
-namespace EnAccess {
+namespace Cicada {
 
 class EnaccessTicker : public Ticker
 {

@@ -28,7 +28,7 @@
 #include <stdint.h>
 #include <termios.h>
 
-namespace EnAccess {
+namespace Cicada {
 
 /*!
  * \class UnixSerial

@@ -11,7 +11,7 @@
 
 #define OS_MAINSTKSIZE 256
 
-using namespace EnAccess;
+using namespace Cicada;
 
 Thread enAccessThread(osPriorityNormal, 8192);
 

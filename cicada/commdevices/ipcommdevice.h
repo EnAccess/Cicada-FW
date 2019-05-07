@@ -37,7 +37,7 @@
 #define LINE_READ (1 << 5)
 #define SERIAL_LOCKED (1 << 6)
 
-namespace EnAccess {
+namespace Cicada {
 
 class IPCommDevice : public IIPCommDevice, public Task
 {

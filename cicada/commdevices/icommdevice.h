@@ -26,7 +26,7 @@
 
 #include <cstdint>
 
-namespace EnAccess {
+namespace Cicada {
 
 /*!
  * \class ICommDevice

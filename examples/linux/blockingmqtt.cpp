@@ -19,7 +19,7 @@
 
 #include <MQTTClient.h>
 
-using namespace EnAccess;
+using namespace Cicada;
 
 void yieldFunction(void* sched)
 {

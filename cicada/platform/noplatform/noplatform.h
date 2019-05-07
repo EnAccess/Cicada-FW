@@ -26,7 +26,7 @@
 
 #include "bufferedserial.h"
 
-namespace EnAccess {
+namespace Cicada {
 
 /*! \class NoplatformSerial
  *

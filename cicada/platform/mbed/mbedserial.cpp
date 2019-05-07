@@ -24,7 +24,7 @@
 #include "mbedserial.h"
 #include "platform/Callback.h"
 
-using namespace EnAccess;
+using namespace Cicada;
 
 MbedSerial::MbedSerial(PinName tx, PinName rx) :
     _rawSerial(tx, rx, 115200)

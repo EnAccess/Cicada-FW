@@ -24,7 +24,7 @@
 #define STACK_SIZE_MQTT 3072
 #define STACK_SIZE_RUNTASK 256
 
-using namespace EnAccess;
+using namespace Cicada;
 
 // Stacks for FreeRTOS tasks
 StackType_t xStackTask[STACK_SIZE_MQTT];

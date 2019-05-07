@@ -27,7 +27,7 @@
 #include <termios.h>
 #include <unistd.h>
 
-using namespace EnAccess;
+using namespace Cicada;
 
 UnixSerial::UnixSerial(const char* port) :
     _isOpen(false),

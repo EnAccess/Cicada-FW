@@ -113,7 +113,7 @@
     case ENTRY_POINT:                                           \
     if (!(COND)) return;                                        \
 
-namespace EnAccess {
+namespace Cicada {
 
 /*!
  * \class Task

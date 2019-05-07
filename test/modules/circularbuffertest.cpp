@@ -3,7 +3,7 @@
 
 #include "cicada/circularbuffer.h"
 
-using namespace EnAccess;
+using namespace Cicada;
 
 TEST_GROUP(CircularBufferTest){};
 

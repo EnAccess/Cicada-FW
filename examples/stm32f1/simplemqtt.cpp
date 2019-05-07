@@ -42,7 +42,7 @@ void System_Config(void)
     HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2);
 }
 
-using namespace EnAccess;
+using namespace Cicada;
 
 void yieldFunction(void* sched)
 {

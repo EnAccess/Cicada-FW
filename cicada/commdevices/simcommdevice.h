@@ -28,7 +28,7 @@
 
 #define LINE_MAX_LENGTH 60
 
-namespace EnAccess {
+namespace Cicada {
 
 class SimCommDevice : public IPCommDevice
 {

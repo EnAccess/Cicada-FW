@@ -27,7 +27,7 @@
 #include "cicada/circularbuffer.h"
 #include <cstdint>
 
-namespace EnAccess {
+namespace Cicada {
 
 /*!
  * \class LineCircularBuffer

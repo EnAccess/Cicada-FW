@@ -24,7 +24,7 @@
 #include <cstddef>
 #include "cicada/commdevices/ipcommdevice.h"
 
-using namespace EnAccess;
+using namespace Cicada;
 
 IPCommDevice::IPCommDevice() :
     _host(NULL),

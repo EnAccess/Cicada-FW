@@ -24,7 +24,7 @@
 #ifndef EISERIAL_H
 #define EISERIAL_H
 
-namespace EnAccess {
+namespace Cicada {
 
 /*!
  * \class ISerial

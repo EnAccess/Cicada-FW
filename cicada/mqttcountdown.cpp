@@ -24,7 +24,7 @@
 #include "cicada/mqttcountdown.h"
 #include "cicada/tick.h"
 
-using namespace EnAccess;
+using namespace Cicada;
 
 MQTTCountdown::MQTTCountdown() {}
 

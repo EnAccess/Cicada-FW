@@ -26,7 +26,7 @@
 
 #include "cicada/iserial.h"
 
-namespace EnAccess {
+namespace Cicada {
 
 /*!
  * \class IBufferedSerial

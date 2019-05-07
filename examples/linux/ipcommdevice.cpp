@@ -10,7 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-using namespace EnAccess;
+using namespace Cicada;
 
 class IPCommTask : public Task
 {

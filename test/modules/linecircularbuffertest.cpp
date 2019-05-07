@@ -5,7 +5,7 @@
 
 #include "cicada/linecircularbuffer.h"
 
-using namespace EnAccess;
+using namespace Cicada;
 
 TEST_GROUP(LineCircularBufferTest){};
 

@@ -2,7 +2,7 @@
 #include "cicada/tick.h"
 #include <stdio.h>
 
-using namespace EnAccess;
+using namespace Cicada;
 
 class Task1 : public Task
 {

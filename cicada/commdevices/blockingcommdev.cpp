@@ -24,7 +24,7 @@
 #include "cicada/commdevices/blockingcommdev.h"
 #include <cstdint>
 
-using namespace EnAccess;
+using namespace Cicada;
 
 BlockingCommDevice::BlockingCommDevice(ICommDevice& dev, E_TICK_TYPE (*tickFunction)(void),
     void (*yieldFunction)(void*), void* yieldUserData) :

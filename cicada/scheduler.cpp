@@ -24,7 +24,7 @@
 #include "cicada/scheduler.h"
 #include <cstddef>
 
-using namespace EnAccess;
+using namespace Cicada;
 
 Scheduler::Scheduler(E_TICK_TYPE (*tickFunction)(), Task** taskList) :
     _tickFunction(tickFunction),

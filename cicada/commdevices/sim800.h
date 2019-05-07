@@ -28,7 +28,7 @@
 #include "cicada/commdevices/simcommdevice.h"
 #include <stdint.h>
 
-namespace EnAccess {
+namespace Cicada {
 
 /*!
  * Driver for the Simcom SIM800 series of 2G cellular modems.

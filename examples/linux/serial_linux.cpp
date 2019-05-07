@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-using namespace EnAccess;
+using namespace Cicada;
 
 class SerialTask : public Task
 {

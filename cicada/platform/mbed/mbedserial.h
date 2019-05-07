@@ -27,7 +27,7 @@
 #include "mbed.h"
 #include "bufferedserial.h"
 
-namespace EnAccess {
+namespace Cicada {
 
 class MbedSerial : public BufferedSerial
 {

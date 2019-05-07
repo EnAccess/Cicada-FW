@@ -10,7 +10,7 @@
 #include <cstdint>
 #include <cstdio>
 
-using namespace EnAccess;
+using namespace Cicada;
 
 void yieldFunction(void* sched)
 {

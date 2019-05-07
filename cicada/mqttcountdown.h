@@ -27,7 +27,7 @@
 #include "cicada/defines.h"
 #include <cstdint>
 
-namespace EnAccess {
+namespace Cicada {
 
 /*!
  * \class MQTTCountdown

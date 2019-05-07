@@ -25,7 +25,7 @@
 #include "cicada/irq.h"
 #include <cstdint>
 
-using namespace EnAccess;
+using namespace Cicada;
 
 BufferedSerial::BufferedSerial() {}
 

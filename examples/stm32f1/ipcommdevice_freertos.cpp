@@ -15,7 +15,7 @@
 #define STACK_SIZE_COMM 2048
 #define STACK_SIZE_RUNTASK 256
 
-using namespace EnAccess;
+using namespace Cicada;
 
 // Stack for FreeRTOS task
 StackType_t xStackTask[STACK_SIZE_COMM];

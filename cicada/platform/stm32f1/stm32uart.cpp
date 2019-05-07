@@ -25,7 +25,7 @@
 #include "cicada/irq.h"
 #include <cstdint>
 
-using namespace EnAccess;
+using namespace Cicada;
 
 #define FLAG_ISOPEN (1 << 0)
 

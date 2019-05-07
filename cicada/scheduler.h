@@ -26,7 +26,7 @@
 
 #include "cicada/ctask.h"
 
-namespace EnAccess {
+namespace Cicada {
 
 /*!
  * \class Scheduler

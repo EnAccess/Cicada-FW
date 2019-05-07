@@ -29,7 +29,7 @@
 
 #define MIN_SPACE_AVAILABLE 22
 
-using namespace EnAccess;
+using namespace Cicada;
 
 const char* SimCommDevice::_okStr = "OK";
 const char* SimCommDevice::_lineEndStr = "\r\n";

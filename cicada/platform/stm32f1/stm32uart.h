@@ -27,7 +27,7 @@
 #include "cicada/bufferedserial.h"
 #include "stm32f1xx_hal.h"
 
-namespace EnAccess {
+namespace Cicada {
 
 /*!
  * UART driver for STM32 micro controllers, using HAL.
