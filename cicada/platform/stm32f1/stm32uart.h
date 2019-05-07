@@ -56,14 +56,14 @@ class Stm32Uart : public BufferedSerial
 
     static Stm32Uart* getInstance(USART_TypeDef* uartInstance);
 
-    bool open();
-    bool isOpen();
-    bool setSerialConfig(uint32_t baudRate, uint8_t dataBits);
-    void close();
-    const char* portName() const;
-    bool rawRead(uint8_t& data);
-    bool rawWrite(uint8_t data);
-    void startTransmit();
+    virtual bool open() override;
+    virtual bool isOpen() override;
+    virtual bool setSerialConfig(uint32_t baudRate, uint8_t dataBits) override;
+    virtual void close() override;
+    virtual const char* portName() const override;
+    virtual bool rawRead(uint8_t& data) override;
+    virtual bool rawWrite(uint8_t data) override;
+    virtual void startTransmit() override;
 
     void handleInterrupt();
 
