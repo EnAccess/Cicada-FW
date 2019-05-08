@@ -173,7 +173,7 @@ void Sim7x00CommDevice::run()
         _stateBooleans |= LINE_READ;
         _waitForReply = _okStr;
         _sendState = sendCgsockcont;
-        sendCommand("ATE1");
+        sendCommand("ATE0");
         break;
 
     case sendCgsockcont: {

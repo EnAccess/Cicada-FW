@@ -159,7 +159,7 @@ void Sim800CommDevice::run()
         _stateBooleans |= LINE_READ;
         _waitForReply = _okStr;
         _sendState = sendCiprxget;
-        sendCommand("ATE1");
+        sendCommand("ATE0");
         break;
 
     case sendCiprxget:
