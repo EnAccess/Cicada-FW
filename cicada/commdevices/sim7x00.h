@@ -63,9 +63,7 @@ class Sim7x00CommDevice : public SimCommDevice
         serialError,
         dnsError,
         connecting,
-        sendCgdcont,
-        sendAtd,
-        sendPpp,
+        sendCgsockcont,
         sendCsocksetpn,
         sendCipmode,
         sendNetopen,
@@ -81,7 +79,6 @@ class Sim7x00CommDevice : public SimCommDevice
         receiving,
         ipUnconnected,
         sendNetclose,
-        sendAth,
         finalizeDisconnect
     };
 };

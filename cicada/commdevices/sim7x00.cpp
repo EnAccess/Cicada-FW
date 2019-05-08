@@ -172,41 +172,22 @@ void Sim7x00CommDevice::run()
         _connectState = IPCommDevice::intermediate;
         _stateBooleans |= LINE_READ;
         _waitForReply = _okStr;
-        _sendState = sendCgdcont;
+        _sendState = sendCgsockcont;
         sendCommand("ATE1");
         break;
 
-    case sendCgdcont: {
-        const char str[] = "AT+CGDCONT=1,\"IP\",\"";
+    case sendCgsockcont: {
+        const char str[] = "AT+CGSOCKCONT=1,\"IP\",\"";
         _serial.write(str, sizeof(str) - 1);
         _serial.write(_apn, strlen(_apn));
         _serial.write(_quoteEndStr);
 
         _waitForReply = _okStr;
-        _sendState = sendAtd;
+        _sendState = sendCsocksetpn;
         break;
     }
 
-    case sendAtd:
-        setDelay(500);
-        _waitForReply = "CONNECT";
-        _sendState = sendPpp;
-        sendCommand("ATD*99#");
-        break;
-
-    case sendPpp:
-        setDelay(1000);
-        {
-            const char str[] = "+++";
-            _serial.write(str, sizeof(str) - 1);
-
-            _waitForReply = _okStr;
-            _sendState = sendCsocksetpn;
-            break;
-        }
-
     case sendCsocksetpn:
-        setDelay(10);
         _waitForReply = _okStr;
         _sendState = sendCipmode;
         sendCommand("AT+CSOCKSETPN=1");
@@ -333,14 +314,8 @@ void Sim7x00CommDevice::run()
     case sendNetclose:
         _connectState = IPCommDevice::intermediate;
         _waitForReply = "+NETCLOSE: 0";
-        _sendState = sendAth;
-        sendCommand("AT+NETCLOSE");
-        break;
-
-    case sendAth:
-        _waitForReply = _okStr;
         _sendState = finalizeDisconnect;
-        sendCommand("ATH");
+        sendCommand("AT+NETCLOSE");
         break;
 
     case finalizeDisconnect:
