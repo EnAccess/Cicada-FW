@@ -113,7 +113,9 @@ void Sim7x00CommDevice::run()
             break;
 
         case cipopen:
-            if (_waitForReply != NULL) {
+            if (_waitForReply == NULL) {
+                _replyState = okReply;
+            } else {
                 if (strncmp(_lineBuffer, "+CIPOPEN: 0,", 12) == 0) {
                     _stateBooleans |= RESET_PENDING;
                     _connectState = generalError;
