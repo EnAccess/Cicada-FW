@@ -47,6 +47,23 @@ void Sim800CommDevice::run()
     if (_stateBooleans & SERIAL_LOCKED)
         return;
 
+    // If a modem reset is pending, handle it
+    if (_stateBooleans & RESET_PENDING) {
+        printf("Modem reset\r\n");
+        _serial.flushReceiveBuffers();
+        _bytesToRead = 0;
+        _bytesToReceive = 0;
+        _bytesToWrite = 0;
+        _sendState = sendCipshut;
+        _replyState = okReply;
+        _waitForReply = NULL;
+        _stateBooleans &= ~RESET_PENDING;
+        if (_connectState >= intermediate) {
+            setDelay(2000);
+            connect();
+        }
+    }
+
     // Buffer reply from the modem
     bool parseLine = fillLineBuffer();
 
@@ -59,18 +76,11 @@ void Sim800CommDevice::run()
         // Handle deactivated or error states
         if (strncmp(_lineBuffer, "+PDP: DEACT", 11) == 0 ||
             strncmp(_lineBuffer, "+CME ERROR", 10) == 0 ||
-            strncmp(_lineBuffer, "ERROR", 5) == 0 ||
-            (_stateBooleans & RESET_PENDING)) {
-            _serial.flushReceiveBuffers();
-            _bytesToRead = 0;
-            _bytesToReceive = 0;
-            _bytesToWrite = 0;
-            _sendState = sendCipshut;
-            _replyState = okReply;
+            strncmp(_lineBuffer, "ERROR", 5) == 0) {
+            _stateBooleans |= RESET_PENDING;
+            _connectState = generalError;
             _waitForReply = NULL;
-            if (_connectState >= intermediate) {
-                connect();
-            }
+            return;
         }
 
         // If sent a command, process standard reply
