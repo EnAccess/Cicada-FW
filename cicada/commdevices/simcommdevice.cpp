@@ -27,6 +27,10 @@
 #include "cicada/commdevices/ipcommdevice.h"
 #include "cicada/commdevices/simcommdevice.h"
 
+#ifdef CICADA_DEBUG
+#include "printf.h"
+#endif
+
 #define MIN_SPACE_AVAILABLE 22
 
 using namespace Cicada;
@@ -113,7 +117,7 @@ bool SimCommDevice::fillLineBuffer()
 
 void SimCommDevice::logStates(int8_t sendState, int8_t replyState)
 {
-    /*
+#ifdef CICADA_DEBUG
     if (_connectState < connected)
     {
         if (_waitForReply)
@@ -125,7 +129,7 @@ void SimCommDevice::logStates(int8_t sendState, int8_t replyState)
                    "_waitForReply=NULL, data: %s",
                    sendState, replyState, _lineBuffer);
     }
-    */
+#endif
 }
 
 bool SimCommDevice::parseDnsReply()

@@ -3,9 +3,14 @@ project(
     'c',
     'cpp',
     version: '0.0.1',
-    subproject_dir: 'dep',
-    default_options:  [ 'c_std=c11', 'cpp_std=gnu++11' ]
+    subproject_dir: 'dep'
 )
+
+# Debugging options
+debug_args = []
+
+# Uncomment next line to enable debug log output
+# debug_args += '-DCICADA_DEBUG'
 
 # Import binary helpers
 python       = find_program('python3', 'python', required: false)
@@ -52,8 +57,8 @@ enaccess_lib = static_library(
     [ src_files, platform_src_files ],
     include_directories : [ target_inc  ],
     dependencies        : [ embedded_printf_dep, eclipse_paho_mqtt_dep ],
-    c_args              : [ mcu_args, target_c_args ],
-    cpp_args            : [ mcu_args, target_cpp_args ],
+    c_args              : [ mcu_args, target_c_args, debug_args ],
+    cpp_args            : [ mcu_args, target_cpp_args, debug_args ],
     link_args           : [ mcu_args, target_link_args ],
     pic                 : false
 )

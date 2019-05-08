@@ -137,4 +137,6 @@ extern "C"
         static Stm32Uart* instance = Stm32Uart::getInstance(USART1);
         instance->handleInterrupt();
     }
+
+    void _putchar(char c) { }
 }
