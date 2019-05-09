@@ -25,7 +25,7 @@
 #define EBUFFEREDSERIAL_H
 
 #include "cicada/circularbuffer.h"
-#include "cicada/ctask.h"
+#include "cicada/task.h"
 #include "cicada/defines.h"
 #include "cicada/ibufferedserial.h"
 #include "cicada/linecircularbuffer.h"

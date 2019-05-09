@@ -24,7 +24,7 @@
 #ifndef ESCHEDULER_H
 #define ESCHEDULER_H
 
-#include "cicada/ctask.h"
+#include "cicada/task.h"
 
 namespace Cicada {
 

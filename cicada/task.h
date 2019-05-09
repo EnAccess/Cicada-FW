@@ -22,7 +22,7 @@
  */
 
 /*!
- * \file ctask.h
+ * \file task.h
  * Task class and macros.
  */
 
@@ -124,10 +124,10 @@ namespace Cicada {
  * function, which contains the code to be called in regular intervals.
  * To actually call the run() function in regular intervals, use the
  * Scheduler class.
- * To ease state machine creation, a series of macros in ctask.h
+ * To ease state machine creation, a series of macros in task.h
  * can assist creating the required switch/case code.
  *
- * \see ctask.h
+ * \see task.h
  *
  * Here is a simple example of a Task's run() implementation:
  * ```

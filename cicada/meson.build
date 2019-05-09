@@ -15,5 +15,5 @@ src_files = files([
     'mqttcountdown.cpp',
     'scheduler.h',
     'scheduler.cpp',
-    'ctask.h'
+    'task.h'
 ])

@@ -27,7 +27,7 @@
 #include "cicada/bufferedserial.h"
 #include "cicada/circularbuffer.h"
 #include "cicada/commdevices/iipcommdevice.h"
-#include "cicada/ctask.h"
+#include "cicada/task.h"
 
 #define CONNECT_PENDING (1 << 0)
 #define RESET_PENDING (1 << 1)
