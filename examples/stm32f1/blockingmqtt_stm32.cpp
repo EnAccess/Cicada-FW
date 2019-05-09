@@ -5,17 +5,17 @@
 
 #define MQTTCLIENT_QOS2 1
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
 #include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-#include "cicada/scheduler.h"
-#include "cicada/platform/stm32f1/stm32uart.h"
-#include "cicada/commdevices/sim7x00.h"
 #include "cicada/commdevices/blockingcommdev.h"
-#include "cicada/tick.h"
+#include "cicada/commdevices/sim7x00.h"
 #include "cicada/mqttcountdown.h"
+#include "cicada/platform/stm32f1/stm32uart.h"
+#include "cicada/scheduler.h"
+#include "cicada/tick.h"
 #include "printf.h"
 
 #include <MQTTClient.h>
@@ -35,11 +35,10 @@ void messageArrived(MQTT::MessageData& md)
 {
     MQTT::Message& message = md.message;
 
-    printf("Message %d arrived: qos %d, retained %d, dup %d, packetid %d\r\n",
-        ++arrivedcount, message.qos, message.retained, message.dup, message.id);
+    printf("Message %d arrived: qos %d, retained %d, dup %d, packetid %d\r\n", ++arrivedcount,
+        message.qos, message.retained, message.dup, message.id);
     printf("Payload %.*s\r\n", (int)message.payloadlen, (char*)message.payload);
 }
-
 
 // Most of the code taken from MQTT hello.cpp
 int main(int argc, char* argv[])
@@ -58,7 +57,7 @@ int main(int argc, char* argv[])
 
     debug.open();
 
-    Task* taskList[] = {&commDev, NULL};
+    Task* taskList[] = { &commDev, NULL };
 
     Scheduler s(&eTickFunction, taskList);
 
@@ -66,8 +65,8 @@ int main(int argc, char* argv[])
 
     const char* topic = "enaccess/test";
 
-    MQTT::Client<BlockingCommDevice, MQTTCountdown> client =
-        MQTT::Client<BlockingCommDevice, MQTTCountdown>(bld);
+    MQTT::Client<BlockingCommDevice, MQTTCountdown> client
+        = MQTT::Client<BlockingCommDevice, MQTTCountdown>(bld);
 
     const char* hostname = "test.mosquitto.org";
     int port = 1883;
@@ -105,7 +104,8 @@ int main(int argc, char* argv[])
     rc = client.publish(topic, message);
     if (rc != 0)
         printf("Error %d from sending QoS 0 message\r\n", rc);
-    else while (arrivedcount == 0)
+    else
+        while (arrivedcount == 0)
             client.yield(100);
 
     // QoS 1
@@ -116,7 +116,8 @@ int main(int argc, char* argv[])
     rc = client.publish(topic, message);
     if (rc != 0)
         printf("Error %d from sending QoS 1 message\r\n", rc);
-    else while (arrivedcount == 1)
+    else
+        while (arrivedcount == 1)
             client.yield(100);
 
     // QoS 2
@@ -145,16 +146,17 @@ int main(int argc, char* argv[])
 
     printf("Finishing with %d messages received\r\n", arrivedcount);
 
-    for (;;);
+    for (;;)
+        ;
 }
 
 void SystemClock_Config(void)
 {
-    RCC_OscInitTypeDef RCC_OscInitStruct = {0};
-    RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
+    RCC_OscInitTypeDef RCC_OscInitStruct = { 0 };
+    RCC_ClkInitTypeDef RCC_ClkInitStruct = { 0 };
 
     /**Initializes the CPU, AHB and APB busses clocks
-    */
+     */
     RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
     RCC_OscInitStruct.HSIState = RCC_HSI_ON;
     RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
@@ -164,9 +166,9 @@ void SystemClock_Config(void)
     HAL_RCC_OscConfig(&RCC_OscInitStruct);
 
     /**Initializes the CPU, AHB and APB busses clocks
-    */
-    RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK
-        | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
+     */
+    RCC_ClkInitStruct.ClockType
+        = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
     RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
     RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
     RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
@@ -176,31 +178,30 @@ void SystemClock_Config(void)
 }
 
 /* Interrupt handler */
-extern "C"
+extern "C" {
+void SysTick_Handler()
 {
-    void SysTick_Handler()
-    {
-        HAL_IncTick();
-    }
+    HAL_IncTick();
+}
 
-    void USART1_IRQHandler()
-    {
-        static Stm32Uart* instance = Stm32Uart::getInstance(USART1);
-        instance->handleInterrupt();
-    }
+void USART1_IRQHandler()
+{
+    static Stm32Uart* instance = Stm32Uart::getInstance(USART1);
+    instance->handleInterrupt();
+}
 
-    void USART2_IRQHandler()
-    {
-        static Stm32Uart* instance = Stm32Uart::getInstance(USART2);
-        instance->handleInterrupt();
-    }
+void USART2_IRQHandler()
+{
+    static Stm32Uart* instance = Stm32Uart::getInstance(USART2);
+    instance->handleInterrupt();
+}
 
-    void _putchar(char c)
-    {
-        static Stm32Uart* serial = NULL;
-        if (!serial) {
-            serial = Stm32Uart::getInstance(USART2);
-        }
-        serial->write(c);
+void _putchar(char c)
+{
+    static Stm32Uart* serial = NULL;
+    if (!serial) {
+        serial = Stm32Uart::getInstance(USART2);
     }
+    serial->write(c);
+}
 }

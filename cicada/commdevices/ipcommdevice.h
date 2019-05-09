@@ -24,10 +24,10 @@
 #ifndef IPCOMMDEVICE_H
 #define IPCOMMDEVICE_H
 
-#include "cicada/ctask.h"
 #include "cicada/bufferedserial.h"
 #include "cicada/circularbuffer.h"
 #include "cicada/commdevices/iipcommdevice.h"
+#include "cicada/ctask.h"
 
 #define CONNECT_PENDING (1 << 0)
 #define RESET_PENDING (1 << 1)
@@ -43,7 +43,7 @@ class IPCommDevice : public IIPCommDevice, public Task
 {
   public:
     IPCommDevice();
-    virtual ~IPCommDevice() { }
+    virtual ~IPCommDevice() {}
 
     virtual void setHostPort(const char* host, uint16_t port);
     virtual bool connect();
@@ -73,7 +73,6 @@ class IPCommDevice : public IIPCommDevice, public Task
     ConnectState _connectState;
     const char* _waitForReply;
 };
-
 }
 
 #endif

@@ -29,9 +29,7 @@
 
 using namespace Cicada;
 
-Sim800CommDevice::Sim800CommDevice(IBufferedSerial& serial) :
-    SimCommDevice(serial)
-{}
+Sim800CommDevice::Sim800CommDevice(IBufferedSerial& serial) : SimCommDevice(serial) {}
 
 void Sim800CommDevice::run()
 {
@@ -74,9 +72,9 @@ void Sim800CommDevice::run()
         logStates(_sendState, _replyState);
 
         // Handle deactivated or error states
-        if (strncmp(_lineBuffer, "+PDP: DEACT", 11) == 0 ||
-            strncmp(_lineBuffer, "+CME ERROR", 10) == 0 ||
-            strncmp(_lineBuffer, "ERROR", 5) == 0) {
+        if (strncmp(_lineBuffer, "+PDP: DEACT", 11) == 0
+            || strncmp(_lineBuffer, "+CME ERROR", 10) == 0
+            || strncmp(_lineBuffer, "ERROR", 5) == 0) {
             _stateBooleans |= RESET_PENDING;
             _connectState = generalError;
             _waitForReply = NULL;
@@ -92,8 +90,7 @@ void Sim800CommDevice::run()
 
         // Process replies which need special treatment
         switch (_replyState) {
-        case cifsr:
-        {
+        case cifsr: {
             // Validate IP address by checking for three dots
             uint8_t i = 0, p = 0;
             while (_lineBuffer[i]) {
@@ -103,8 +100,7 @@ void Sim800CommDevice::run()
             if (p == 3) {
                 _replyState = okReply;
             }
-        }
-        break;
+        } break;
 
         case cdnsgip:
             if (parseDnsReply()) {
@@ -252,7 +248,7 @@ void Sim800CommDevice::run()
         }
         break;
 
-    // States after connecting
+        // States after connecting
 
     case sendData:
         SimCommDevice::sendData();

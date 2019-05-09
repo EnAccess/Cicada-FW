@@ -3,10 +3,10 @@
  */
 
 #include "cicada/commdevices/blockingcommdev.h"
-#include "cicada/scheduler.h"
-#include "cicada/tick.h"
 #include "cicada/commdevices/sim7x00.h"
 #include "cicada/platform/linux/unixserial.h"
+#include "cicada/scheduler.h"
+#include "cicada/tick.h"
 #include <cstdint>
 #include <cstdio>
 

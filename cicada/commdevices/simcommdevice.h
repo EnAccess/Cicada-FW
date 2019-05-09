@@ -34,7 +34,7 @@ class SimCommDevice : public IPCommDevice
 {
   public:
     SimCommDevice(IBufferedSerial& serial);
-    virtual ~SimCommDevice() { }
+    virtual ~SimCommDevice() {}
 
     /*!
      * Set's the cellular network APN.
@@ -118,7 +118,6 @@ class SimCommDevice : public IPCommDevice
     static const char* _lineEndStr;
     static const char* _quoteEndStr;
 };
-
 }
 
 #endif

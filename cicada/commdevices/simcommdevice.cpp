@@ -21,11 +21,11 @@
  *
  */
 
+#include "cicada/commdevices/simcommdevice.h"
+#include "cicada/commdevices/ipcommdevice.h"
 #include <cstddef>
 #include <cstdio>
 #include <cstring>
-#include "cicada/commdevices/ipcommdevice.h"
-#include "cicada/commdevices/simcommdevice.h"
 
 #ifdef CICADA_DEBUG
 #include "printf.h"
@@ -79,8 +79,7 @@ void SimCommDevice::serialUnlock()
 
 uint16_t SimCommDevice::serialWrite(char* data)
 {
-    if (_stateBooleans & SERIAL_LOCKED)
-    {
+    if (_stateBooleans & SERIAL_LOCKED) {
         return _serial.write(data);
     }
 
@@ -89,8 +88,7 @@ uint16_t SimCommDevice::serialWrite(char* data)
 
 uint16_t SimCommDevice::serialRead(char* data, uint16_t maxSize)
 {
-    if (_stateBooleans & SERIAL_LOCKED)
-    {
+    if (_stateBooleans & SERIAL_LOCKED) {
         return _serial.read(data, maxSize);
     }
 
@@ -118,16 +116,15 @@ bool SimCommDevice::fillLineBuffer()
 void SimCommDevice::logStates(int8_t sendState, int8_t replyState)
 {
 #ifdef CICADA_DEBUG
-    if (_connectState < connected)
-    {
+    if (_connectState < connected) {
         if (_waitForReply)
             printf("_sendState=%d, _replyState=%d, "
                    "_waitForReply=\"%s\", data: %s",
-                   sendState, replyState, _waitForReply, _lineBuffer);
+                sendState, replyState, _waitForReply, _lineBuffer);
         else
             printf("_sendState=%d, _replyState=%d, "
                    "_waitForReply=NULL, data: %s",
-                   sendState, replyState, _lineBuffer);
+                sendState, replyState, _lineBuffer);
     }
 #endif
 }
@@ -285,7 +282,8 @@ void SimCommDevice::sendData()
     }
 }
 
-bool SimCommDevice::sendCiprxget2() {
+bool SimCommDevice::sendCiprxget2()
+{
     if (_serial.spaceAvailable() > 8 && _readBuffer.availableSpace() > 0) {
         int bytesToReceive = _serial.spaceAvailable() - 8;
         if (bytesToReceive > _bytesToReceive)
@@ -330,7 +328,7 @@ bool SimCommDevice::receive()
 }
 
 void SimCommDevice::sendCommand(const char* cmd)
-{ 
+{
     _serial.write(cmd);
     _serial.write(_lineEndStr);
 }

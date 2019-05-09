@@ -3,11 +3,11 @@
  * also blinks an LED in another thread
  */
 
-#include "mbed.h"
-#include "cicada/platform/mbed/mbedserial.h"
-#include "cicada/tick.h"
 #include "cicada/commdevices/sim7x00.h"
+#include "cicada/platform/mbed/mbedserial.h"
 #include "cicada/scheduler.h"
+#include "cicada/tick.h"
+#include "mbed.h"
 
 #define OS_MAINSTKSIZE 256
 
@@ -18,10 +18,7 @@ Thread enAccessThread(osPriorityNormal, 8192);
 class IPCommTask : public Task
 {
   public:
-    IPCommTask(Sim7x00CommDevice& commDev) :
-        m_commDev(commDev),
-        m_i(0)
-    { }
+    IPCommTask(Sim7x00CommDevice& commDev) : m_commDev(commDev), m_i(0) {}
 
     virtual void run()
     {
@@ -38,11 +35,10 @@ class IPCommTask : public Task
         printf("*** Connected! ***\n");
 
         {
-            const char str[] =
-                "GET / HTTP/1.1\r\n"
-                "Host: wttr.in\r\n"
-                "User-Agent: curl\r\n"
-                "Connection: close\r\n\r\n";
+            const char str[] = "GET / HTTP/1.1\r\n"
+                               "Host: wttr.in\r\n"
+                               "User-Agent: curl\r\n"
+                               "Connection: close\r\n\r\n";
             m_commDev.write((uint8_t*)str, sizeof(str) - 1);
         }
 
@@ -78,7 +74,7 @@ void runEnAccess()
     Sim7x00CommDevice commDev(serial);
     IPCommTask task(commDev);
 
-    Task* taskList[] = {&task, &commDev, NULL};
+    Task* taskList[] = { &task, &commDev, NULL };
 
     Scheduler s(&eTickFunction, taskList);
     s.start();

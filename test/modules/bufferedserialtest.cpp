@@ -9,17 +9,14 @@ TEST_GROUP(BufferedSerialTest)
 {
     class BufferedSerialMock : public BufferedSerial
     {
-    public:
-        BufferedSerialMock()
-        { }
+      public:
+        BufferedSerialMock() {}
 
         bool open()
         {
             return true;
         }
-        void close()
-        {
-        }
+        void close() {}
 
         bool isOpen()
         {

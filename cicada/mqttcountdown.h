@@ -42,7 +42,6 @@ namespace Cicada {
 class MQTTCountdown
 {
   public:
-
     MQTTCountdown();
     MQTTCountdown(int ms);
 
