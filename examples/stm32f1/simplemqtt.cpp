@@ -4,12 +4,12 @@
 
 #include <string.h>
 
-#include "scheduler.h"
-#include "stm32uart.h"
-#include "sim7x00.h"
-#include "tick.h"
-#include "blockingcommdev.h"
-#include "mqttcountdown.h"
+#include "cicada/scheduler.h"
+#include "cicada/platform/stm32f1/stm32uart.h"
+#include "cicada/commdevices/sim7x00.h"
+#include "cicada/tick.h"
+#include "cicada/commdevices/blockingcommdev.h"
+#include "cicada/mqttcountdown.h"
 
 #include <MQTTClient.h>
 
@@ -42,7 +42,7 @@ void System_Config(void)
     HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2);
 }
 
-using namespace EnAccess;
+using namespace Cicada;
 
 void yieldFunction(void* sched)
 {
@@ -55,7 +55,7 @@ int main(int argc, char* argv[])
     System_Config();
 
     // Set up serial port
-    Stm32Uart serial(UART4, GPIOC);
+    Stm32Uart serial(USART1, GPIOA, GPIO_PIN_9, GPIO_PIN_10);
 
     // Set up modem driver connected to serial port
     Sim7x00CommDevice commDev(serial);
@@ -108,9 +108,11 @@ extern "C"
         HAL_IncTick();
     }
 
-    void UART4_IRQHandler()
+    void USART1_IRQHandler()
     {
-        static Stm32Uart* instance = Stm32Uart::getInstance(UART4);
+        static Stm32Uart* instance = Stm32Uart::getInstance(USART1);
         instance->handleInterrupt();
     }
+
+    void _putchar(char c) { }
 }

@@ -1,9 +1,9 @@
 #include "CppUTest/TestHarness.h"
 #include "CppUTestExt/MockSupport.h"
 
-#include "circularbuffer.h"
+#include "cicada/circularbuffer.h"
 
-using namespace EnAccess;
+using namespace Cicada;
 
 TEST_GROUP(CircularBufferTest){};
 

@@ -1,9 +1,9 @@
 #include "CppUTest/TestHarness.h"
 #include "CppUTestExt/MockSupport.h"
 
-#include "bufferedserial.h"
+#include "cicada/bufferedserial.h"
 
-using namespace EnAccess;
+using namespace Cicada;
 
 TEST_GROUP(BufferedSerialTest)
 {
@@ -36,11 +36,6 @@ TEST_GROUP(BufferedSerialTest)
             return NULL;
         }
 
-        uint16_t rawBytesAvailable() const
-        {
-            return _inBufferMock.availableData();
-        }
-
         bool rawRead(uint8_t& data)
         {
             if (!_inBufferMock.isEmpty()) {
@@ -59,6 +54,11 @@ TEST_GROUP(BufferedSerialTest)
             }
 
             return false;
+        }
+
+        virtual void startTransmit()
+        {
+            mock().actualCall("startTransmit");
         }
 
         CircularBuffer<char, 120> _inBufferMock;
@@ -90,6 +90,8 @@ TEST(BufferedSerialTest, ShouldHaveDataInMockSerialAfterWrite)
     const uint8_t SIZE = 20;
     char dataIn[SIZE] = "123456789 987654321";
     char dataOut[SIZE];
+
+    mock().expectOneCall("startTransmit");
 
     bs.write(dataIn, SIZE);
 

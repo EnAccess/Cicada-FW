@@ -14,7 +14,7 @@ embedded_printf_src = files([
     './src/printf.c'
 ])
 
-embedded_prinf_dep = declare_dependency(
+embedded_printf_dep = declare_dependency(
     include_directories : [ embedded_printf_inc ],
 	sources             : [ embedded_printf_src ]
 )

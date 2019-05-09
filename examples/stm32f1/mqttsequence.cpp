@@ -8,18 +8,18 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-#include "scheduler.h"
-#include "stm32uart.h"
-#include "sim7x00.h"
-#include "blockingcommdev.h"
-#include "tick.h"
-#include "mqttcountdown.h"
+#include "cicada/scheduler.h"
+#include "cicada/platform/stm32f1/stm32uart.h"
+#include "cicada/commdevices/sim7x00.h"
+#include "cicada/commdevices/blockingcommdev.h"
+#include "cicada/tick.h"
+#include "cicada/mqttcountdown.h"
 
 #include <MQTTClient.h>
 
 #define PAYLOAD_LENGTH 80
 
-using namespace EnAccess;
+using namespace Cicada;
 
 static void SystemClock_Config(void);
 
@@ -39,7 +39,7 @@ int main(int argc, char* argv[])
     HAL_Init();
     SystemClock_Config();
 
-    Stm32Uart serial(UART4, GPIOC);
+    Stm32Uart serial(USART1, GPIOA, GPIO_PIN_9, GPIO_PIN_10);
     Sim7x00CommDevice commDev(serial);
 
     Task* taskList[] = {&commDev, NULL};
@@ -132,9 +132,11 @@ extern "C"
         HAL_IncTick();
     }
 
-    void UART4_IRQHandler()
+    void USART1_IRQHandler()
     {
-        static Stm32Uart* instance = Stm32Uart::getInstance(UART4);
+        static Stm32Uart* instance = Stm32Uart::getInstance(USART1);
         instance->handleInterrupt();
     }
+
+    void _putchar(char c) { }
 }

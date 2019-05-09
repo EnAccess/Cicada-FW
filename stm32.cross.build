@@ -11,6 +11,7 @@ strip   = 'arm-none-eabi-strip'
 gdb     = 'arm-none-eabi-gdb'
 
 [properties]
+cicada_build_target = 'stm32f1'
 cpp_args = ['-DTARGET_STM32']
 
 [host_machine]

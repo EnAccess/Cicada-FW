@@ -2,14 +2,14 @@
  * Example code for serial communication
  */
 
-#include "scheduler.h"
-#include "tick.h"
-#include "unixserial.h"
+#include "cicada/scheduler.h"
+#include "cicada/tick.h"
+#include "cicada/platform/linux/unixserial.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-using namespace EnAccess;
+using namespace Cicada;
 
 class SerialTask : public Task
 {

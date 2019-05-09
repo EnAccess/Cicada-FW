@@ -5,21 +5,21 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "scheduler.h"
-#include "stm32uart.h"
-#include "sim7x00.h"
-#include "tick.h"
+#include "cicada/scheduler.h"
+#include "cicada/platform/stm32f1/stm32uart.h"
+#include "cicada/commdevices/sim7x00.h"
+#include "cicada/tick.h"
 #include "stm32f1xx_hal.h"
 #include "printf.h"
 
-using namespace EnAccess;
+using namespace Cicada;
 
 static void SystemClock_Config(void);
 
 class IPCommTask : public Task
 {
   public:
-    IPCommTask(Sim7x00CommDevice& commDev) :
+    IPCommTask(SimCommDevice& commDev) :
         m_commDev(commDev),
         m_i(0)
     { }
@@ -28,13 +28,15 @@ class IPCommTask : public Task
     {
         E_BEGIN_TASK
 
+        printf("Connecting ...\r\n");
+
         m_commDev.setApn("internet");
         m_commDev.setHostPort("wttr.in", 80);
         m_commDev.connect();
 
         E_REENTER_COND(m_commDev.isConnected());
 
-        printf("*** Connected! ***\n");
+        printf("*** Connected! ***\r\n");
 
         {
             const char str[] =
@@ -51,23 +53,28 @@ class IPCommTask : public Task
             if (m_commDev.bytesAvailable()) {
                 char buf[41];
                 uint16_t bytesRead = m_commDev.read((uint8_t*)buf, 40);
-                buf[bytesRead] = '\0';
-                printf("%s", buf);
+                for (int i=0; i<bytesRead; i++)
+                {
+                    if (buf[i] == '\n') {
+                        _putchar('\r');
+                    }
+                    _putchar(buf[i]);
+                }
             } else {
-                E_REENTER_DELAY(10);
+                E_REENTER_DELAY(20);
             }
         }
 
         m_commDev.disconnect();
         E_REENTER_COND(m_commDev.isIdle());
 
-        printf("*** Disconnected ***\n");
+        printf("*** Disconnected ***\r\n");
 
         E_END_TASK
     }
 
   private:
-    Sim7x00CommDevice& m_commDev;
+    SimCommDevice& m_commDev;
     int m_i;
 };
 
@@ -77,9 +84,14 @@ int main(int argc, char* argv[])
     HAL_Init();
     SystemClock_Config();
 
-    Stm32Uart debug(USART3, GPIOB);
-    Stm32Uart serial(UART4, GPIOC);
+    HAL_Delay(2000);
+
+    Stm32Uart debug;
+    Stm32Uart serial(USART1, GPIOA, GPIO_PIN_9, GPIO_PIN_10);
+
+    // Change this class to the modem driver you want
     Sim7x00CommDevice commDev(serial);
+
     IPCommTask task(commDev);
 
     Task* taskList[] = {&task, &commDev, NULL};
@@ -124,15 +136,15 @@ extern "C"
         HAL_IncTick();
     }
 
-    void USART3_IRQHandler()
+    void USART1_IRQHandler()
     {
-        static Stm32Uart* instance = Stm32Uart::getInstance(USART3);
+        static Stm32Uart* instance = Stm32Uart::getInstance(USART1);
         instance->handleInterrupt();
     }
 
-    void UART4_IRQHandler()
+    void USART2_IRQHandler()
     {
-        static Stm32Uart* instance = Stm32Uart::getInstance(UART4);
+        static Stm32Uart* instance = Stm32Uart::getInstance(USART2);
         instance->handleInterrupt();
     }
 
@@ -140,7 +152,7 @@ extern "C"
     {
         static Stm32Uart* serial = NULL;
         if (!serial) {
-            serial = Stm32Uart::getInstance(USART3);
+            serial = Stm32Uart::getInstance(USART2);
         }
         serial->write(c);
     }

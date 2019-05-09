@@ -10,17 +10,17 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-#include "scheduler.h"
-#include "stm32uart.h"
-#include "sim7x00.h"
-#include "blockingcommdev.h"
-#include "tick.h"
-#include "mqttcountdown.h"
+#include "cicada/scheduler.h"
+#include "cicada/platform/stm32f1/stm32uart.h"
+#include "cicada/commdevices/sim7x00.h"
+#include "cicada/commdevices/blockingcommdev.h"
+#include "cicada/tick.h"
+#include "cicada/mqttcountdown.h"
 #include "printf.h"
 
 #include <MQTTClient.h>
 
-using namespace EnAccess;
+using namespace Cicada;
 
 static void SystemClock_Config(void);
 
@@ -50,8 +50,10 @@ int main(int argc, char* argv[])
 
     HAL_Delay(2000);
 
-    Stm32Uart debug(USART3, GPIOB);
-    Stm32Uart serial(UART4, GPIOC);
+    Stm32Uart debug;
+    Stm32Uart serial(USART1, GPIOA, GPIO_PIN_9, GPIO_PIN_10);
+
+    // Change this class to the modem driver you want
     Sim7x00CommDevice commDev(serial);
 
     debug.open();
@@ -181,15 +183,15 @@ extern "C"
         HAL_IncTick();
     }
 
-    void USART3_IRQHandler()
+    void USART1_IRQHandler()
     {
-        static Stm32Uart* instance = Stm32Uart::getInstance(USART3);
+        static Stm32Uart* instance = Stm32Uart::getInstance(USART1);
         instance->handleInterrupt();
     }
 
-    void UART4_IRQHandler()
+    void USART2_IRQHandler()
     {
-        static Stm32Uart* instance = Stm32Uart::getInstance(UART4);
+        static Stm32Uart* instance = Stm32Uart::getInstance(USART2);
         instance->handleInterrupt();
     }
 
@@ -197,7 +199,7 @@ extern "C"
     {
         static Stm32Uart* serial = NULL;
         if (!serial) {
-            serial = Stm32Uart::getInstance(USART3);
+            serial = Stm32Uart::getInstance(USART2);
         }
         serial->write(c);
     }

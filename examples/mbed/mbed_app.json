@@ -1,0 +1,10 @@
+{
+    "name": "enaccess-mbed-example",
+    "target_overrides": {
+        "*": {
+            "rtos.idle-thread-stack-size": 512,
+            "rtos.main-thread-stack-size": 512,
+            "platform.stdio-baud-rate": 115200
+        }
+    }
+}
