@@ -24,8 +24,8 @@
 #ifndef EBLOCKINGCOMMDEV_H
 #define EBLOCKINGCOMMDEV_H
 
-#include "cicada/defines.h"
 #include "cicada/commdevices/icommdevice.h"
+#include "cicada/defines.h"
 #include <cstddef>
 
 namespace Cicada {

@@ -76,7 +76,7 @@ class UnixSerial : public BufferedSerialTask
 
     virtual bool rawWrite(uint8_t data);
 
-    virtual void startTransmit() { }
+    virtual void startTransmit() {}
 
   private:
     bool _isOpen;

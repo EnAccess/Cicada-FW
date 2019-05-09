@@ -22,15 +22,15 @@
  */
 
 /*!
- * \file ctask.h
+ * \file task.h
  * Task class and macros.
  */
 
 #ifndef ETASK_H
 #define ETASK_H
 
-#include <stdint.h>
 #include "cicada/defines.h"
+#include <stdint.h>
 
 /*!
  * \def E_BEGIN_TASK
@@ -38,9 +38,9 @@
  * E_REENTER macros.
  */
 #define E_BEGIN_TASK E_BEGIN_TASK_ARG(__COUNTER__)
-#define E_BEGIN_TASK_ARG(FIRST_ENTRY)           \
-    static uint8_t entrypoint = FIRST_ENTRY;    \
-    switch (entrypoint) {                       \
+#define E_BEGIN_TASK_ARG(FIRST_ENTRY)                                                              \
+    static uint8_t entrypoint = FIRST_ENTRY;                                                       \
+    switch (entrypoint) {                                                                          \
     case FIRST_ENTRY:
 
 /*!
@@ -49,9 +49,10 @@
  * E_REENTER macros.
  */
 #define E_END_TASK E_END_TASK_ARG(__COUNTER__)
-#define E_END_TASK_ARG(LAST_ENTRY)              \
-    entrypoint = LAST_ENTRY;                    \
-    break; }
+#define E_END_TASK_ARG(LAST_ENTRY)                                                                 \
+    entrypoint = LAST_ENTRY;                                                                       \
+    break;                                                                                         \
+    }
 
 /*!
  * \def E_REENTER_YIELD()
@@ -60,9 +61,9 @@
  * last set by setDelay() or one of the other macros.
  */
 #define E_REENTER_YIELD() E_REENTER_YIELD_ARG(__COUNTER__)
-#define E_REENTER_YIELD_ARG(ENTRY_POINT)        \
-    entrypoint = ENTRY_POINT;                   \
-    return;                                     \
+#define E_REENTER_YIELD_ARG(ENTRY_POINT)                                                           \
+    entrypoint = ENTRY_POINT;                                                                      \
+    return;                                                                                        \
     case ENTRY_POINT:
 
 /*!
@@ -74,10 +75,10 @@
  * will call run() again.
  */
 #define E_REENTER_DELAY(DELAY) E_REENTER_DELAY_ARG(__COUNTER__, DELAY)
-#define E_REENTER_DELAY_ARG(ENTRY_POINT, DELAY)         \
-    setDelay(DELAY);                                    \
-    entrypoint = ENTRY_POINT;                           \
-    return;                                             \
+#define E_REENTER_DELAY_ARG(ENTRY_POINT, DELAY)                                                    \
+    setDelay(DELAY);                                                                               \
+    entrypoint = ENTRY_POINT;                                                                      \
+    return;                                                                                        \
     case ENTRY_POINT:
 
 /*!
@@ -89,11 +90,12 @@
  * \param COND Condition to be met to continue
  */
 #define E_REENTER_COND(COND) E_REENTER_COND_ARG(__COUNTER__, COND)
-#define E_REENTER_COND_ARG(ENTRY_POINT, COND)           \
-    setDelay(0);                                        \
-    entrypoint = ENTRY_POINT;                           \
-    case ENTRY_POINT:                                   \
-    if (!(COND)) return;                                \
+#define E_REENTER_COND_ARG(ENTRY_POINT, COND)                                                      \
+    setDelay(0);                                                                                   \
+    entrypoint = ENTRY_POINT;                                                                      \
+    case ENTRY_POINT:                                                                              \
+        if (!(COND))                                                                               \
+            return;
 
 /*!
  * \def E_REENTER_COND_DELAY(COND, DELAY)
@@ -105,13 +107,13 @@
  * \param DELAY Minimum delay after which the task scheduler
  * will call run() again.
  */
-#define E_REENTER_COND_DELAY(COND, DELAY)                       \
-    E_REENTER_COND_DELAY_ARG(__COUNTER__, COND, DELAY)
-#define E_REENTER_COND_DELAY_ARG(ENTRY_POINT, COND, DELAY)      \
-    setDelay(DELAY);                                            \
-    entrypoint = ENTRY_POINT;                                   \
-    case ENTRY_POINT:                                           \
-    if (!(COND)) return;                                        \
+#define E_REENTER_COND_DELAY(COND, DELAY) E_REENTER_COND_DELAY_ARG(__COUNTER__, COND, DELAY)
+#define E_REENTER_COND_DELAY_ARG(ENTRY_POINT, COND, DELAY)                                         \
+    setDelay(DELAY);                                                                               \
+    entrypoint = ENTRY_POINT;                                                                      \
+    case ENTRY_POINT:                                                                              \
+        if (!(COND))                                                                               \
+            return;
 
 namespace Cicada {
 
@@ -122,10 +124,10 @@ namespace Cicada {
  * function, which contains the code to be called in regular intervals.
  * To actually call the run() function in regular intervals, use the
  * Scheduler class.
- * To ease state machine creation, a series of macros in ctask.h
+ * To ease state machine creation, a series of macros in task.h
  * can assist creating the required switch/case code.
  *
- * \see ctask.h
+ * \see task.h
  *
  * Here is a simple example of a Task's run() implementation:
  * ```
@@ -150,10 +152,7 @@ namespace Cicada {
 class Task
 {
   public:
-    Task(uint16_t initialDelay = 0) :
-        _delay(initialDelay),
-        _lastRun(0)
-    { }
+    Task(uint16_t initialDelay = 0) : _delay(initialDelay), _lastRun(0) {}
 
     virtual ~Task() {}
 
@@ -210,10 +209,9 @@ class Task
      */
     Task(const Task&);
 
-    uint16_t _delay; /**< Time before the task will run again */
+    uint16_t _delay;      /**< Time before the task will run again */
     E_TICK_TYPE _lastRun; /**< Stores the tick when the task last ran */
 };
-
 }
 
 #endif

@@ -23,10 +23,6 @@
 
 #include "cicada/irq.h"
 
-void eDisableInterrupts()
-{
-}
+void eDisableInterrupts() {}
 
-void eEnableInterrupts()
-{
-}
+void eEnableInterrupts() {}

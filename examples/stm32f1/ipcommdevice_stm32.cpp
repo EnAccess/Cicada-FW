@@ -2,15 +2,15 @@
  * Example code for IP communication
  */
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include "cicada/scheduler.h"
-#include "cicada/platform/stm32f1/stm32uart.h"
 #include "cicada/commdevices/sim7x00.h"
+#include "cicada/platform/stm32f1/stm32uart.h"
+#include "cicada/scheduler.h"
 #include "cicada/tick.h"
-#include "stm32f1xx_hal.h"
 #include "printf.h"
+#include "stm32f1xx_hal.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 using namespace Cicada;
 
@@ -19,10 +19,7 @@ static void SystemClock_Config(void);
 class IPCommTask : public Task
 {
   public:
-    IPCommTask(SimCommDevice& commDev) :
-        m_commDev(commDev),
-        m_i(0)
-    { }
+    IPCommTask(SimCommDevice& commDev) : m_commDev(commDev), m_i(0) {}
 
     virtual void run()
     {
@@ -39,11 +36,10 @@ class IPCommTask : public Task
         printf("*** Connected! ***\r\n");
 
         {
-            const char str[] =
-                "GET / HTTP/1.1\r\n"
-                "Host: wttr.in\r\n"
-                "User-Agent: curl\r\n"
-                "Connection: close\r\n\r\n";
+            const char str[] = "GET / HTTP/1.1\r\n"
+                               "Host: wttr.in\r\n"
+                               "User-Agent: curl\r\n"
+                               "Connection: close\r\n\r\n";
             m_commDev.write((uint8_t*)str, sizeof(str) - 1);
         }
 
@@ -53,8 +49,7 @@ class IPCommTask : public Task
             if (m_commDev.bytesAvailable()) {
                 char buf[41];
                 uint16_t bytesRead = m_commDev.read((uint8_t*)buf, 40);
-                for (int i=0; i<bytesRead; i++)
-                {
+                for (int i = 0; i < bytesRead; i++) {
                     if (buf[i] == '\n') {
                         _putchar('\r');
                     }
@@ -94,7 +89,7 @@ int main(int argc, char* argv[])
 
     IPCommTask task(commDev);
 
-    Task* taskList[] = {&task, &commDev, NULL};
+    Task* taskList[] = { &task, &commDev, NULL };
 
     Scheduler s(&eTickFunction, taskList);
     debug.open();
@@ -103,11 +98,11 @@ int main(int argc, char* argv[])
 
 void SystemClock_Config(void)
 {
-    RCC_OscInitTypeDef RCC_OscInitStruct = {0};
-    RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
+    RCC_OscInitTypeDef RCC_OscInitStruct = { 0 };
+    RCC_ClkInitTypeDef RCC_ClkInitStruct = { 0 };
 
     /**Initializes the CPU, AHB and APB busses clocks
-    */
+     */
     RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
     RCC_OscInitStruct.HSIState = RCC_HSI_ON;
     RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
@@ -117,9 +112,9 @@ void SystemClock_Config(void)
     HAL_RCC_OscConfig(&RCC_OscInitStruct);
 
     /**Initializes the CPU, AHB and APB busses clocks
-    */
-    RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK
-        | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
+     */
+    RCC_ClkInitStruct.ClockType
+        = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
     RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
     RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
     RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
@@ -129,31 +124,30 @@ void SystemClock_Config(void)
 }
 
 /* Interrupt handler */
-extern "C"
+extern "C" {
+void SysTick_Handler()
 {
-    void SysTick_Handler()
-    {
-        HAL_IncTick();
-    }
+    HAL_IncTick();
+}
 
-    void USART1_IRQHandler()
-    {
-        static Stm32Uart* instance = Stm32Uart::getInstance(USART1);
-        instance->handleInterrupt();
-    }
+void USART1_IRQHandler()
+{
+    static Stm32Uart* instance = Stm32Uart::getInstance(USART1);
+    instance->handleInterrupt();
+}
 
-    void USART2_IRQHandler()
-    {
-        static Stm32Uart* instance = Stm32Uart::getInstance(USART2);
-        instance->handleInterrupt();
-    }
+void USART2_IRQHandler()
+{
+    static Stm32Uart* instance = Stm32Uart::getInstance(USART2);
+    instance->handleInterrupt();
+}
 
-    void _putchar(char c)
-    {
-        static Stm32Uart* serial = NULL;
-        if (!serial) {
-            serial = Stm32Uart::getInstance(USART2);
-        }
-        serial->write(c);
+void _putchar(char c)
+{
+    static Stm32Uart* serial = NULL;
+    if (!serial) {
+        serial = Stm32Uart::getInstance(USART2);
     }
+    serial->write(c);
+}
 }

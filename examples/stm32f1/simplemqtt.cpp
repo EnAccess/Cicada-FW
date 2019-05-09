@@ -4,12 +4,12 @@
 
 #include <string.h>
 
-#include "cicada/scheduler.h"
-#include "cicada/platform/stm32f1/stm32uart.h"
-#include "cicada/commdevices/sim7x00.h"
-#include "cicada/tick.h"
 #include "cicada/commdevices/blockingcommdev.h"
+#include "cicada/commdevices/sim7x00.h"
 #include "cicada/mqttcountdown.h"
+#include "cicada/platform/stm32f1/stm32uart.h"
+#include "cicada/scheduler.h"
+#include "cicada/tick.h"
 
 #include <MQTTClient.h>
 
@@ -17,11 +17,11 @@ void System_Config(void)
 {
     HAL_Init();
 
-    RCC_OscInitTypeDef RCC_OscInitStruct = {0};
-    RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
+    RCC_OscInitTypeDef RCC_OscInitStruct = { 0 };
+    RCC_ClkInitTypeDef RCC_ClkInitStruct = { 0 };
 
     /**Initializes the CPU, AHB and APB busses clocks
-    */
+     */
     RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
     RCC_OscInitStruct.HSIState = RCC_HSI_ON;
     RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
@@ -31,9 +31,9 @@ void System_Config(void)
     HAL_RCC_OscConfig(&RCC_OscInitStruct);
 
     /**Initializes the CPU, AHB and APB busses clocks
-    */
-    RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK
-        | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
+     */
+    RCC_ClkInitStruct.ClockType
+        = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
     RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
     RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
     RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
@@ -61,13 +61,13 @@ int main(int argc, char* argv[])
     Sim7x00CommDevice commDev(serial);
 
     // Set up task scheduler to call the modem driver's run() function
-    Task* taskList[] = {&commDev, NULL};
+    Task* taskList[] = { &commDev, NULL };
     Scheduler s(&eTickFunction, taskList);
 
     // Set up MQTT client
     BlockingCommDevice bld(commDev, eTickFunction, yieldFunction, &s);
-    MQTT::Client<BlockingCommDevice, MQTTCountdown> client =
-        MQTT::Client<BlockingCommDevice, MQTTCountdown>(bld);
+    MQTT::Client<BlockingCommDevice, MQTTCountdown> client
+        = MQTT::Client<BlockingCommDevice, MQTTCountdown>(bld);
 
     // Connect modem and IP channel
     commDev.setApn("internet");
@@ -101,18 +101,17 @@ int main(int argc, char* argv[])
 }
 
 /* Interrupt handler */
-extern "C"
+extern "C" {
+void SysTick_Handler()
 {
-    void SysTick_Handler()
-    {
-        HAL_IncTick();
-    }
+    HAL_IncTick();
+}
 
-    void USART1_IRQHandler()
-    {
-        static Stm32Uart* instance = Stm32Uart::getInstance(USART1);
-        instance->handleInterrupt();
-    }
+void USART1_IRQHandler()
+{
+    static Stm32Uart* instance = Stm32Uart::getInstance(USART1);
+    instance->handleInterrupt();
+}
 
-    void _putchar(char c) { }
+void _putchar(char c) {}
 }

@@ -21,14 +21,14 @@
  *
  */
 
-#include <cstddef>
 #include "cicada/commdevices/ipcommdevice.h"
+#include <cstddef>
 
 using namespace Cicada;
 
 IPCommDevice::IPCommDevice() :
     _host(NULL),
-     _port(0),
+    _port(0),
     _stateBooleans(0),
     _connectState(notConnected),
     _waitForReply(NULL)

@@ -4,11 +4,11 @@
  * scheduler of FreeRTOS.
  */
 
-#include "stm32f1xx_hal.h"
 #include "FreeRTOS.h"
-#include "task.h"
 #include "cicada/platform/stm32f1/stm32uart.h"
 #include "printf.h"
+#include "stm32f1xx_hal.h"
+#include "task.h"
 
 #define STACK_SIZE 200
 
@@ -19,11 +19,10 @@ StackType_t xStack[STACK_SIZE];
 StaticTask_t xTaskBuffer;
 
 static void SystemClock_Config(void);
-extern "C" void vApplicationGetIdleTaskMemory( StaticTask_t **ppxIdleTaskTCBBuffer,
-                                               StackType_t **ppxIdleTaskStackBuffer,
-                                               uint32_t *pulIdleTaskStackSize );
+extern "C" void vApplicationGetIdleTaskMemory(StaticTask_t** ppxIdleTaskTCBBuffer,
+    StackType_t** ppxIdleTaskStackBuffer, uint32_t* pulIdleTaskStackSize);
 
-void serialTask(void *parameters)
+void serialTask(void* parameters)
 {
     Stm32Uart* serial = static_cast<Stm32Uart*>(parameters);
 
@@ -59,9 +58,8 @@ int main(int argc, char* argv[])
     Stm32Uart serial(USART1, GPIOA, GPIO_PIN_9, GPIO_PIN_10);
 
     // Create serial task
-    xTaskCreateStatic(serialTask, "serialTask", STACK_SIZE, &serial, tskIDLE_PRIORITY,
-                xStack, &xTaskBuffer);
-
+    xTaskCreateStatic(
+        serialTask, "serialTask", STACK_SIZE, &serial, tskIDLE_PRIORITY, xStack, &xTaskBuffer);
 
     debug.open();
     serial.open();
@@ -71,11 +69,11 @@ int main(int argc, char* argv[])
 
 void SystemClock_Config(void)
 {
-    RCC_OscInitTypeDef RCC_OscInitStruct = {0};
-    RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
+    RCC_OscInitTypeDef RCC_OscInitStruct = { 0 };
+    RCC_ClkInitTypeDef RCC_ClkInitStruct = { 0 };
 
     /**Initializes the CPU, AHB and APB busses clocks
-    */
+     */
     RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
     RCC_OscInitStruct.HSIState = RCC_HSI_ON;
     RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
@@ -85,9 +83,9 @@ void SystemClock_Config(void)
     HAL_RCC_OscConfig(&RCC_OscInitStruct);
 
     /**Initializes the CPU, AHB and APB busses clocks
-    */
-    RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK
-        | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
+     */
+    RCC_ClkInitStruct.ClockType
+        = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
     RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
     RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
     RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
@@ -96,47 +94,45 @@ void SystemClock_Config(void)
     HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2);
 }
 
-extern "C"
+extern "C" {
+/* configSUPPORT_STATIC_ALLOCATION is set to 1, so the application must provide an
+   implementation of vApplicationGetIdleTaskMemory() to provide the memory that is
+   used by the Idle task. */
+void vApplicationGetIdleTaskMemory(StaticTask_t** ppxIdleTaskTCBBuffer,
+    StackType_t** ppxIdleTaskStackBuffer, uint32_t* pulIdleTaskStackSize)
 {
-    /* configSUPPORT_STATIC_ALLOCATION is set to 1, so the application must provide an
-       implementation of vApplicationGetIdleTaskMemory() to provide the memory that is
-       used by the Idle task. */
-    void vApplicationGetIdleTaskMemory( StaticTask_t **ppxIdleTaskTCBBuffer,
-                                        StackType_t **ppxIdleTaskStackBuffer,
-                                        uint32_t *pulIdleTaskStackSize )
-    {
-        static StaticTask_t xIdleTaskTCB;
-        static StackType_t uxIdleTaskStack[configMINIMAL_STACK_SIZE];
-        *ppxIdleTaskTCBBuffer = &xIdleTaskTCB;
-        *ppxIdleTaskStackBuffer = uxIdleTaskStack;
-        *pulIdleTaskStackSize = configMINIMAL_STACK_SIZE;
-    }
+    static StaticTask_t xIdleTaskTCB;
+    static StackType_t uxIdleTaskStack[configMINIMAL_STACK_SIZE];
+    *ppxIdleTaskTCBBuffer = &xIdleTaskTCB;
+    *ppxIdleTaskStackBuffer = uxIdleTaskStack;
+    *pulIdleTaskStackSize = configMINIMAL_STACK_SIZE;
+}
 
-    void xPortSysTickHandler(void);
-    void SysTick_Handler()
-    {
-        HAL_IncTick();
-        xPortSysTickHandler();
-    }
+void xPortSysTickHandler(void);
+void SysTick_Handler()
+{
+    HAL_IncTick();
+    xPortSysTickHandler();
+}
 
-    void USART1_IRQHandler()
-    {
-        static Stm32Uart* instance = Stm32Uart::getInstance(USART1);
-        instance->handleInterrupt();
-    }
+void USART1_IRQHandler()
+{
+    static Stm32Uart* instance = Stm32Uart::getInstance(USART1);
+    instance->handleInterrupt();
+}
 
-    void USART2_IRQHandler()
-    {
-        static Stm32Uart* instance = Stm32Uart::getInstance(USART2);
-        instance->handleInterrupt();
-    }
+void USART2_IRQHandler()
+{
+    static Stm32Uart* instance = Stm32Uart::getInstance(USART2);
+    instance->handleInterrupt();
+}
 
-    void _putchar(char c)
-    {
-        static Stm32Uart* serial = NULL;
-        if (!serial) {
-            serial = Stm32Uart::getInstance(USART2);
-        }
-        serial->write(c);
+void _putchar(char c)
+{
+    static Stm32Uart* serial = NULL;
+    if (!serial) {
+        serial = Stm32Uart::getInstance(USART2);
     }
+    serial->write(c);
+}
 }

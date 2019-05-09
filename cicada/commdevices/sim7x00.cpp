@@ -30,9 +30,7 @@
 
 using namespace Cicada;
 
-Sim7x00CommDevice::Sim7x00CommDevice(IBufferedSerial& serial) :
-    SimCommDevice(serial)
-{}
+Sim7x00CommDevice::Sim7x00CommDevice(IBufferedSerial& serial) : SimCommDevice(serial) {}
 
 void Sim7x00CommDevice::run()
 {
@@ -96,8 +94,7 @@ void Sim7x00CommDevice::run()
         case netopen:
             if (_waitForReply == NULL) {
                 _replyState = okReply;
-            }
-            else if (strncmp(_lineBuffer, "+NETOPEN: 1", 11) == 0) {
+            } else if (strncmp(_lineBuffer, "+NETOPEN: 1", 11) == 0) {
                 setDelay(2000);
                 _sendState = sendNetopen;
                 _waitForReply = NULL;
