@@ -105,8 +105,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a0d3a057b3321a1b77dbd1601761854a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Base class for tasks which need to be called in regular intervals. To create a tasks, inherit from this class and implement it's <a class="el" href="classCicada_1_1Task.html#a0d3a057b3321a1b77dbd1601761854a0">run()</a> function, which contains the code to be called in regular intervals. To actually call the <a class="el" href="classCicada_1_1Task.html#a0d3a057b3321a1b77dbd1601761854a0">run()</a> function in regular intervals, use the <a class="el" href="classCicada_1_1Scheduler.html">Scheduler</a> class. To ease state machine creation, a series of macros in <a class="el" href="ctask_8h_source.html">ctask.h</a> can assist creating the required switch/case code.</p>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="ctask_8h_source.html">ctask.h</a></dd></dl>
+<div class="textblock"><p>Base class for tasks which need to be called in regular intervals. To create a tasks, inherit from this class and implement it's <a class="el" href="classCicada_1_1Task.html#a0d3a057b3321a1b77dbd1601761854a0">run()</a> function, which contains the code to be called in regular intervals. To actually call the <a class="el" href="classCicada_1_1Task.html#a0d3a057b3321a1b77dbd1601761854a0">run()</a> function in regular intervals, use the <a class="el" href="classCicada_1_1Scheduler.html">Scheduler</a> class. To ease state machine creation, a series of macros in <a class="el" href="task_8h_source.html">task.h</a> can assist creating the required switch/case code.</p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="task_8h_source.html">task.h</a></dd></dl>
 <p>Here is a simple example of a <a class="el" href="classCicada_1_1Task.html">Task</a>'s <a class="el" href="classCicada_1_1Task.html#a0d3a057b3321a1b77dbd1601761854a0">run()</a> implementation: </p><div class="fragment"><div class="line"><span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classCicada_1_1Task.html#a0d3a057b3321a1b77dbd1601761854a0">run</a>()</div><div class="line">{</div><div class="line">    E_BEGIN_TASK</div><div class="line"></div><div class="line">    <span class="comment">// Do something</span></div><div class="line">    printf(<span class="stringliteral">&quot;Doing something\n&quot;</span>);</div><div class="line"></div><div class="line">    <span class="comment">// Return from run, reenter here after 1 second</span></div><div class="line">    E_REENTER_DELAY(1000);</div><div class="line"></div><div class="line">    <span class="comment">// After a second, so something else</span></div><div class="line">    printf(<span class="stringliteral">&quot;Doing something else\n&quot;</span>);</div><div class="line"></div><div class="line">    E_END_TASK</div><div class="line">}</div></div><!-- fragment --> </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a71e28ad04f22e52a506fadfdf8b52b6c"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a71e28ad04f22e52a506fadfdf8b52b6c">&#9670;&nbsp;</a></span>delay()</h2>
@@ -249,7 +249,7 @@ Public Member Functions</h2></td></tr>
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>cicada/<a class="el" href="ctask_8h_source.html">ctask.h</a></li>
+<li>cicada/<a class="el" href="task_8h_source.html">task.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
