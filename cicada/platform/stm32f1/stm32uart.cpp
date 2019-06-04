@@ -112,24 +112,25 @@ bool Stm32Uart::open()
     }
 
     // Enable GPIO Clock
-    if (_uartPort == GPIOA)
+    if (_uartPort == GPIOA) {
         __HAL_RCC_GPIOA_CLK_ENABLE();
-    else if (_uartPort == GPIOB)
+    } else if (_uartPort == GPIOB) {
         __HAL_RCC_GPIOB_CLK_ENABLE();
-    else if (_uartPort == GPIOC)
+    } else if (_uartPort == GPIOC) {
         __HAL_RCC_GPIOC_CLK_ENABLE();
-    else if (_uartPort == GPIOD)
+    } else if (_uartPort == GPIOD) {
         __HAL_RCC_GPIOD_CLK_ENABLE();
-    else if (_uartPort == GPIOE)
+    } else if (_uartPort == GPIOE) {
         __HAL_RCC_GPIOE_CLK_ENABLE();
 #ifdef GPIOF
-    else if (_uartPort == GPIOF)
+    } else if (_uartPort == GPIOF) {
         __HAL_RCC_GPIOF_CLK_ENABLE();
 #endif
 #ifdef GPIOG
-    else if (_uartPort == GPIOG)
+    } else if (_uartPort == GPIOG) {
         __HAL_RCC_GPIOG_CLK_ENABLE();
 #endif
+    }
 
     // Configure GPIO pins
     GPIO_InitTypeDef gpio = { 0 };
