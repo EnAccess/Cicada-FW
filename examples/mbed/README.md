@@ -10,7 +10,7 @@ If running Windows:
 
 
 Using the Mbed CLI:
-1. Naviagte to the current directory (> examples > mbed)
+1. Navigate to the current directory (> examples > mbed)
 2. Download Mbed sources required for compiling:
 > mbed deploy
 3. Create new mbed program/library: 
