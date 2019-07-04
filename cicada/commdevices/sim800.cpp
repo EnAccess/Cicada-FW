@@ -47,7 +47,6 @@ void Sim800CommDevice::run()
 
     // If a modem reset is pending, handle it
     if (_stateBooleans & RESET_PENDING) {
-        printf("Modem reset\r\n");
         _serial.flushReceiveBuffers();
         _bytesToRead = 0;
         _bytesToReceive = 0;
