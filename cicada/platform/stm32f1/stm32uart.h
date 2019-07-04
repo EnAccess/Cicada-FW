@@ -53,6 +53,7 @@ class Stm32Uart : public BufferedSerial
   public:
     Stm32Uart(USART_TypeDef* uartInstance = USART2, GPIO_TypeDef* uartPort = GPIOA,
         uint16_t txPin = GPIO_PIN_2, uint16_t rxPin = GPIO_PIN_3);
+    ~Stm32Uart();
 
     static Stm32Uart* getInstance(USART_TypeDef* uartInstance);
 

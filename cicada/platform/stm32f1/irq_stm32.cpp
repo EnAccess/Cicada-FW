@@ -21,8 +21,8 @@
  *
  */
 
-#include "stm32f1xx_hal.h"
 #include "cicada/irq.h"
+#include "stm32f1xx_hal.h"
 
 void eDisableInterrupts()
 {

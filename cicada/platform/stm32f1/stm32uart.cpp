@@ -52,6 +52,12 @@ Stm32Uart::Stm32Uart(
     }
 }
 
+Stm32Uart::~Stm32Uart()
+{
+    if (_flags & FLAG_ISOPEN)
+        close();
+}
+
 Stm32Uart* Stm32Uart::getInstance(USART_TypeDef* uartInstance)
 {
     for (int i = 0; i < E_MULTITON_MAX_INSTANCES; i++) {

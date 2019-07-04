@@ -21,8 +21,8 @@
  *
  */
 
-#include "stm32f1xx_hal.h"
 #include "cicada/tick.h"
+#include "stm32f1xx_hal.h"
 
 E_TICK_TYPE eTickFunction()
 {
