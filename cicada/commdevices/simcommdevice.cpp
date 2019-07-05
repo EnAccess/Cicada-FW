@@ -308,6 +308,7 @@ void SimCommDevice::checkConnectionState(const char* closeVariant)
     if (strncmp(_lineBuffer, "+CIPRXGET: 1,0", 14) == 0) {
         _stateBooleans |= DATA_PENDING;
     } else if (strncmp(_lineBuffer, closeVariant, strlen(closeVariant)) == 0) {
+        _waitForReply = NULL;
         _stateBooleans &= ~IP_CONNECTED;
     }
 }
