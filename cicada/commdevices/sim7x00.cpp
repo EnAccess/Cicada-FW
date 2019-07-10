@@ -156,6 +156,14 @@ void Sim7x00CommDevice::run()
     if (_serial.spaceAvailable() < 20)
         return;
 
+    // When signal strength was requested, send the command to the modem
+    if (_rssi == UINT8_MAX && _stateBooleans & LINE_READ) {
+        _replyState = csq;
+        _waitForReply = _okStr;
+        sendCommand("AT+CSQ");
+        return;
+    }
+
     // Connection state machine
     switch (_sendState) {
     case notConnected:

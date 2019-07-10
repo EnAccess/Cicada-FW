@@ -23,6 +23,7 @@
 
 #include "cicada/commdevices/simcommdevice.h"
 #include "cicada/commdevices/ipcommdevice.h"
+#include <cinttypes>
 #include <cstddef>
 #include <cstdio>
 #include <cstring>
@@ -47,7 +48,8 @@ SimCommDevice::SimCommDevice(IBufferedSerial& serial) :
     _replyState(0),
     _bytesToWrite(0),
     _bytesToReceive(0),
-    _bytesToRead(0)
+    _bytesToRead(0),
+    _rssi(99)
 {}
 
 void SimCommDevice::setApn(const char* apn)
@@ -185,6 +187,15 @@ bool SimCommDevice::parseCiprxget2()
         _bytesToReceive -= bytesToReceive;
         _bytesToRead += bytesToReceive;
         _stateBooleans &= ~LINE_READ;
+        return true;
+    }
+    return false;
+}
+
+bool SimCommDevice::parseCsq()
+{
+    if (strncmp(_lineBuffer, "+CSQ: ", 6) == 0) {
+        sscanf(_lineBuffer + 6, "%2" SCNu8, &_rssi);
         return true;
     }
     return false;
@@ -332,4 +343,14 @@ void SimCommDevice::sendCommand(const char* cmd)
 {
     _serial.write(cmd);
     _serial.write(_lineEndStr);
+}
+
+void SimCommDevice::requestRSSI()
+{
+    _rssi = UINT8_MAX;
+}
+
+uint8_t SimCommDevice::getRSSI()
+{
+    return _rssi;
 }

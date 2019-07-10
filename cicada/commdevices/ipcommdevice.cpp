@@ -29,7 +29,7 @@ using namespace Cicada;
 IPCommDevice::IPCommDevice() :
     _host(NULL),
     _port(0),
-    _stateBooleans(0),
+    _stateBooleans(LINE_READ),
     _connectState(notConnected),
     _waitForReply(NULL)
 {}

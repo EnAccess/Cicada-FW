@@ -66,7 +66,6 @@ void Sim800CommDevice::run()
 
     // Parse reply from the modem
     if (parseLine) {
-
         // Log the current modem states
         logStates(_sendState, _replyState);
 
@@ -129,6 +128,11 @@ void Sim800CommDevice::run()
             }
             break;
 
+        case csq:
+            if (parseCsq()) {
+                _replyState = okReply;
+            }
+
         default:
             break;
         }
@@ -151,6 +155,14 @@ void Sim800CommDevice::run()
     // Don't go on if space in write buffer is low
     if (_serial.spaceAvailable() < 20)
         return;
+
+    // When signal strength was requested, send the command to the modem
+    if (_rssi == UINT8_MAX && _stateBooleans & LINE_READ) {
+        _replyState = csq;
+        _waitForReply = _okStr;
+        sendCommand("AT+CSQ");
+        return;
+    }
 
     // Connection state machine
     switch (_sendState) {

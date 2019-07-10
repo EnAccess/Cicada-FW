@@ -48,7 +48,7 @@ class Sim800CommDevice : public SimCommDevice
     virtual void run();
 
   private:
-    enum ReplyState { okReply = 0, cifsr, cdnsgip, cipstart, ciprxget4, ciprxget2 };
+    enum ReplyState { okReply = 0, csq, cifsr, cdnsgip, cipstart, ciprxget4, ciprxget2 };
 
     enum SendState {
         notConnected,
