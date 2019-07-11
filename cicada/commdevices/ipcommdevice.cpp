@@ -67,7 +67,7 @@ bool IPCommDevice::isIdle()
 
 uint16_t IPCommDevice::bytesAvailable() const
 {
-    return _readBuffer.availableData();
+    return _readBuffer.bytesAvailable();
 }
 
 uint16_t IPCommDevice::spaceAvailable() const
@@ -75,7 +75,7 @@ uint16_t IPCommDevice::spaceAvailable() const
     if (_connectState != connected)
         return 0;
 
-    return _writeBuffer.availableSpace();
+    return _writeBuffer.spaceAvailable();
 }
 
 uint16_t IPCommDevice::read(uint8_t* data, uint16_t maxSize)

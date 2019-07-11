@@ -244,7 +244,7 @@ void Sim7x00CommDevice::run()
         break;
 
     case connected:
-        if (_writeBuffer.availableData()) {
+        if (_writeBuffer.bytesAvailable()) {
             if (prepareSending()) {
                 _connectState = IPCommDevice::transmitting;
                 _sendState = sendData;

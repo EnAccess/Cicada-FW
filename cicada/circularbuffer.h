@@ -56,8 +56,8 @@ class CircularBuffer
     //TODO: Check if virtual is appropriate
     virtual uint16_t push(const T* data, uint16_t size)
     {
-        if (size > availableSpace())
-            size = availableSpace();
+        if (size > spaceAvailable())
+            size = spaceAvailable();
 
         uint16_t writeCount = 0;
 
@@ -93,8 +93,8 @@ class CircularBuffer
      */
     virtual uint16_t pull(T* data, uint16_t size)
     {
-        if (size > availableData())
-            size = availableData();
+        if (size > bytesAvailable())
+            size = bytesAvailable();
 
         uint16_t readCount = 0;
 
@@ -163,7 +163,7 @@ class CircularBuffer
     /*!
      * \return Number of available elements in the buffer
      */
-    virtual uint16_t availableData() const
+    virtual uint16_t bytesAvailable() const
     {
         return _availableData;
     }
@@ -171,7 +171,7 @@ class CircularBuffer
     /*!
      * \return Number of available space in the buffer
      */
-    virtual uint16_t availableSpace() const
+    virtual uint16_t spaceAvailable() const
     {
         return BUFFER_SIZE - _availableData;
     }

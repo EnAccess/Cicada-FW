@@ -269,7 +269,7 @@ bool SimCommDevice::prepareSending()
     if (_serial.spaceAvailable() < 22)
         return false;
 
-    _bytesToWrite = _writeBuffer.availableData();
+    _bytesToWrite = _writeBuffer.bytesAvailable();
     if (_bytesToWrite > _serial.spaceAvailable() - MIN_SPACE_AVAILABLE) {
         _bytesToWrite = _serial.spaceAvailable() - MIN_SPACE_AVAILABLE;
     }
@@ -295,12 +295,12 @@ void SimCommDevice::sendData()
 
 bool SimCommDevice::sendCiprxget2()
 {
-    if (_serial.spaceAvailable() > 8 && _readBuffer.availableSpace() > 0) {
+    if (_serial.spaceAvailable() > 8 && _readBuffer.spaceAvailable() > 0) {
         int bytesToReceive = _serial.spaceAvailable() - 8;
         if (bytesToReceive > _bytesToReceive)
             bytesToReceive = _bytesToReceive;
-        if (bytesToReceive > _readBuffer.availableSpace())
-            bytesToReceive = _readBuffer.availableSpace();
+        if (bytesToReceive > _readBuffer.spaceAvailable())
+            bytesToReceive = _readBuffer.spaceAvailable();
 
         const char str[] = "AT+CIPRXGET=2,0,";
         char sizeStr[6];

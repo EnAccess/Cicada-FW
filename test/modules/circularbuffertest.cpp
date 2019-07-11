@@ -18,8 +18,8 @@ TEST(CircularBufferTest, ShouldPushAndPullDataAsExpected)
 
     uint8_t writeLen = buffer.push(dataIn, SIZE);
     uint8_t readLen = buffer.pull(dataOut, SIZE);
-    uint8_t availableData = buffer.availableData();
-    uint8_t availableSpace = buffer.availableSpace();
+    uint8_t availableData = buffer.bytesAvailable();
+    uint8_t availableSpace = buffer.spaceAvailable();
     bool isEmpty = buffer.isEmpty();
     bool isFull = buffer.isFull();
 
@@ -60,8 +60,8 @@ TEST(CircularBufferTest, ShouldFillBufferExactly)
     char dataOut[SIZE];
 
     uint8_t writeLen = buffer.push(dataIn, SIZE);
-    uint8_t availableData = buffer.availableData();
-    uint8_t availableSpace = buffer.availableSpace();
+    uint8_t availableData = buffer.bytesAvailable();
+    uint8_t availableSpace = buffer.spaceAvailable();
     uint8_t readLen = buffer.pull(dataOut, SIZE);
 
     CHECK_EQUAL(SIZE, writeLen);
@@ -82,11 +82,11 @@ TEST(CircularBufferTest, MaximumBufferSize)
         dataExpected[i] = i % 255;
         buffer.push(dataExpected[i]);
     }
-    uint16_t availableDataBeforeRead = buffer.availableData();
-    uint16_t availableSpaceBeforeRead = buffer.availableSpace();
+    uint16_t availableDataBeforeRead = buffer.bytesAvailable();
+    uint16_t availableSpaceBeforeRead = buffer.spaceAvailable();
     uint16_t readLen = buffer.pull(dataOut, SIZE);
-    uint16_t availableDataAfterRead = buffer.availableData();
-    uint16_t availableSpaceAfterRead = buffer.availableSpace();
+    uint16_t availableDataAfterRead = buffer.bytesAvailable();
+    uint16_t availableSpaceAfterRead = buffer.spaceAvailable();
 
     CHECK_EQUAL(SIZE, availableDataBeforeRead);
     CHECK_EQUAL(0, availableSpaceBeforeRead);
@@ -109,7 +109,7 @@ TEST(CircularBufferTest, WriteReadMultipleTimes)
     char dataOutSecond[SIZE];
 
     uint8_t writeLen = buffer.push(dataInFirst, SIZE);
-    uint8_t availLen = buffer.availableData();
+    uint8_t availLen = buffer.bytesAvailable();
     uint8_t readLen = buffer.pull(dataOutFirst, SIZE);
 
     CHECK_EQUAL(SIZE, writeLen);
@@ -118,7 +118,7 @@ TEST(CircularBufferTest, WriteReadMultipleTimes)
     STRNCMP_EQUAL(dataInFirst, dataOutFirst, SIZE);
 
     writeLen = buffer.push(dataInSecond, SIZE);
-    availLen = buffer.availableData();
+    availLen = buffer.bytesAvailable();
     readLen = buffer.pull(dataOutSecond, SIZE);
 
     CHECK_EQUAL(SIZE, writeLen);

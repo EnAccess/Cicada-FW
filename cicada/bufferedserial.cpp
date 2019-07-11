@@ -32,7 +32,7 @@ BufferedSerial::BufferedSerial() {}
 uint16_t BufferedSerial::bytesAvailable() const
 {
     eDisableInterrupts();
-    uint16_t availableData = _readBuffer.availableData();
+    uint16_t availableData = _readBuffer.bytesAvailable();
     eEnableInterrupts();
 
     return availableData;
@@ -41,7 +41,7 @@ uint16_t BufferedSerial::bytesAvailable() const
 uint16_t BufferedSerial::spaceAvailable() const
 {
     eDisableInterrupts();
-    uint16_t spaceAvailable = _writeBuffer.availableSpace();
+    uint16_t spaceAvailable = _writeBuffer.spaceAvailable();
     eEnableInterrupts();
 
     return spaceAvailable;
@@ -154,7 +154,7 @@ uint16_t BufferedSerial::bufferSize()
 
 void BufferedSerial::transferToAndFromBuffer()
 {
-    if (_writeBuffer.availableData()) {
+    if (_writeBuffer.bytesAvailable()) {
         if (rawWrite(_writeBuffer.read())) {
             _writeBuffer.pull();
         }
