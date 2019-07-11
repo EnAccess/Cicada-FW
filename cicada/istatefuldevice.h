@@ -21,26 +21,48 @@
  *
  */
 
-#ifndef EIIPCOMMDEVICE_H
-#define EIIPCOMMDEVICE_H
+#ifndef EISTATEFULDEVICE_H
+#define EISTATEFULDEVICE_H
 
 #include "cicada/icommdevice.h"
-#include "cicada/istatefuldevice.h"
+#include <cstdint>
 
 namespace Cicada {
+/*!
+ * \class IStatefulDevice
+ *
+ * Base interface for stateful devices, which have a
+ * connected/disconnected state.
+ */
 
-class IIPCommDevice : public IStatefulDevice
+class IStatefulDevice : public ICommDevice
 {
   public:
-    virtual ~IIPCommDevice() { }
+    virtual ~IStatefulDevice() { }
 
     /*!
-     * Set parameters for IP connection.
-     * Need to be set before connect() is called.
-     * \param host Host to connect to. Needs to be valid for
-     * \param port port to connect to
+     * Connects the device to the other side of the communication channel
      */
-    virtual void setHostPort(const char* host, uint16_t port) = 0;
+    virtual bool connect() = 0;
+
+    /*!
+     * Disconnects the device
+     */
+    virtual void disconnect() = 0;
+
+    /*!
+     * \return true if the device is fully connected, false otherwise.
+     * Fully connected means it's able to perform read/write operations
+     * to it's connected host.
+     */
+    virtual bool isConnected() = 0;
+
+    /*!
+     * \return true if the device is in idle state, false otherwise.
+     * Idle means all services are disconnected and it's able to
+     * establish a new connection.
+     */
+    virtual bool isIdle() = 0;
 };
 
 }

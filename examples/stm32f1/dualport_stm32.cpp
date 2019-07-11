@@ -16,7 +16,7 @@ static void SystemClock_Config(void);
 class SerialTask : public Task
 {
   public:
-    SerialTask(BufferedSerial& serial) : m_serial(serial), m_i(0) {}
+    SerialTask(IBufferedSerial& serial) : m_serial(serial), m_i(0) {}
 
     virtual void run()
     {
@@ -26,7 +26,8 @@ class SerialTask : public Task
             {
                 const char* send_str = "AT\r\n";
                 printf("Sending command: %s", send_str);
-                int bytesWritten = m_serial.write(send_str, strlen(send_str));
+                int bytesWritten = m_serial.write((const uint8_t*)send_str,
+                    strlen(send_str));
                 printf("%d bytes written\r\n", bytesWritten);
             }
 
@@ -35,7 +36,7 @@ class SerialTask : public Task
             {
                 char buf[32];
                 int bytesReceived;
-                bytesReceived = m_serial.read(buf, 31);
+                bytesReceived = m_serial.read((uint8_t*)buf, 31);
                 printf("%d bytes received\r\n", bytesReceived);
 
                 buf[bytesReceived] = '\0';
@@ -51,7 +52,7 @@ class SerialTask : public Task
     }
 
   private:
-    BufferedSerial& m_serial;
+    IBufferedSerial& m_serial;
     int m_i;
 };
 
@@ -127,6 +128,6 @@ void _putchar(char c)
     if (!serial) {
         serial = Stm32Uart::getInstance(USART2);
     }
-    serial->write(c);
+    serial->write((uint8_t)c);
 }
 }

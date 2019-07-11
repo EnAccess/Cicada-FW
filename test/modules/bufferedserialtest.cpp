@@ -75,7 +75,7 @@ TEST(BufferedSerialTest, ShouldReadDataAfterTransferFromUnderlyingMockSerial)
     for (int i = 0; i < 100; i++)
         bs.transferToAndFromBuffer();
 
-    uint8_t readLen = bs.read(dataOut, SIZE);
+    uint8_t readLen = bs.read((uint8_t*)dataOut, SIZE);
 
     CHECK_EQUAL(SIZE, readLen);
     STRNCMP_EQUAL(dataIn, dataOut, SIZE);
@@ -90,7 +90,7 @@ TEST(BufferedSerialTest, ShouldHaveDataInMockSerialAfterWrite)
 
     mock().expectOneCall("startTransmit");
 
-    bs.write(dataIn, SIZE);
+    bs.write((uint8_t*)dataIn, SIZE);
 
     for (int i = 0; i < 100; i++)
         bs.transferToAndFromBuffer();
@@ -112,10 +112,10 @@ TEST(BufferedSerialTest, ShouldDetectLineBreaksAndReadIndividualLines)
     for (int i = 0; i < 100; i++)
         bs.transferToAndFromBuffer();
 
-    int outLen = bs.readLine(dataOut, SIZE);
+    int outLen = bs.readLine((uint8_t*)dataOut, SIZE);
     dataOut[outLen] = '\0';
     STRNCMP_EQUAL("A line\n", dataOut, SIZE);
-    outLen = bs.readLine(dataOut, SIZE);
+    outLen = bs.readLine((uint8_t*)dataOut, SIZE);
     dataOut[outLen] = '\0';
     STRNCMP_EQUAL("Another line\n", dataOut, SIZE);
 }

@@ -48,19 +48,19 @@ class BufferedSerial : public IBufferedSerial
 
     virtual uint16_t spaceAvailable() const override;
 
-    virtual uint16_t read(char* data, uint16_t size) override;
+    virtual uint16_t read(uint8_t* data, uint16_t size) override;
 
-    virtual char read() override;
+    virtual uint8_t read() override;
 
-    virtual uint16_t write(const char* data, uint16_t size) override;
+    virtual uint16_t write(const uint8_t* data, uint16_t size) override;
 
-    virtual uint16_t write(const char* data) override;
+    virtual uint16_t write(const uint8_t* data) override;
 
-    virtual void write(char data) override;
+    virtual void write(uint8_t data) override;
 
     virtual bool canReadLine() const override;
 
-    virtual uint16_t readLine(char* data, uint16_t size) override;
+    virtual uint16_t readLine(uint8_t* data, uint16_t size) override;
 
     virtual void flushReceiveBuffers() override;
 
@@ -77,7 +77,7 @@ class BufferedSerial : public IBufferedSerial
     LineCircularBuffer<E_SERIAL_BUFFERSIZE> _writeBuffer;
 
   private:
-    void copyToBuffer(char data);
+    void copyToBuffer(uint8_t data);
 };
 
 /*!

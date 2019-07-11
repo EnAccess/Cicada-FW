@@ -15,7 +15,7 @@ static void SystemClock_Config(void);
 class SerialTask : public Task
 {
   public:
-    SerialTask(BufferedSerial& serial) : m_serial(serial), m_i(0) {}
+    SerialTask(IBufferedSerial& serial) : m_serial(serial), m_i(0) {}
 
     virtual void run()
     {
@@ -32,14 +32,14 @@ class SerialTask : public Task
         for (m_i = 0; m_i < 100; m_i++) {
             {
                 const char* send_str = "AT\r\n";
-                m_serial.write(send_str, strlen(send_str));
+                m_serial.write((const uint8_t*)send_str, strlen(send_str));
             }
 
             E_REENTER_COND_DELAY(m_serial.bytesAvailable(), 100);
 
             {
                 char buf[32];
-                m_serial.read(buf, 31);
+                m_serial.read((uint8_t*)buf, 31);
             }
 
             E_REENTER_DELAY(500);
@@ -51,7 +51,7 @@ class SerialTask : public Task
     }
 
   private:
-    BufferedSerial& m_serial;
+    IBufferedSerial& m_serial;
     int m_i;
 };
 

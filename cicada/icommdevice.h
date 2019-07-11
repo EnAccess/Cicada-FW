@@ -31,7 +31,7 @@ namespace Cicada {
 /*!
  * \class ICommDevice
  *
- * Interface for communication devices, like 4G/GSM cellular modems
+ * Base Interface for communication devices, like UARTs, 4G/GSM cellular modems
  * or WiFi modules. Drivers for these devices must implement this
  * interface. All methods in this class have to be **non-blocking**.
  * The actual processing and communication with the hardware is done
@@ -43,30 +43,6 @@ class ICommDevice
 {
   public:
     virtual ~ICommDevice() { }
-
-    /*!
-     * Connects the device to the other side of the communication channel
-     */
-    virtual bool connect() = 0;
-
-    /*!
-     * Disconnects the device
-     */
-    virtual void disconnect() = 0;
-
-    /*!
-     * \return true if the device is fully connected, false otherwise.
-     * Fully connected means it's able to perform read/write operations
-     * to it's connected host.
-     */
-    virtual bool isConnected() = 0;
-
-    /*!
-     * \return true if the device is in idle state, false otherwise.
-     * Idle means all services are disconnected and it's able to
-     * establish a new connection.
-     */
-    virtual bool isIdle() = 0;
 
     /*!
      * Number of bytes available for reading.
@@ -86,8 +62,8 @@ class ICommDevice
      * Reads data from the device. This method is non-blocking and only
      * copies data already in the receive buffer. If no data is
      * currently available, the method does not copy anything and will
-     * return 0. Filling up the read buffer is done in the modem
-     * driver's run() function.
+     * return 0. Filling up the read buffer is done in an interrupt or
+     * the device driver's run() function.
      * \param data Buffer to store data. Must be large enough to store
      * maxSize bytes.
      * \param maxSize Maximum number of bytes to store into data. The actual

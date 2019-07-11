@@ -82,7 +82,7 @@ void SimCommDevice::serialUnlock()
 uint16_t SimCommDevice::serialWrite(char* data)
 {
     if (_stateBooleans & SERIAL_LOCKED) {
-        return _serial.write(data);
+        return _serial.write((const uint8_t*)data);
     }
 
     return 0;
@@ -91,7 +91,7 @@ uint16_t SimCommDevice::serialWrite(char* data)
 uint16_t SimCommDevice::serialRead(char* data, uint16_t maxSize)
 {
     if (_stateBooleans & SERIAL_LOCKED) {
-        return _serial.read(data, maxSize);
+        return _serial.read((uint8_t*)data, maxSize);
     }
 
     return 0;
@@ -243,9 +243,9 @@ bool SimCommDevice::sendDnsQuery()
     if (_serial.spaceAvailable() < strlen(_host) + 20)
         return false;
 
-    _serial.write("AT+CDNSGIP=\"");
-    _serial.write(_host);
-    _serial.write(_quoteEndStr);
+    _serial.write((const uint8_t*)"AT+CDNSGIP=\"");
+    _serial.write((const uint8_t*)_host);
+    _serial.write((const uint8_t*)_quoteEndStr);
 
     return true;
 }
@@ -255,13 +255,13 @@ void SimCommDevice::sendCipstart(const char* variant)
     char portStr[6];
     sprintf(portStr, "%d", _port);
 
-    _serial.write("AT+CIP");
-    _serial.write(variant);
-    _serial.write("=0,\"TCP\",\"");
-    _serial.write(_ip);
-    _serial.write("\",");
-    _serial.write(portStr);
-    _serial.write(_lineEndStr);
+    _serial.write((const uint8_t*)"AT+CIP");
+    _serial.write((const uint8_t*)variant);
+    _serial.write((const uint8_t*)"=0,\"TCP\",\"");
+    _serial.write((const uint8_t*)_ip);
+    _serial.write((const uint8_t*)"\",");
+    _serial.write((const uint8_t*)portStr);
+    _serial.write((const uint8_t*)_lineEndStr);
 }
 
 bool SimCommDevice::prepareSending()
@@ -277,9 +277,9 @@ bool SimCommDevice::prepareSending()
     char sizeStr[6];
     sprintf(sizeStr, "%d", _bytesToWrite);
 
-    _serial.write("AT+CIPSEND=0,");
-    _serial.write(sizeStr);
-    _serial.write(_lineEndStr);
+    _serial.write((const uint8_t*)"AT+CIPSEND=0,");
+    _serial.write((const uint8_t*)sizeStr);
+    _serial.write((const uint8_t*)_lineEndStr);
 
     _waitForReply = ">";
 
@@ -305,9 +305,9 @@ bool SimCommDevice::sendCiprxget2()
         const char str[] = "AT+CIPRXGET=2,0,";
         char sizeStr[6];
         sprintf(sizeStr, "%d", bytesToReceive);
-        _serial.write(str, sizeof(str) - 1);
-        _serial.write(sizeStr);
-        _serial.write(_lineEndStr);
+        _serial.write((const uint8_t*)str, sizeof(str) - 1);
+        _serial.write((const uint8_t*)sizeStr);
+        _serial.write((const uint8_t*)_lineEndStr);
         return true;
     } else {
         return false;
@@ -341,8 +341,8 @@ bool SimCommDevice::receive()
 
 void SimCommDevice::sendCommand(const char* cmd)
 {
-    _serial.write(cmd);
-    _serial.write(_lineEndStr);
+    _serial.write((const uint8_t*)cmd);
+    _serial.write((const uint8_t*)_lineEndStr);
 }
 
 void SimCommDevice::requestRSSI()

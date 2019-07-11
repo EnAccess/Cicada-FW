@@ -29,7 +29,7 @@ void serialTask(void* parameters)
     for (;;) {
         const char* send_str = "AT\r\n";
         printf("Sending command: %s", send_str);
-        int bytesWritten = serial->write(send_str);
+        int bytesWritten = serial->write((const uint8_t*)send_str);
         printf("%d bytes written\r\n", bytesWritten);
 
         while (!serial->bytesAvailable()) {
@@ -38,7 +38,7 @@ void serialTask(void* parameters)
 
         char buf[32];
         int bytesReceived;
-        bytesReceived = serial->read(buf, 31);
+        bytesReceived = serial->read((uint8_t*)buf, 31);
         printf("%d bytes received\r\n", bytesReceived);
 
         buf[bytesReceived] = '\0';
@@ -133,6 +133,6 @@ void _putchar(char c)
     if (!serial) {
         serial = Stm32Uart::getInstance(USART2);
     }
-    serial->write(c);
+    serial->write((uint8_t)c);
 }
 }

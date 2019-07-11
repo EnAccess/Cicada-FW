@@ -47,7 +47,7 @@ uint16_t BufferedSerial::spaceAvailable() const
     return spaceAvailable;
 }
 
-uint16_t BufferedSerial::read(char* data, uint16_t size)
+uint16_t BufferedSerial::read(uint8_t* data, uint16_t size)
 {
     uint16_t avail = bytesAvailable();
     if (size > avail)
@@ -62,16 +62,16 @@ uint16_t BufferedSerial::read(char* data, uint16_t size)
     return readCount;
 }
 
-char BufferedSerial::read()
+uint8_t BufferedSerial::read()
 {
     eDisableInterrupts();
-    char c = _readBuffer.pull();
+    uint8_t c = _readBuffer.pull();
     eEnableInterrupts();
 
     return c;
 }
 
-uint16_t BufferedSerial::write(const char* data, uint16_t size)
+uint16_t BufferedSerial::write(const uint8_t* data, uint16_t size)
 {
     uint16_t space = spaceAvailable();
     if (size > space)
@@ -88,7 +88,7 @@ uint16_t BufferedSerial::write(const char* data, uint16_t size)
     return writeCount;
 }
 
-uint16_t BufferedSerial::write(const char* data)
+uint16_t BufferedSerial::write(const uint8_t* data)
 {
     uint16_t space = spaceAvailable();
 
@@ -103,13 +103,13 @@ uint16_t BufferedSerial::write(const char* data)
     return writeCount;
 }
 
-void BufferedSerial::write(char data)
+void BufferedSerial::write(uint8_t data)
 {
     copyToBuffer(data);
     startTransmit();
 }
 
-void BufferedSerial::copyToBuffer(char data)
+void BufferedSerial::copyToBuffer(uint8_t data)
 {
     eDisableInterrupts();
     _writeBuffer.push(data);
@@ -125,10 +125,10 @@ bool BufferedSerial::canReadLine() const
     return lines > 0;
 }
 
-uint16_t BufferedSerial::readLine(char* data, uint16_t size)
+uint16_t BufferedSerial::readLine(uint8_t* data, uint16_t size)
 {
     uint16_t readCount = 0;
-    char c = '\0';
+    uint8_t c = '\0';
 
     while (bytesAvailable() && c != '\n') {
         c = read();

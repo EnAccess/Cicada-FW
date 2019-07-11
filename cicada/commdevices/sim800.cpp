@@ -195,9 +195,9 @@ void Sim800CommDevice::run()
 
     case sendCstt: {
         const char str[] = "AT+CSTT=\"";
-        _serial.write(str, sizeof(str) - 1);
-        _serial.write(_apn);
-        _serial.write(_quoteEndStr);
+        _serial.write((const uint8_t*)str, sizeof(str) - 1);
+        _serial.write((const uint8_t*)_apn);
+        _serial.write((const uint8_t*)_quoteEndStr);
 
         _waitForReply = _okStr;
         _sendState = sendCiicr;
@@ -212,8 +212,8 @@ void Sim800CommDevice::run()
 
     case sendCifsr: {
         const char str[] = "AT+CIFSR";
-        _serial.write(str, sizeof(str) - 1);
-        _serial.write(_lineEndStr);
+        _serial.write((const uint8_t*)str, sizeof(str) - 1);
+        _serial.write((const uint8_t*)_lineEndStr);
 
         _replyState = cifsr;
         _sendState = sendDnsQuery;
