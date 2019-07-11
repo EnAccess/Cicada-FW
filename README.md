@@ -3,9 +3,9 @@
 An easy way to get production ready, bi-directional communications for your 
 IoT embedded device. 
 
-This repository contains the source code for 2G, 3G, 4G modems (and wifi in the 
-future). **This library is platform agnostic, designed to be portable** - including 
-examples for mbed, FreeRTOS, or bare metal. 
+This repository contains the source code for UART drivers, 2G, 3G, 4G modems
+(and wifi in the future). **This library is platform agnostic, designed to be
+portable** - including examples for mbed, FreeRTOS, or bare metal.
 
 Cicada uses the MQTT protocol to connect to the cloud but it can be used for 
 general IP communication as well. 
@@ -16,6 +16,11 @@ can be done in less than 50 lines of code.
 It's easy to add support for a new microcontroller or embedded os. There is also
 support for Unix (Linux, OS X) to test code on a PC without the need of having
 access to actual microcontroller hardware.
+
+## Supported UARTs:
+- STM32F1
+- Mbed
+- Unix (Linux / OS X) termios
 
 ## Supported cellular modems:
 - Simcom SIM7x00
