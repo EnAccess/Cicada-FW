@@ -57,7 +57,7 @@ void IPCommDevice::disconnect()
 
 bool IPCommDevice::isConnected()
 {
-    return _connectState == connected;
+    return _connectState == connected || _connectState == transmitting;
 }
 
 bool IPCommDevice::isIdle()
