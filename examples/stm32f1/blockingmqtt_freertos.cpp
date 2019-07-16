@@ -64,6 +64,9 @@ void runTask(void* parameters)
 
 void mqttTask(void* parameters)
 {
+    Stm32Uart debug;
+    debug.open();
+
     Stm32Uart serial(USART1, GPIOA, GPIO_PIN_9, GPIO_PIN_10);
 
     // Change this class to the modem driver you want
@@ -167,9 +170,6 @@ int main(int argc, char* argv[])
     // System configuration
     HAL_Init();
     SystemClock_Config();
-
-    Stm32Uart debug;
-    debug.open();
 
     xTaskCreateStatic(
         mqttTask, "mqttTask", STACK_SIZE_MQTT, NULL, tskIDLE_PRIORITY, xStackMqtt, &xMqttBuffer);

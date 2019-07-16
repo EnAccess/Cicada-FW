@@ -12,7 +12,7 @@
 #include "stm32f1xx_hal.h"
 #include "task.h"
 
-#define STACK_SIZE_COMM 2048
+#define STACK_SIZE_COMM 3072
 #define STACK_SIZE_RUNTASK 256
 
 using namespace Cicada;
@@ -39,6 +39,9 @@ void runTask(void* parameters)
 
 void ipCommTask(void* parameters)
 {
+    Stm32Uart debug;
+    debug.open();
+
     Stm32Uart serial(USART1, GPIOA, GPIO_PIN_9, GPIO_PIN_10);
 
     // Change this class to the modem driver you want
@@ -102,13 +105,9 @@ int main(int argc, char* argv[])
     HAL_Init();
     SystemClock_Config();
 
-    Stm32Uart debug;
-
     // Run communication task
     xTaskCreateStatic(ipCommTask, "ipCommTask", STACK_SIZE_COMM, NULL, tskIDLE_PRIORITY, xStackComm,
         &xCommBuffer);
-
-    debug.open();
 
     vTaskStartScheduler();
 }

@@ -10,7 +10,7 @@
 #include "stm32f1xx_hal.h"
 #include "task.h"
 
-#define STACK_SIZE 200
+#define STACK_SIZE 2048
 
 using namespace Cicada;
 
@@ -24,21 +24,25 @@ extern "C" void vApplicationGetIdleTaskMemory(StaticTask_t** ppxIdleTaskTCBBuffe
 
 void serialTask(void* parameters)
 {
-    Stm32Uart* serial = static_cast<Stm32Uart*>(parameters);
+    Stm32Uart debug;
+    Stm32Uart serial(USART1, GPIOA, GPIO_PIN_9, GPIO_PIN_10);
+
+    debug.open();
+    serial.open();
 
     for (;;) {
         const char* send_str = "AT\r\n";
         printf("Sending command: %s", send_str);
-        int bytesWritten = serial->write((const uint8_t*)send_str);
+        int bytesWritten = serial.write((const uint8_t*)send_str);
         printf("%d bytes written\r\n", bytesWritten);
 
-        while (!serial->bytesAvailable()) {
+        while (!serial.bytesAvailable()) {
             vTaskDelay(100);
         }
 
         char buf[32];
         int bytesReceived;
-        bytesReceived = serial->read((uint8_t*)buf, 31);
+        bytesReceived = serial.read((uint8_t*)buf, 31);
         printf("%d bytes received\r\n", bytesReceived);
 
         buf[bytesReceived] = '\0';
@@ -54,15 +58,9 @@ int main(int argc, char* argv[])
     HAL_Init();
     SystemClock_Config();
 
-    Stm32Uart debug;
-    Stm32Uart serial(USART1, GPIOA, GPIO_PIN_9, GPIO_PIN_10);
-
     // Create serial task
     xTaskCreateStatic(
-        serialTask, "serialTask", STACK_SIZE, &serial, tskIDLE_PRIORITY, xStack, &xTaskBuffer);
-
-    debug.open();
-    serial.open();
+        serialTask, "serialTask", STACK_SIZE, NULL, tskIDLE_PRIORITY, xStack, &xTaskBuffer);
 
     vTaskStartScheduler();
 }
