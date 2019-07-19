@@ -60,6 +60,15 @@ class BufferedSerial : public IBufferedSerial
 
     virtual bool canReadLine() const override;
 
+    /*!
+     * Reads a line, or more precisely, all characters before the
+     * next '\n'. The '\n' is not included in the result, but
+     * instead replaced with '\0'.
+     *
+     * This is meant a s convenience function to easily retrieve full
+     * lines in character data, for example a reply after an AT command.
+     * It should not be used for binary data.
+     */
     virtual uint16_t readLine(uint8_t* data, uint16_t size) override;
 
     virtual void flushReceiveBuffers() override;

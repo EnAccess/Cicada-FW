@@ -73,7 +73,14 @@ class IBufferedSerial : public ICommDevice, public ISerial
     virtual bool canReadLine() const = 0;
 
     /*!
-     * Reads a line.
+     * Reads a line. The exact definition of line can be
+     * implementation dependant, but this function should
+     * not be used for binary data.
+     *
+     * \param data Buffer to store data. Must be large enough to store
+     * size bytes.
+     * \param size Maximum number of bytes to store into data. The actual
+     * number of characters stored can be smaller than maxSize.
      */
     virtual uint16_t readLine(uint8_t* data, uint16_t size) = 0;
 

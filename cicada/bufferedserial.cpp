@@ -130,12 +130,16 @@ uint16_t BufferedSerial::readLine(uint8_t* data, uint16_t size)
     uint16_t readCount = 0;
     uint8_t c = '\0';
 
+    if (size == 0)
+        return 0;
+
     while (bytesAvailable() && c != '\n') {
         c = read();
-        if (readCount < size) {
+        if (readCount < size - 1) {
             data[readCount++] = c;
         }
     }
+    data[readCount] = '\0';
 
     return readCount;
 }
