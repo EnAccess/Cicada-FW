@@ -41,8 +41,8 @@ class IBufferedSerial : public ICommDevice, public ISerial
   public:
     virtual ~IBufferedSerial() { }
 
-    virtual uint16_t read(uint8_t* data, uint16_t maxSize) override = 0;
-    virtual uint16_t write(const uint8_t* data, uint16_t size) override = 0;
+    virtual Size read(uint8_t* data, Size maxSize) override = 0;
+    virtual Size write(const uint8_t* data, Size size) override = 0;
 
     /*!
      * Reads a single char from the buffer
@@ -59,7 +59,7 @@ class IBufferedSerial : public ICommDevice, public ISerial
      * is returned.
      * \return Actual number of characters written
      */
-    virtual uint16_t write(const uint8_t* data) = 0;
+    virtual Size write(const uint8_t* data) = 0;
 
     /*!
      * Writes a singla char to the buffer.
@@ -82,7 +82,7 @@ class IBufferedSerial : public ICommDevice, public ISerial
      * \param size Maximum number of bytes to store into data. The actual
      * number of characters stored can be smaller than maxSize.
      */
-    virtual uint16_t readLine(uint8_t* data, uint16_t size) = 0;
+    virtual Size readLine(uint8_t* data, Size size) = 0;
 
     /*!
      * Clears the read buffer, discarding all available data.
@@ -92,7 +92,7 @@ class IBufferedSerial : public ICommDevice, public ISerial
     /*!
      * \return Buffer size of read/write buffer
      */
-    virtual uint16_t bufferSize() = 0;
+    virtual Size bufferSize() = 0;
 };
 
 }

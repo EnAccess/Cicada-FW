@@ -44,17 +44,17 @@ class BufferedSerial : public IBufferedSerial
   public:
     BufferedSerial();
 
-    virtual uint16_t bytesAvailable() const override;
+    virtual Size bytesAvailable() const override;
 
-    virtual uint16_t spaceAvailable() const override;
+    virtual Size spaceAvailable() const override;
 
-    virtual uint16_t read(uint8_t* data, uint16_t size) override;
+    virtual Size read(uint8_t* data, Size size) override;
 
     virtual uint8_t read() override;
 
-    virtual uint16_t write(const uint8_t* data, uint16_t size) override;
+    virtual Size write(const uint8_t* data, Size size) override;
 
-    virtual uint16_t write(const uint8_t* data) override;
+    virtual Size write(const uint8_t* data) override;
 
     virtual void write(uint8_t data) override;
 
@@ -69,11 +69,11 @@ class BufferedSerial : public IBufferedSerial
      * lines in character data, for example a reply after an AT command.
      * It should not be used for binary data.
      */
-    virtual uint16_t readLine(uint8_t* data, uint16_t size) override;
+    virtual Size readLine(uint8_t* data, Size size) override;
 
     virtual void flushReceiveBuffers() override;
 
-    virtual uint16_t bufferSize() override;
+    virtual Size bufferSize() override;
 
     /*!
      * Actually perform read/write to the underlying

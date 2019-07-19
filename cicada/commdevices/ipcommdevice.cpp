@@ -65,12 +65,12 @@ bool IPCommDevice::isIdle()
     return _connectState == notConnected;
 }
 
-uint16_t IPCommDevice::bytesAvailable() const
+Size IPCommDevice::bytesAvailable() const
 {
     return _readBuffer.bytesAvailable();
 }
 
-uint16_t IPCommDevice::spaceAvailable() const
+Size IPCommDevice::spaceAvailable() const
 {
     if (_connectState != connected)
         return 0;
@@ -78,12 +78,12 @@ uint16_t IPCommDevice::spaceAvailable() const
     return _writeBuffer.spaceAvailable();
 }
 
-uint16_t IPCommDevice::read(uint8_t* data, uint16_t maxSize)
+Size IPCommDevice::read(uint8_t* data, Size maxSize)
 {
     return _readBuffer.pull(data, maxSize);
 }
 
-uint16_t IPCommDevice::write(const uint8_t* data, uint16_t size)
+Size IPCommDevice::write(const uint8_t* data, Size size)
 {
     if (_connectState != connected)
         return 0;

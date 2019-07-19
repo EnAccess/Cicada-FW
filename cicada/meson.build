@@ -11,9 +11,11 @@ src_files = files([
     'commdevices/blockingcommdev.cpp',
     'bufferedserial.h',
     'bufferedserial.cpp',
+    'defines.h',
     'mqttcountdown.h',
     'mqttcountdown.cpp',
     'scheduler.h',
     'scheduler.cpp',
-    'task.h'
+    'task.h',
+    'types.h'
 ])

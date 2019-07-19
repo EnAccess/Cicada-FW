@@ -21,31 +21,14 @@
  *
  */
 
-#ifndef EDEFINES_H
-#define EDEFINES_H
+#ifndef ETYPES_H
+#define ETYPES_H
 
-#ifndef E_MULTITON_MAX_INSTANCES
-#define E_MULTITON_MAX_INSTANCES 2
-#endif
+#include "defines.h"
+#include <cstdint>
 
-#ifndef E_TICK_TYPE
-#define E_TICK_TYPE uint32_t
-#endif
+namespace Cicada {
 
-#ifndef E_SIZE_TYPE
-#define E_SIZE_TYPE uint64_t
-#endif
-
-#ifndef E_SERIAL_BUFFERSIZE
-#define E_SERIAL_BUFFERSIZE 1504
-#endif
-
-#ifndef E_NETWORK_BUFFERSIZE
-#define E_NETWORK_BUFFERSIZE 1200
-#endif
-
-#ifndef E_INTERRUPT_PRIORITY
-#define E_INTERRUPT_PRIORITY 15
-#endif
-
+typedef E_SIZE_TYPE Size;
+};
 #endif

@@ -68,7 +68,7 @@ class SimCommDevice : public IPCommDevice
      * \param data zero-Terminated string of data to send to the modem
      * \return Actual number of bytes written
      */
-    virtual uint16_t serialWrite(char* data);
+    virtual Size serialWrite(char* data);
 
     /*!
      * After acquiring the lock with serialLock(), this function may be used
@@ -80,7 +80,7 @@ class SimCommDevice : public IPCommDevice
      * \maxSize maximum space available in the buffer.
      * \return Number of bytes actually copied to data.
      */
-    virtual uint16_t serialRead(char* data, uint16_t maxSize);
+    virtual Size serialRead(char* data, Size maxSize);
 
     /*!
      * Request the RSSI (signal strength) from the modem. It can then be
@@ -128,9 +128,9 @@ class SimCommDevice : public IPCommDevice
 
     int8_t _sendState;
     int8_t _replyState;
-    uint16_t _bytesToWrite;
-    uint16_t _bytesToReceive;
-    uint16_t _bytesToRead;
+    Size _bytesToWrite;
+    Size _bytesToReceive;
+    Size _bytesToRead;
 
     uint8_t _rssi;
 

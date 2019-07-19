@@ -29,31 +29,31 @@ using namespace Cicada;
 
 BufferedSerial::BufferedSerial() {}
 
-uint16_t BufferedSerial::bytesAvailable() const
+Size BufferedSerial::bytesAvailable() const
 {
     eDisableInterrupts();
-    uint16_t availableData = _readBuffer.bytesAvailable();
+    Size availableData = _readBuffer.bytesAvailable();
     eEnableInterrupts();
 
     return availableData;
 }
 
-uint16_t BufferedSerial::spaceAvailable() const
+Size BufferedSerial::spaceAvailable() const
 {
     eDisableInterrupts();
-    uint16_t spaceAvailable = _writeBuffer.spaceAvailable();
+    Size spaceAvailable = _writeBuffer.spaceAvailable();
     eEnableInterrupts();
 
     return spaceAvailable;
 }
 
-uint16_t BufferedSerial::read(uint8_t* data, uint16_t size)
+Size BufferedSerial::read(uint8_t* data, Size size)
 {
-    uint16_t avail = bytesAvailable();
+    Size avail = bytesAvailable();
     if (size > avail)
         size = avail;
 
-    uint16_t readCount = 0;
+    Size readCount = 0;
 
     while (readCount < size) {
         data[readCount++] = read();
@@ -71,13 +71,13 @@ uint8_t BufferedSerial::read()
     return c;
 }
 
-uint16_t BufferedSerial::write(const uint8_t* data, uint16_t size)
+Size BufferedSerial::write(const uint8_t* data, Size size)
 {
-    uint16_t space = spaceAvailable();
+    Size space = spaceAvailable();
     if (size > space)
         size = space;
 
-    uint16_t writeCount = 0;
+    Size writeCount = 0;
 
     while (writeCount < size) {
         copyToBuffer(data[writeCount++]);
@@ -88,11 +88,11 @@ uint16_t BufferedSerial::write(const uint8_t* data, uint16_t size)
     return writeCount;
 }
 
-uint16_t BufferedSerial::write(const uint8_t* data)
+Size BufferedSerial::write(const uint8_t* data)
 {
-    uint16_t space = spaceAvailable();
+    Size space = spaceAvailable();
 
-    uint16_t writeCount = 0;
+    Size writeCount = 0;
 
     while (data[writeCount] != '\0' && writeCount < space) {
         copyToBuffer(data[writeCount++]);
@@ -119,15 +119,15 @@ void BufferedSerial::copyToBuffer(uint8_t data)
 bool BufferedSerial::canReadLine() const
 {
     eDisableInterrupts();
-    uint16_t lines = _readBuffer.numBufferedLines();
+    Size lines = _readBuffer.numBufferedLines();
     eEnableInterrupts();
 
     return lines > 0;
 }
 
-uint16_t BufferedSerial::readLine(uint8_t* data, uint16_t size)
+Size BufferedSerial::readLine(uint8_t* data, Size size)
 {
-    uint16_t readCount = 0;
+    Size readCount = 0;
     uint8_t c = '\0';
 
     if (size == 0)
@@ -151,7 +151,7 @@ void BufferedSerial::flushReceiveBuffers()
     eEnableInterrupts();
 }
 
-uint16_t BufferedSerial::bufferSize()
+Size BufferedSerial::bufferSize()
 {
     return _writeBuffer.size();
 }

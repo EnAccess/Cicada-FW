@@ -35,7 +35,7 @@ namespace Cicada {
  * Extends the circular buffer for handling lines.
  */
 
-template <uint16_t BUFFER_SIZE>
+template <Size BUFFER_SIZE>
 class LineCircularBuffer : public CircularBuffer<char, BUFFER_SIZE>
 {
   public:
@@ -43,12 +43,12 @@ class LineCircularBuffer : public CircularBuffer<char, BUFFER_SIZE>
         _bufferedLines(0)
     { }
 
-    uint16_t push(const char* data, uint16_t size) override
+    Size push(const char* data, Size size) override
     {
         if (size > CircularBuffer<char, BUFFER_SIZE>::spaceAvailable())
             size = CircularBuffer<char, BUFFER_SIZE>::spaceAvailable();
 
-        uint16_t writeCount = 0;
+        Size writeCount = 0;
 
         while (writeCount < size) {
             push(data[writeCount++]);
@@ -66,12 +66,12 @@ class LineCircularBuffer : public CircularBuffer<char, BUFFER_SIZE>
         }
     }
 
-    virtual uint16_t pull(char* data, uint16_t size) override
+    virtual Size pull(char* data, Size size) override
     {
         if (size > CircularBuffer<char, BUFFER_SIZE>::bytesAvailable())
             size = CircularBuffer<char, BUFFER_SIZE>::bytesAvailable();
 
-        uint16_t readCount = 0;
+        Size readCount = 0;
 
         while (readCount < size) {
             data[readCount++] = pull();
@@ -105,9 +105,9 @@ class LineCircularBuffer : public CircularBuffer<char, BUFFER_SIZE>
      * \param size Available space in data
      * \return Actual number of characters pulled from the buffer
      */
-    uint16_t readLine(char* data, uint16_t size)
+    Size readLine(char* data, Size size)
     {
-        uint16_t readCount = 0;
+        Size readCount = 0;
         char c = '\0';
 
         while (!CircularBuffer<char, BUFFER_SIZE>::isEmpty() && c != '\n') {

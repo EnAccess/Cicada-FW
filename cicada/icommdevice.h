@@ -24,6 +24,7 @@
 #ifndef EICOMMDEVICE_H
 #define EICOMMDEVICE_H
 
+#include "cicada/types.h"
 #include <cstdint>
 
 namespace Cicada {
@@ -48,7 +49,7 @@ class ICommDevice
      * Number of bytes available for reading.
      * \return Number of bytes available for reading
      */
-    virtual uint16_t bytesAvailable() const = 0;
+    virtual Size bytesAvailable() const = 0;
 
     /*!
      * Number of bytes which can be written immediately,
@@ -56,7 +57,7 @@ class ICommDevice
      * available in ther underlying buffer.
      * \return Number of bytes available for writing
      */
-    virtual uint16_t spaceAvailable() const = 0;
+    virtual Size spaceAvailable() const = 0;
 
     /*!
      * Reads data from the device. This method is non-blocking and only
@@ -70,7 +71,7 @@ class ICommDevice
      * number of bytes stored can be smaller than maxSize.
      * \return Number of bytes actually copied to data
      */
-    virtual uint16_t read(uint8_t* data, uint16_t maxSize) = 0;
+    virtual Size read(uint8_t* data, Size maxSize) = 0;
 
     /*!
      * Writes data to the device. This method is non-blocking and
@@ -83,7 +84,7 @@ class ICommDevice
      * \param size Number of bytes to write
      * \return Actual number of bytes copied into the transmit buffer.
      */
-    virtual uint16_t write(const uint8_t* data, uint16_t size) = 0;
+    virtual Size write(const uint8_t* data, Size size) = 0;
 };
 
 }

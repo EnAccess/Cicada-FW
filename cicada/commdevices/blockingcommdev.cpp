@@ -57,7 +57,7 @@ int BlockingCommDevice::write(unsigned char* buffer, int len, int timeout)
 {
     E_TICK_TYPE startTime = _tickFunction();
 
-    while (_commDev.spaceAvailable() < len) {
+    while (_commDev.spaceAvailable() < (Size)len) {
         if (_tickFunction() - startTime > (E_TICK_TYPE)timeout)
             return 0;
 

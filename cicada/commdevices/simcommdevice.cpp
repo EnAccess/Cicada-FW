@@ -79,7 +79,7 @@ void SimCommDevice::serialUnlock()
     _stateBooleans &= ~SERIAL_LOCKED;
 }
 
-uint16_t SimCommDevice::serialWrite(char* data)
+Size SimCommDevice::serialWrite(char* data)
 {
     if (_stateBooleans & SERIAL_LOCKED) {
         return _serial.write((const uint8_t*)data);
@@ -88,7 +88,7 @@ uint16_t SimCommDevice::serialWrite(char* data)
     return 0;
 }
 
-uint16_t SimCommDevice::serialRead(char* data, uint16_t maxSize)
+Size SimCommDevice::serialRead(char* data, Size maxSize)
 {
     if (_stateBooleans & SERIAL_LOCKED) {
         return _serial.read((uint8_t*)data, maxSize);
@@ -275,7 +275,7 @@ bool SimCommDevice::prepareSending()
     }
 
     char sizeStr[6];
-    sprintf(sizeStr, "%d", _bytesToWrite);
+    sprintf(sizeStr, "%u", (unsigned int)_bytesToWrite);
 
     _serial.write((const uint8_t*)"AT+CIPSEND=0,");
     _serial.write((const uint8_t*)sizeStr);
@@ -296,7 +296,7 @@ void SimCommDevice::sendData()
 bool SimCommDevice::sendCiprxget2()
 {
     if (_serial.spaceAvailable() > 8 && _readBuffer.spaceAvailable() > 0) {
-        int bytesToReceive = _serial.spaceAvailable() - 8;
+        Size bytesToReceive = _serial.spaceAvailable() - 8;
         if (bytesToReceive > _bytesToReceive)
             bytesToReceive = _bytesToReceive;
         if (bytesToReceive > _readBuffer.spaceAvailable())
@@ -304,7 +304,7 @@ bool SimCommDevice::sendCiprxget2()
 
         const char str[] = "AT+CIPRXGET=2,0,";
         char sizeStr[6];
-        sprintf(sizeStr, "%d", bytesToReceive);
+        sprintf(sizeStr, "%u", (unsigned int)bytesToReceive);
         _serial.write((const uint8_t*)str, sizeof(str) - 1);
         _serial.write((const uint8_t*)sizeStr);
         _serial.write((const uint8_t*)_lineEndStr);

@@ -24,6 +24,7 @@
 #ifndef CIRCULAR_BUFFER_H
 #define CIRCULAR_BUFFER_H
 
+#include "cicada/types.h"
 #include <cstdint>
 
 namespace Cicada {
@@ -34,7 +35,7 @@ namespace Cicada {
  * Implementation of a circular buffer.
  */
 
-template <typename T, uint16_t BUFFER_SIZE>
+template <typename T, Size BUFFER_SIZE>
 class CircularBuffer
 {
   public:
@@ -54,12 +55,12 @@ class CircularBuffer
      * \param size number of elements in data
      */
     //TODO: Check if virtual is appropriate
-    virtual uint16_t push(const T* data, uint16_t size)
+    virtual Size push(const T* data, Size size)
     {
         if (size > spaceAvailable())
             size = spaceAvailable();
 
-        uint16_t writeCount = 0;
+        Size writeCount = 0;
 
         while (writeCount < size) {
             _buffer[_writeHead] = data[writeCount++];
@@ -91,12 +92,12 @@ class CircularBuffer
      * \param size Maximum size to pull
      * \return Actual number of elements pulled from the buffer
      */
-    virtual uint16_t pull(T* data, uint16_t size)
+    virtual Size pull(T* data, Size size)
     {
         if (size > bytesAvailable())
             size = bytesAvailable();
 
-        uint16_t readCount = 0;
+        Size readCount = 0;
 
         while (readCount < size) {
             data[readCount++] = _buffer[_readHead];
@@ -163,7 +164,7 @@ class CircularBuffer
     /*!
      * \return Number of available elements in the buffer
      */
-    virtual uint16_t bytesAvailable() const
+    virtual Size bytesAvailable() const
     {
         return _availableData;
     }
@@ -171,7 +172,7 @@ class CircularBuffer
     /*!
      * \return Number of available space in the buffer
      */
-    virtual uint16_t spaceAvailable() const
+    virtual Size spaceAvailable() const
     {
         return BUFFER_SIZE - _availableData;
     }
@@ -179,18 +180,18 @@ class CircularBuffer
     /*!
      * \return size of the buffer, which was specified at compile time
      */
-    virtual uint16_t size() const
+    virtual Size size() const
     {
         return BUFFER_SIZE;
     }
 
   private:
-    uint16_t _writeHead;
-    uint16_t _readHead;
-    uint16_t _availableData;
+    Size _writeHead;
+    Size _readHead;
+    Size _availableData;
     T _buffer[BUFFER_SIZE];
 
-    void incrementOrResetHead(uint16_t& head)
+    void incrementOrResetHead(Size& head)
     {
         head++;
         if (head >= BUFFER_SIZE)
