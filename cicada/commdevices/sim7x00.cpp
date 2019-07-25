@@ -133,6 +133,11 @@ void Sim7x00CommDevice::run()
             }
             break;
 
+        case csq:
+            if (parseCsq()) {
+                _replyState = okReply;
+            }
+
         default:
             break;
         }
