@@ -36,7 +36,6 @@ c_args =    ['-DSTM32F103xB',       # MCU type, used by STM32Cube
              '--specs=nosys.specs',
              '--specs=nano.specs'
             ]
-
 cpp_link_args = ['-Wl,--gc-sections',
                  '-mcpu=cortex-m3',
                  '-mthumb',

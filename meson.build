@@ -49,6 +49,9 @@ eclipse_paho_mqtt     = subproject('paho.mqtt.embedded-c')
 eclipse_paho_mqtt_dep = eclipse_paho_mqtt.get_variable('eclipse_paho_mqtt_dep')
 eclipse_paho_mqtt_inc = eclipse_paho_mqtt.get_variable('eclipse_paho_mqtt_inc')
 
+# Include directory when used as submodule
+cicada_inc = include_directories(['.'])
+
 # Actually build library
 subdir('cicada/platform/' + cicada_build_target)
 cicada_lib = static_library(
@@ -62,45 +65,53 @@ cicada_lib = static_library(
     pic                 : false
 )
 cicada_dep = declare_dependency(
+    include_directories : cicada_inc,
     link_with           : cicada_lib
 )
 
-# Build examples
+# Only build examples and tests when not a subproject
+
 if (meson.is_subproject() != true)
+
+    # Build examples
     subdir('examples/' + cicada_build_target)
     subdir('examples')
+
+
+    # Add unit test src
+    subdir('test')
+    test_src_inc   = get_variable('test_src_inc')
+    test_src_files = get_variable('test_src_files')
+
+    # Add CppUTest dependancy
+    cpputest     = subproject('cpputest')
+    cpputest_dep = cpputest.get_variable('cpputest_dep')
+
+    # Unit test args
+    test_args = []
+
+    # Build native unit tests
+    run_tests = executable(
+        'run_tests',
+        [ test_src_files, src_files, './test/main.cpp' ],
+        include_directories : [ test_src_inc ],
+        dependencies        : [ cpputest_dep ],
+        c_args              : [ '-std=c11', test_args ],
+        cpp_args            : [ '-std=c++11', test_args ],
+        native              : true,
+        build_by_default    : false
+    )
+
+    # Unit test
+    test('cpputest', run_tests)
+
+    # Setup custom build commands
+    run_target('lint',      command: [ 'clang-format', '-verbose',
+                                       '-style=file', '-i', src_files,
+                                       platform_src_files, test_src_files ])
+    run_target('doc',       command: [ 'doxygen', 'Doxyfile' ])
+
 endif
-
-# Add unit test src 
-subdir('test')
-test_src_inc   = get_variable('test_src_inc')
-test_src_files = get_variable('test_src_files')
-
-# Add CppUTest dependancy
-cpputest     = subproject('cpputest')
-cpputest_dep = cpputest.get_variable('cpputest_dep')
-
-# Unit test args
-test_args = []
-
-# Build native unit tests
-run_tests = executable(
-    'run_tests', 
-    [ test_src_files, src_files, './test/main.cpp' ],
-    include_directories : [ test_src_inc ],
-    dependencies        : [ cpputest_dep ],
-    c_args              : [ '-std=c11', test_args ],
-    cpp_args            : [ '-std=c++11', test_args ],
-    native              : true,
-    build_by_default    : false
-)
-
-# Unit test
-test('cpputest', run_tests)
-
-# Setup custom build commands
-run_target('lint',      command: [ 'clang-format', '-verbose', '-style=file', '-i', src_files, platform_src_files, test_src_files ])
-run_target('doc',       command: [ 'doxygen', 'Doxyfile' ])
 
 message('''
 
