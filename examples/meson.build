@@ -4,7 +4,7 @@ foreach example : examples_list
         cicada_build_target + '/' + example + '.cpp',
         include_directories : [ include_directories('..'),
                                 eclipse_paho_mqtt_inc, embedded_printf_inc ],
-        dependencies        : [ target_deps, enaccess_dep ],
+        dependencies        : [ target_deps, cicada_dep ],
         name_suffix         : bin_suffix,
         c_args              : [ mcu_args, target_c_args ],
         cpp_args            : [ mcu_args, target_cpp_args ],

@@ -1,5 +1,5 @@
 project(
-    'EnAccess - IoT Comms Library',
+    'Cicada - IoT Comms Library',
     'cpp',
     version: '0.0.1',
     subproject_dir: 'dep'
@@ -51,8 +51,8 @@ eclipse_paho_mqtt_inc = eclipse_paho_mqtt.get_variable('eclipse_paho_mqtt_inc')
 
 # Actually build library
 subdir('cicada/platform/' + cicada_build_target)
-enaccess_lib = static_library(
-    'EnAccess',
+cicada_lib = static_library(
+    'Cicada',
     [ src_files, platform_src_files ],
     include_directories : [ target_inc  ],
     dependencies        : [ embedded_printf_dep, eclipse_paho_mqtt_dep ],
@@ -61,8 +61,8 @@ enaccess_lib = static_library(
     link_args           : [ mcu_args, target_link_args ],
     pic                 : false
 )
-enaccess_dep = declare_dependency(
-    link_with           : enaccess_lib
+cicada_dep = declare_dependency(
+    link_with           : cicada_lib
 )
 
 # Build examples
