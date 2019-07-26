@@ -30,24 +30,3 @@ void eDisableInterrupts();
 void eEnableInterrupts();
 
 #endif
-
-/* #ifndef EIRQ_H */
-/* #define EIRQ_H */
-
-/* #if defined TARGET_STM32 */
-/* #include "stm32f103xb.h" */
-/* #define eDisableInterrupts()  __disable_irq() */
-/* #define eEnableInterrupts() __enable_irq() */
-
-/* #elif defined __MBED__ */
-/* #include "mbed.h" */
-/* #define eDisableInterrupts()  __disable_irq() */
-/* #define eEnableInterrupts() __enable_irq() */
-
-/* #else */
-/* #define eDisableInterrupts() { } */
-/* #define eEnableInterrupts() { } */
-
-/* #endif */
-
-/* #endif */
