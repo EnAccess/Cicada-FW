@@ -66,8 +66,10 @@ enaccess_dep = declare_dependency(
 )
 
 # Build examples
-subdir('examples/' + cicada_build_target)
-subdir('examples')
+if (meson.is_subproject() != true)
+    subdir('examples/' + cicada_build_target)
+    subdir('examples')
+endif
 
 # Add unit test src 
 subdir('test')
