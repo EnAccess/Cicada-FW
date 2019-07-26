@@ -195,7 +195,10 @@ bool SimCommDevice::parseCiprxget2()
 bool SimCommDevice::parseCsq()
 {
     if (strncmp(_lineBuffer, "+CSQ: ", 6) == 0) {
-        sscanf(_lineBuffer + 6, "%2" SCNu8, &_rssi);
+        unsigned int rssi;
+        if (sscanf(_lineBuffer + 6, "%u", &rssi) == 1) {
+            _rssi = rssi;
+        }
         return true;
     }
     return false;

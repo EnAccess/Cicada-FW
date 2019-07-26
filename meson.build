@@ -1,6 +1,5 @@
 project(
     'EnAccess - IoT Comms Library',
-    'c',
     'cpp',
     version: '0.0.1',
     subproject_dir: 'dep'

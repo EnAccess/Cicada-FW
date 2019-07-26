@@ -12,7 +12,53 @@ gdb     = 'arm-none-eabi-gdb'
 
 [properties]
 cicada_build_target = 'stm32f1'
-cpp_args = ['-DTARGET_STM32']
+cpp_args =  ['-DSTM32F103xB',       # MCU type, used by STM32Cube
+             '-mcpu=cortex-m3',     # target CPU type
+             '-mthumb',             # use Thumb instruction set
+             '-Og',                 # optimise for debug
+             '-Wall',               # enable all compiler warnings
+             '-fdata-sections',     # each variable to a seperate section
+             '-ffunction-sections', # each function to a seperate section
+             '-fno-exceptions',     # exceptions are not used in Cicada
+             '-ggdb',               # generate debug symbols
+             '--specs=nosys.specs',
+             '--specs=nano.specs'
+             ]
+c_args =    ['-DSTM32F103xB',       # MCU type, used by STM32Cube
+             '-mcpu=cortex-m3',     # target CPU type
+             '-mthumb',             # use Thumb instruction set
+             '-Og',                 # optimise for debug
+             '-Wall',               # enable all compiler warnings
+             '-fdata-sections',     # each variable to a seperate section
+             '-ffunction-sections', # each function to a seperate section
+             '-fno-exceptions',     # exceptions are not used in Cicada
+             '-ggdb',               # generate debug symbols
+             '--specs=nosys.specs',
+             '--specs=nano.specs'
+            ]
+
+cpp_link_args = ['-Wl,--gc-sections',
+                 '-mcpu=cortex-m3',
+                 '-mthumb',
+                 '-Og',
+                 '-fdata-sections',
+                 '-ffunction-sections',
+                 '-fno-exceptions',
+                 '-ggdb',
+                 '--specs=nosys.specs',
+                 '--specs=nano.specs',
+                ]
+c_link_args =   ['-Wl,--gc-sections',
+                 '-mcpu=cortex-m3',
+                 '-mthumb',
+                 '-Og',
+                 '-fdata-sections',
+                 '-ffunction-sections',
+                 '-fno-exceptions',
+                 '-ggdb',
+                 '--specs=nosys.specs',
+                 '--specs=nano.specs',
+                ]
 
 [host_machine]
 system     = 'none'

@@ -7,4 +7,4 @@ source_hash = dc58871b048a435af739ac14cea7b4e4bd121bf7760474a78c4fe8f52918d704
 
 patch_url = https://raw.githubusercontent.com/EnAccess/Cicada/master/dep/packagecache/stm32_patch.zip
 patch_filename = stm32_patch.zip
-patch_hash = 59a09843add82a36a3bb8568a90914f49fbe9c34fa160daa2824013cd8ebd04f
+patch_hash = 79ebec19fa09748187f1ee5b366786ba8a912635a2489a00d29c451d5554e2f5
