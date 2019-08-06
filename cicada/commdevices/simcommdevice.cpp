@@ -286,7 +286,7 @@ bool SimCommDevice::prepareSending()
 
     // length
     char sizeStr[6];
-    sprintf(sizeStr, "%d", _bytesToWrite);
+    sprintf(sizeStr, "%d", (int)_bytesToWrite);
     _serial.write((const uint8_t*)sizeStr);
     if (_type == UDP) {
         // IP address
