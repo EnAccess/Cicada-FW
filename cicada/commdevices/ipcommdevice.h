@@ -45,7 +45,7 @@ class IPCommDevice : public IIPCommDevice, public Task
     IPCommDevice();
     virtual ~IPCommDevice() {}
 
-    virtual void setHostPort(const char* host, uint16_t port);
+    virtual void setHostPort(ConnectionType type, const char* host, uint16_t port);
     virtual bool connect();
     virtual void disconnect();
     virtual bool isConnected();
@@ -67,6 +67,7 @@ class IPCommDevice : public IIPCommDevice, public Task
 
     CircularBuffer<uint8_t, E_NETWORK_BUFFERSIZE> _readBuffer;
     CircularBuffer<uint8_t, E_NETWORK_BUFFERSIZE> _writeBuffer;
+    ConnectionType _type;
     const char* _host;
     uint16_t _port;
     uint8_t _stateBooleans;

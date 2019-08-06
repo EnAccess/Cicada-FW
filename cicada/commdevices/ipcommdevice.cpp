@@ -34,10 +34,11 @@ IPCommDevice::IPCommDevice() :
     _waitForReply(NULL)
 {}
 
-void IPCommDevice::setHostPort(const char* host, uint16_t port)
+void IPCommDevice::setHostPort(IPCommDevice::ConnectionType type, const char* host, uint16_t port)
 {
     _host = host;
     _port = port;
+    _type = type;
 }
 
 bool IPCommDevice::connect()

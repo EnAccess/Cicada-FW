@@ -260,9 +260,13 @@ void SimCommDevice::sendCipstart(const char* variant)
 
     _serial.write((const uint8_t*)"AT+CIP");
     _serial.write((const uint8_t*)variant);
-    _serial.write((const uint8_t*)"=0,\"TCP\",\"");
-    _serial.write((const uint8_t*)_ip);
-    _serial.write((const uint8_t*)"\",");
+    if (_type == UDP) {
+        _serial.write((const uint8_t*)"=0,\"UDP\",,,");
+    } else {
+        _serial.write((const uint8_t*)"=0,\"TCP\",\"");
+        _serial.write((const uint8_t*)_ip);
+        _serial.write((const uint8_t*)"\",");
+    }
     _serial.write((const uint8_t*)portStr);
     _serial.write((const uint8_t*)_lineEndStr);
 }
@@ -277,11 +281,24 @@ bool SimCommDevice::prepareSending()
         _bytesToWrite = _serial.spaceAvailable() - MIN_SPACE_AVAILABLE;
     }
 
-    char sizeStr[6];
-    sprintf(sizeStr, "%u", (unsigned int)_bytesToWrite);
-
+    // cmd
     _serial.write((const uint8_t*)"AT+CIPSEND=0,");
+
+    // length
+    char sizeStr[6];
+    sprintf(sizeStr, "%d", _bytesToWrite);
     _serial.write((const uint8_t*)sizeStr);
+    if (_type == UDP) {
+        // IP address
+        char ipStr[20];
+        sprintf(ipStr, ",\"%s\"", _ip);
+        _serial.write((const uint8_t*)ipStr);
+
+        // Port
+        char portStr[6];
+        sprintf(portStr, ",%d", _port);
+        _serial.write((const uint8_t*)portStr);
+    }
     _serial.write((const uint8_t*)_lineEndStr);
 
     _waitForReply = ">";

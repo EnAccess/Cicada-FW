@@ -34,13 +34,17 @@ class IIPCommDevice : public IStatefulDevice
   public:
     virtual ~IIPCommDevice() { }
 
+    enum ConnectionType {
+      UDP = 0,
+      TCP
+    };
     /*!
      * Set parameters for IP connection.
      * Need to be set before connect() is called.
      * \param host Host to connect to. Needs to be valid for
      * \param port port to connect to
      */
-    virtual void setHostPort(const char* host, uint16_t port) = 0;
+    virtual void setHostPort(ConnectionType type, const char* host, uint16_t port) = 0;
 };
 
 }
