@@ -256,7 +256,7 @@ bool SimCommDevice::sendDnsQuery()
 void SimCommDevice::sendCipstart(const char* variant)
 {
     char portStr[6];
-    sprintf(portStr, "%d", _port);
+    snprintf(portStr, sizeof(portStr), "%u", _port);
 
     _serial.write((const uint8_t*)"AT+CIP");
     _serial.write((const uint8_t*)variant);
@@ -286,17 +286,17 @@ bool SimCommDevice::prepareSending()
 
     // length
     char sizeStr[6];
-    sprintf(sizeStr, "%d", (int)_bytesToWrite);
+    snprintf(sizeStr, sizeof(sizeStr), "%u", (int)_bytesToWrite);
     _serial.write((const uint8_t*)sizeStr);
     if (_type == UDP) {
         // IP address
-        char ipStr[20];
-        sprintf(ipStr, ",\"%s\"", _ip);
-        _serial.write((const uint8_t*)ipStr);
+        _serial.write((const uint8_t*)",\"");
+        _serial.write((const uint8_t*)_ip);
+        _serial.write((const uint8_t*)"\"");
 
         // Port
-        char portStr[6];
-        sprintf(portStr, ",%d", _port);
+        char portStr[7];
+        snprintf(portStr, sizeof(portStr), ",%u", _port);
         _serial.write((const uint8_t*)portStr);
     }
     _serial.write((const uint8_t*)_lineEndStr);

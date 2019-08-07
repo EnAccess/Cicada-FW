@@ -44,7 +44,7 @@ class IIPCommDevice : public IStatefulDevice
      * \param host Host to connect to. Needs to be valid for
      * \param port port to connect to
      */
-    virtual void setHostPort(ConnectionType type, const char* host, uint16_t port) = 0;
+    virtual void setHostPort(const char* host, uint16_t port, ConnectionType type = TCP) = 0;
 };
 
 }

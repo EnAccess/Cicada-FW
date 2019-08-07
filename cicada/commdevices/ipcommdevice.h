@@ -45,7 +45,7 @@ class IPCommDevice : public IIPCommDevice, public Task
     IPCommDevice();
     virtual ~IPCommDevice() {}
 
-    virtual void setHostPort(ConnectionType type, const char* host, uint16_t port);
+    virtual void setHostPort(const char* host, uint16_t port, ConnectionType type = UDP);
     virtual bool connect();
     virtual void disconnect();
     virtual bool isConnected();
