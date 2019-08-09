@@ -95,6 +95,7 @@ bool Stm32Uart::open()
 {
     // Enable USART/UART Clock
     if (_handle.Instance == USART1) {
+        __HAL_AFIO_REMAP_USART1_ENABLE();
         __HAL_RCC_USART1_CLK_ENABLE();
         _uartInterruptInstance = USART1_IRQn;
     } else if (_handle.Instance == USART2) {
