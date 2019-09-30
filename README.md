@@ -38,9 +38,9 @@ access to actual microcontroller hardware.
 - CppUnit
 
 ### Build setup
-To setup build dependencies, do:
-`git submodule init`
-`git submodule update`
+To setup build dependencies, do:  
+`git submodule init`  
+`git submodule update`  
 
 ### Native build (for testing an a host PC):
 Run `meson <builddirectory>` to generate build files. Finally, change
