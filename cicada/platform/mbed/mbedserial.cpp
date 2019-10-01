@@ -90,7 +90,7 @@ void MbedSerial::handleInterrupt()
 {
     transferToAndFromBuffer();
 
-    if (!_writeBuffer.availableData()) {
+    if (!_writeBuffer.bytesAvailable()) {
         _rawSerial.attach(NULL, RawSerial::TxIrq);
     }
 }
