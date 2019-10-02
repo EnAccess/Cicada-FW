@@ -107,7 +107,9 @@ void Sim800CommDevice::run()
             break;
 
         case cipstart:
-            if (_waitForReply == NULL) {
+            if (handleDisconnect(sendCipshut)) {
+                _replyState = okReply;
+            } else if (_waitForReply == NULL) {
                 _replyState = okReply;
             } else if (strncmp(_lineBuffer, "0, CONNECT FAIL", 15) == 0) {
                 _stateBooleans |= RESET_PENDING;
@@ -228,13 +230,26 @@ void Sim800CommDevice::run()
         }
         break;
 
-    case sendCipstart:
-        SimCommDevice::sendCipstart("START");
+    case sendCipstart: {
+        char portStr[6];
+        snprintf(portStr, sizeof(portStr), "%u", _port);
+
+        _serial.write((const uint8_t*)"AT+CIPSTART");
+        if (_type == UDP) {
+            _serial.write((const uint8_t*)"=0,\"UDP\",\"");
+        } else {
+            _serial.write((const uint8_t*)"=0,\"TCP\",\"");
+        }
+        _serial.write((const uint8_t*)_ip);
+        _serial.write((const uint8_t*)"\",");
+        _serial.write((const uint8_t*)portStr);
+        _serial.write((const uint8_t*)_lineEndStr);
 
         _replyState = cipstart;
         _waitForReply = "0, CONNECT OK";
         _sendState = finalizeConnect;
         break;
+    }
 
     case finalizeConnect:
         setDelay(0);
@@ -247,6 +262,7 @@ void Sim800CommDevice::run()
     case connected:
         if (_writeBuffer.bytesAvailable()) {
             if (prepareSending()) {
+                _serial.write((const uint8_t*)_lineEndStr);
                 _connectState = IPCommDevice::transmitting;
                 _sendState = sendData;
             }
@@ -329,6 +345,7 @@ void Sim800CommDevice::run()
         break;
 
     case sendCipshut:
+        _connectState = IPCommDevice::intermediate;
         _waitForReply = "SHUT OK";
         _sendState = finalizeDisconnect;
         sendCommand("AT+CIPSHUT");

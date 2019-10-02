@@ -9,5 +9,6 @@ examples_list = [
     'blockingmqtt_stm32',
     'dualport_freertos',
     'ipcommdevice_freertos',
-    'blockingmqtt_freertos'
+    'blockingmqtt_freertos',
+    'ntp'
 ]

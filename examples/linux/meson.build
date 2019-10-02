@@ -3,5 +3,6 @@ examples_list = [
     'serial_linux',
     'ipcommdevice',
     'blocking',
-    'blockingmqtt'
+    'blockingmqtt',
+    'ntp'
 ]

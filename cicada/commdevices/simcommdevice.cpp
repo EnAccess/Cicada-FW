@@ -253,24 +253,6 @@ bool SimCommDevice::sendDnsQuery()
     return true;
 }
 
-void SimCommDevice::sendCipstart(const char* variant)
-{
-    char portStr[6];
-    snprintf(portStr, sizeof(portStr), "%u", _port);
-
-    _serial.write((const uint8_t*)"AT+CIP");
-    _serial.write((const uint8_t*)variant);
-    if (_type == UDP) {
-        _serial.write((const uint8_t*)"=0,\"UDP\",,,");
-    } else {
-        _serial.write((const uint8_t*)"=0,\"TCP\",\"");
-        _serial.write((const uint8_t*)_ip);
-        _serial.write((const uint8_t*)"\",");
-    }
-    _serial.write((const uint8_t*)portStr);
-    _serial.write((const uint8_t*)_lineEndStr);
-}
-
 bool SimCommDevice::prepareSending()
 {
     if (_serial.spaceAvailable() < 22)
@@ -288,18 +270,6 @@ bool SimCommDevice::prepareSending()
     char sizeStr[6];
     snprintf(sizeStr, sizeof(sizeStr), "%u", (int)_bytesToWrite);
     _serial.write((const uint8_t*)sizeStr);
-    if (_type == UDP) {
-        // IP address
-        _serial.write((const uint8_t*)",\"");
-        _serial.write((const uint8_t*)_ip);
-        _serial.write((const uint8_t*)"\"");
-
-        // Port
-        char portStr[7];
-        snprintf(portStr, sizeof(portStr), ",%u", _port);
-        _serial.write((const uint8_t*)portStr);
-    }
-    _serial.write((const uint8_t*)_lineEndStr);
 
     _waitForReply = ">";
 

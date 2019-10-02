@@ -232,7 +232,19 @@ void Sim7x00CommDevice::run()
         break;
 
     case sendCipopen: {
-        SimCommDevice::sendCipstart("OPEN");
+        char portStr[6];
+        snprintf(portStr, sizeof(portStr), "%u", _port);
+
+        _serial.write((const uint8_t*)"AT+CIPOPEN");
+        if (_type == UDP) {
+            _serial.write((const uint8_t*)"=0,\"UDP\",,,");
+        } else {
+            _serial.write((const uint8_t*)"=0,\"TCP\",\"");
+            _serial.write((const uint8_t*)_ip);
+            _serial.write((const uint8_t*)"\",");
+        }
+        _serial.write((const uint8_t*)portStr);
+        _serial.write((const uint8_t*)_lineEndStr);
 
         _replyState = cipopen;
         _waitForReply = "+CIPOPEN: 0,0";
@@ -251,6 +263,19 @@ void Sim7x00CommDevice::run()
     case connected:
         if (_writeBuffer.bytesAvailable()) {
             if (prepareSending()) {
+                if (_type == UDP) {
+                    // IP address
+                    _serial.write((const uint8_t*)",\"");
+                    _serial.write((const uint8_t*)_ip);
+                    _serial.write((const uint8_t*)"\",");
+
+                    // Port
+                    char portStr[6];
+                    snprintf(portStr, sizeof(portStr), "%u", _port);
+                    _serial.write((const uint8_t*)portStr);
+                }
+                _serial.write((const uint8_t*)_lineEndStr);
+
                 _connectState = IPCommDevice::transmitting;
                 _sendState = sendData;
             }
