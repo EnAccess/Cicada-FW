@@ -213,6 +213,9 @@ void Sim800CommDevice::run()
         break;
 
     case sendCifsr: {
+        if (handleDisconnect(sendCipshut))
+            break;
+
         const char str[] = "AT+CIFSR";
         _serial.write((const uint8_t*)str, sizeof(str) - 1);
         _serial.write((const uint8_t*)_lineEndStr);
