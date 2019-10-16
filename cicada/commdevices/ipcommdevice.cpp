@@ -53,6 +53,9 @@ bool IPCommDevice::connect()
 
 void IPCommDevice::disconnect()
 {
+    if (isIdle())
+        return;
+
     _stateBooleans |= DISCONNECT_PENDING;
 }
 

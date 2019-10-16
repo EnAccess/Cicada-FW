@@ -210,6 +210,9 @@ void Sim7x00CommDevice::run()
         break;
 
     case sendNetopen:
+        if (handleDisconnect(finalizeDisconnect))
+            break;
+
         setDelay(10);
         _waitForReply = "+NETOPEN: 0";
         _sendState = sendCiprxget;
