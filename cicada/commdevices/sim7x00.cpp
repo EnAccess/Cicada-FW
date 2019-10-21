@@ -357,6 +357,7 @@ void Sim7x00CommDevice::run()
         break;
 
     case finalizeDisconnect:
+        _stateBooleans &= ~IP_CONNECTED;
         _connectState = IPCommDevice::notConnected;
         _sendState = notConnected;
         break;
