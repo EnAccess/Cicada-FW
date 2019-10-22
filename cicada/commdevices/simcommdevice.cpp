@@ -42,15 +42,25 @@ const char* SimCommDevice::_quoteEndStr = "\"\r\n";
 
 SimCommDevice::SimCommDevice(IBufferedSerial& serial) :
     _serial(serial),
-    _apn(NULL),
-    _lbFill(0),
-    _sendState(0),
-    _replyState(0),
-    _bytesToWrite(0),
-    _bytesToReceive(0),
-    _bytesToRead(0),
-    _rssi(99)
-{}
+    _apn(NULL)
+{
+    resetStates();
+}
+
+void SimCommDevice::resetStates()
+{
+    _serial.flushReceiveBuffers();
+    _lbFill = 0;
+    _sendState = 0;
+    _replyState = 0;
+    _connectState = notConnected;
+    _bytesToWrite = 0;
+    _bytesToReceive = 0;
+    _bytesToRead = 0;
+    _waitForReply = NULL;
+    _stateBooleans = LINE_READ;
+    _rssi = 99;
+}
 
 void SimCommDevice::setApn(const char* apn)
 {

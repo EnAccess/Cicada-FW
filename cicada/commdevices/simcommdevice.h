@@ -37,6 +37,14 @@ class SimCommDevice : public IPCommDevice
     virtual ~SimCommDevice() {}
 
     /*!
+     * Resets the drivers states. The internal states will be initialized
+     * with default values as they are right after construction. This method
+     * should be called if the modem hardware is reset, and thus the driver state
+     * is not consistent with the modem state anymore.
+     */
+    virtual void resetStates();
+
+    /*!
      * Set's the cellular network APN.
      * \param apn The network APN
      */
