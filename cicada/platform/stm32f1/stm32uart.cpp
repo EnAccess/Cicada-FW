@@ -31,8 +31,9 @@ using namespace Cicada;
 
 Stm32Uart* Stm32Uart::instance[E_MULTITON_MAX_INSTANCES] = { NULL };
 
-Stm32Uart::Stm32Uart(
+Stm32Uart::Stm32Uart(char* readBuffer, char* writeBuffer, Size bufferSize,
     USART_TypeDef* uartInstance, GPIO_TypeDef* uartPort, uint16_t txPin, uint16_t rxPin) :
+    BufferedSerial(readBuffer, writeBuffer, bufferSize),
     _flags(0),
     _handle(),
     _uartPort(uartPort),

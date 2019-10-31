@@ -29,7 +29,10 @@
 
 using namespace Cicada;
 
-Sim800CommDevice::Sim800CommDevice(IBufferedSerial& serial) : SimCommDevice(serial) {}
+Sim800CommDevice::Sim800CommDevice(
+    IBufferedSerial& serial, uint8_t* readBuffer, uint8_t* writeBuffer, Size bufferSize) :
+    SimCommDevice(serial, readBuffer, writeBuffer, bufferSize)
+{}
 
 void Sim800CommDevice::run()
 {

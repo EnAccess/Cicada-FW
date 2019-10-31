@@ -33,7 +33,8 @@ namespace Cicada {
 class SimCommDevice : public IPCommDevice
 {
   public:
-    SimCommDevice(IBufferedSerial& serial);
+    SimCommDevice(
+        IBufferedSerial& serial, uint8_t* readBuffer, uint8_t* writeBuffer, Size bufferSize);
     virtual ~SimCommDevice() {}
 
     /*!

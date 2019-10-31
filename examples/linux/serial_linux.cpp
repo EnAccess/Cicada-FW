@@ -73,7 +73,10 @@ class SerialTask : public Task
 
 int main(int argc, char* argv[])
 {
-    UnixSerial serial;
+    const uint16_t bufferSize = 1504;
+    char readBuffer[bufferSize];
+    char writeBuffer[bufferSize];
+    UnixSerial serial(readBuffer, writeBuffer, bufferSize);
     SerialTask task(serial);
 
     Task* taskList[] = { &task, &serial, NULL };

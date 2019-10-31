@@ -26,7 +26,9 @@
 
 using namespace Cicada;
 
-MbedSerial::MbedSerial(PinName tx, PinName rx) :
+MbedSerial::MbedSerial(char* readBuffer, char* writeBuffer, Size bufferSize,
+                       PinName tx, PinName rx) :
+    BufferedSerial(readBuffer, writeBuffer, bufferSize),
     _rawSerial(tx, rx, 115200)
 {
     _rawSerial.attach(mbed::callback(this, &MbedSerial::handleInterrupt),

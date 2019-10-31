@@ -40,7 +40,9 @@ const char* SimCommDevice::_okStr = "OK";
 const char* SimCommDevice::_lineEndStr = "\r\n";
 const char* SimCommDevice::_quoteEndStr = "\"\r\n";
 
-SimCommDevice::SimCommDevice(IBufferedSerial& serial) :
+SimCommDevice::SimCommDevice(
+    IBufferedSerial& serial, uint8_t* readBuffer, uint8_t* writeBuffer, Size bufferSize) :
+    IPCommDevice(readBuffer, writeBuffer, bufferSize),
     _serial(serial),
     _apn(NULL)
 {

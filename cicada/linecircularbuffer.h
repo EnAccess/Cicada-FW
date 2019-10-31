@@ -35,18 +35,18 @@ namespace Cicada {
  * Extends the circular buffer for handling lines.
  */
 
-template <Size BUFFER_SIZE>
-class LineCircularBuffer : public CircularBuffer<char, BUFFER_SIZE>
+class LineCircularBuffer : public CircularBuffer<char>
 {
   public:
-    LineCircularBuffer() :
+    LineCircularBuffer(char* buffer, Size bufferSize) :
+        CircularBuffer(buffer, bufferSize),
         _bufferedLines(0)
     { }
 
     Size push(const char* data, Size size) override
     {
-        if (size > CircularBuffer<char, BUFFER_SIZE>::spaceAvailable())
-            size = CircularBuffer<char, BUFFER_SIZE>::spaceAvailable();
+        if (size > CircularBuffer<char>::spaceAvailable())
+            size = CircularBuffer<char>::spaceAvailable();
 
         Size writeCount = 0;
 
@@ -59,7 +59,7 @@ class LineCircularBuffer : public CircularBuffer<char, BUFFER_SIZE>
 
     void push(char data) override
     {
-        CircularBuffer<char, BUFFER_SIZE>::push(data);
+        CircularBuffer<char>::push(data);
 
         if (data == '\n') {
             _bufferedLines++;
@@ -68,8 +68,8 @@ class LineCircularBuffer : public CircularBuffer<char, BUFFER_SIZE>
 
     virtual Size pull(char* data, Size size) override
     {
-        if (size > CircularBuffer<char, BUFFER_SIZE>::bytesAvailable())
-            size = CircularBuffer<char, BUFFER_SIZE>::bytesAvailable();
+        if (size > CircularBuffer<char>::bytesAvailable())
+            size = CircularBuffer<char>::bytesAvailable();
 
         Size readCount = 0;
 
@@ -82,7 +82,7 @@ class LineCircularBuffer : public CircularBuffer<char, BUFFER_SIZE>
 
     char pull() override
     {
-        char data = CircularBuffer<char, BUFFER_SIZE>::pull();
+        char data = CircularBuffer<char>::pull();
 
         if (data == '\n') {
             _bufferedLines--;
@@ -110,7 +110,7 @@ class LineCircularBuffer : public CircularBuffer<char, BUFFER_SIZE>
         Size readCount = 0;
         char c = '\0';
 
-        while (!CircularBuffer<char, BUFFER_SIZE>::isEmpty() && c != '\n') {
+        while (!CircularBuffer<char>::isEmpty() && c != '\n') {
             c = pull();
             if (readCount < size) {
                 data[readCount++] = c;

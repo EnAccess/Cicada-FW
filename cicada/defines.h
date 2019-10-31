@@ -36,14 +36,6 @@
 #define E_SIZE_TYPE uint64_t
 #endif
 
-#ifndef E_SERIAL_BUFFERSIZE
-#define E_SERIAL_BUFFERSIZE 1504
-#endif
-
-#ifndef E_NETWORK_BUFFERSIZE
-#define E_NETWORK_BUFFERSIZE 1200
-#endif
-
 #ifndef E_INTERRUPT_PRIORITY
 #define E_INTERRUPT_PRIORITY 15
 #endif

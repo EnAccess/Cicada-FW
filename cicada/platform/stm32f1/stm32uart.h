@@ -51,7 +51,8 @@ namespace Cicada {
 class Stm32Uart : public BufferedSerial
 {
   public:
-    Stm32Uart(USART_TypeDef* uartInstance = USART2, GPIO_TypeDef* uartPort = GPIOA,
+    Stm32Uart(char* readBuffer, char* writeBuffer, Size bufferSize,
+        USART_TypeDef* uartInstance = USART2, GPIO_TypeDef* uartPort = GPIOA,
         uint16_t txPin = GPIO_PIN_2, uint16_t rxPin = GPIO_PIN_3);
     ~Stm32Uart();
 

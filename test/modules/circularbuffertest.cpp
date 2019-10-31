@@ -10,7 +10,8 @@ TEST_GROUP(CircularBufferTest){};
 TEST(CircularBufferTest, ShouldPushAndPullDataAsExpected)
 {
     const uint8_t MAX_BUFFER_SIZE = 255;
-    CircularBuffer<char, MAX_BUFFER_SIZE> buffer;
+    char rawBuffer[MAX_BUFFER_SIZE];
+    CircularBuffer<char> buffer(rawBuffer, MAX_BUFFER_SIZE);
 
     const uint8_t SIZE = 20;
     char dataIn[SIZE] = "123456789 987654321";
@@ -35,7 +36,8 @@ TEST(CircularBufferTest, ShouldPushAndPullDataAsExpected)
 TEST(CircularBufferTest, ShouldTruncateDataIfItDoesntFitInTheBuffer)
 {
     const uint8_t MAX_BUFFER_SIZE = 9;
-    CircularBuffer<char, MAX_BUFFER_SIZE> buffer;
+    char rawBuffer[MAX_BUFFER_SIZE];
+    CircularBuffer<char> buffer(rawBuffer, MAX_BUFFER_SIZE);
 
     const uint8_t SIZE = 20;
     char dataIn[SIZE] = "123456789 987654321";
@@ -54,7 +56,8 @@ TEST(CircularBufferTest, ShouldTruncateDataIfItDoesntFitInTheBuffer)
 TEST(CircularBufferTest, ShouldFillBufferExactly)
 {
     const uint8_t SIZE = 20;
-    CircularBuffer<char, SIZE> buffer;
+    char rawBuffer[SIZE];
+    CircularBuffer<char> buffer(rawBuffer, SIZE);
 
     char dataIn[SIZE] = "123456789 987654321";
     char dataOut[SIZE];
@@ -74,7 +77,8 @@ TEST(CircularBufferTest, ShouldFillBufferExactly)
 TEST(CircularBufferTest, MaximumBufferSize)
 {
     const uint16_t SIZE = UINT16_MAX;
-    CircularBuffer<uint8_t, SIZE> buffer;
+    uint8_t rawBuffer[SIZE];
+    CircularBuffer<uint8_t> buffer(rawBuffer, SIZE);
     uint8_t dataOut[SIZE];
     uint8_t dataExpected[SIZE];
 
@@ -99,7 +103,8 @@ TEST(CircularBufferTest, MaximumBufferSize)
 TEST(CircularBufferTest, WriteReadMultipleTimes)
 {
     const uint8_t MAX_BUFFER_SIZE = 10;
-    CircularBuffer<char, MAX_BUFFER_SIZE> buffer;
+    char rawBuffer[MAX_BUFFER_SIZE];
+    CircularBuffer<char> buffer(rawBuffer, MAX_BUFFER_SIZE);
 
     const uint8_t SIZE = 7;
     char dataInFirst[SIZE] = { 'A', 'B', 'C', 'D', 'E', 'F', 'G' };
@@ -130,7 +135,8 @@ TEST(CircularBufferTest, WriteReadMultipleTimes)
 TEST(CircularBufferTest, ShouldReadNothingAfterFlushingTheBuffer)
 {
     const uint8_t MAX_BUFFER_SIZE = 10;
-    CircularBuffer<char, MAX_BUFFER_SIZE> buffer;
+    char rawBuffer[MAX_BUFFER_SIZE];
+    CircularBuffer<char> buffer(rawBuffer, MAX_BUFFER_SIZE);
 
     char expectedDataOut[MAX_BUFFER_SIZE] = {};
     char dataOut[MAX_BUFFER_SIZE] = {};

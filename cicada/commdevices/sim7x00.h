@@ -40,7 +40,8 @@ class Sim7x00CommDevice : public SimCommDevice
     /*!
      * \param serial Serial driver for the port the modem is connected to.
      */
-    Sim7x00CommDevice(IBufferedSerial& serial);
+    Sim7x00CommDevice(
+        IBufferedSerial& serial, uint8_t* readBuffer, uint8_t* writeBuffer, Size bufferSize);
 
     /*!
      * Actually performs communication with the modem.

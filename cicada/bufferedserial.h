@@ -42,7 +42,13 @@ namespace Cicada {
 class BufferedSerial : public IBufferedSerial
 {
   public:
-    BufferedSerial();
+    /*
+     * \param readBuffer user supplied buffer for data arriving at the serial line
+     * \param writeBuffer user supplied buffer to store data before being sent
+     * on the serial line
+     * \param bufferSize size of each buffer. Both buffers have the same size.
+     */
+    BufferedSerial(char* readBuffer, char* writeBuffer, Size bufferSize);
 
     virtual Size bytesAvailable() const override;
 
@@ -82,8 +88,8 @@ class BufferedSerial : public IBufferedSerial
     void transferToAndFromBuffer();
 
   protected:
-    LineCircularBuffer<E_SERIAL_BUFFERSIZE> _readBuffer;
-    LineCircularBuffer<E_SERIAL_BUFFERSIZE> _writeBuffer;
+    LineCircularBuffer _readBuffer;
+    LineCircularBuffer _writeBuffer;
 
   private:
     void copyToBuffer(uint8_t data);
@@ -102,6 +108,10 @@ class BufferedSerial : public IBufferedSerial
 class BufferedSerialTask : public BufferedSerial, public Task
 {
   public:
+    BufferedSerialTask(char* readBuffer, char* writeBuffer, Size bufferSize) :
+        BufferedSerial(readBuffer, writeBuffer, bufferSize)
+    {}
+
     /*!
      * Calls BufferedSerial::performReadWrite().
      */

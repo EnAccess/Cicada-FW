@@ -64,13 +64,22 @@ void runTask(void* parameters)
 
 void mqttTask(void* parameters)
 {
-    Stm32Uart debug;
+    const uint16_t serialBufferSize = 1504;
+    char readBufferDebug[serialBufferSize];
+    char writeBufferDebug[serialBufferSize];
+    Stm32Uart debug(readBufferDebug, writeBufferDebug, serialBufferSize);
     debug.open();
 
-    Stm32Uart serial(USART1, GPIOA, GPIO_PIN_9, GPIO_PIN_10);
+    char readBufferSerial[serialBufferSize];
+    char writeBufferSerial[serialBufferSize];
+    Stm32Uart serial(readBufferSerial, writeBufferSerial, serialBufferSize,
+                     USART1, GPIOA, GPIO_PIN_9, GPIO_PIN_10);
 
+    const uint16_t commBufferSize = 1200;
+    uint8_t commReadBuffer[commBufferSize];
+    uint8_t commWriteBuffer[commBufferSize];
     // Change this class to the modem driver you want
-    Sim7x00CommDevice commDev(serial);
+    Sim7x00CommDevice commDev(serial, commReadBuffer, commWriteBuffer, commBufferSize);
 
     // Run modem driver task
     xTaskCreateStatic(runTask, "runTask", STACK_SIZE_RUNTASK, static_cast<Task*>(&commDev),

@@ -19,8 +19,14 @@ void yieldFunction(void* sched)
 
 int main(int argc, char* argv[])
 {
-    UnixSerial serial;
-    Sim7x00CommDevice commDev(serial);
+    const uint16_t serialBufferSize = 1504;
+    char serialReadBuffer[serialBufferSize];
+    char serialWriteBuffer[serialBufferSize];
+    UnixSerial serial(serialReadBuffer, serialWriteBuffer, serialBufferSize);
+    const uint16_t commBufferSize = 1504;
+    uint8_t commReadBuffer[commBufferSize];
+    uint8_t commWriteBuffer[commBufferSize];
+    Sim7x00CommDevice commDev(serial, commReadBuffer, commWriteBuffer, commBufferSize);
 
     Task* taskList[] = { &commDev, &serial, NULL };
 

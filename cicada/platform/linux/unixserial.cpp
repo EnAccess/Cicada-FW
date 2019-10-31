@@ -29,7 +29,8 @@
 
 using namespace Cicada;
 
-UnixSerial::UnixSerial(const char* port) :
+UnixSerial::UnixSerial(char* readBuffer, char* writeBuffer, Size bufferSize, const char* port) :
+    BufferedSerialTask(readBuffer, writeBuffer, bufferSize),
     _isOpen(false),
     _port(port),
     _fd(-1),

@@ -42,7 +42,13 @@ namespace Cicada {
 class IPCommDevice : public IIPCommDevice, public Task
 {
   public:
-    IPCommDevice();
+    /*
+     * \param readBuffer user supplied buffer for data arriving from the device
+     * \param writeBuffer user supplied buffer to store data before being sent
+     * to the device
+     * \param bufferSize size of each buffer. Both buffers have the same size
+     */
+    IPCommDevice(uint8_t* readBuffer, uint8_t* writeBuffer, Size bufferSize);
     virtual ~IPCommDevice() {}
 
     virtual void setHostPort(const char* host, uint16_t port, ConnectionType type = TCP);
@@ -65,8 +71,8 @@ class IPCommDevice : public IIPCommDevice, public Task
         dnsError,
     };
 
-    CircularBuffer<uint8_t, E_NETWORK_BUFFERSIZE> _readBuffer;
-    CircularBuffer<uint8_t, E_NETWORK_BUFFERSIZE> _writeBuffer;
+    CircularBuffer<uint8_t> _readBuffer;
+    CircularBuffer<uint8_t> _writeBuffer;
     ConnectionType _type;
     const char* _host;
     uint16_t _port;
