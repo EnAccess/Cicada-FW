@@ -111,6 +111,11 @@ bool Stm32Uart::setSerialConfig(uint32_t baudRate, uint8_t dataBits)
 
 bool Stm32Uart::open()
 {
+    return open(E_INTERRUPT_PRIORITY);
+}
+
+bool Stm32Uart::open(uint8_t priority)
+{
     // Enable USART/UART Clock
     if (_handle.Instance == USART1) {
         __HAL_AFIO_REMAP_USART1_ENABLE();
@@ -180,7 +185,7 @@ bool Stm32Uart::open()
         return false;
 
     // Configure interrupt
-    NVIC_SetPriority(_uartInterruptInstance, E_INTERRUPT_PRIORITY);
+    NVIC_SetPriority(_uartInterruptInstance, priority);
     NVIC_EnableIRQ(_uartInterruptInstance);
     SET_BIT(_handle.Instance->CR1, USART_CR1_RXNEIE);
 

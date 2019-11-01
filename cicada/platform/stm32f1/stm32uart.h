@@ -62,6 +62,14 @@ class Stm32Uart : public BufferedSerial
     static Stm32Uart* getInstance(USART_TypeDef* uartInstance);
 
     virtual bool open() override;
+
+    /*!
+     * Opens the UART device with the given interrupt priority.
+     *
+     * \param priority Interrupt priority for this UART's NVIC
+     */
+    virtual bool open(uint8_t priority);
+
     virtual bool isOpen() override;
     virtual bool setSerialConfig(uint32_t baudRate, uint8_t dataBits) override;
     virtual void close() override;
