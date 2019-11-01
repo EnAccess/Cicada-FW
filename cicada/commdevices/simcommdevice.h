@@ -145,6 +145,8 @@ class SimCommDevice : public IPCommDevice
 
     uint8_t _rssi;
 
+    uint16_t _modemMaxReceiveSize;
+
     static const char* _okStr;
     static const char* _lineEndStr;
     static const char* _quoteEndStr;

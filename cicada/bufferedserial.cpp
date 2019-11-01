@@ -160,7 +160,12 @@ void BufferedSerial::flushReceiveBuffers()
     eEnableInterrupts();
 }
 
-Size BufferedSerial::bufferSize()
+Size BufferedSerial::readBufferSize()
+{
+    return _readBuffer.size();
+}
+
+Size BufferedSerial::writeBufferSize()
 {
     return _writeBuffer.size();
 }

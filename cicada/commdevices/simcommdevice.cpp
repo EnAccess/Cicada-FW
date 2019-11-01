@@ -276,7 +276,7 @@ bool SimCommDevice::sendDnsQuery()
 
 bool SimCommDevice::prepareSending()
 {
-    if (_serial.spaceAvailable() < 22)
+    if (_serial.spaceAvailable() < MIN_SPACE_AVAILABLE)
         return false;
 
     _bytesToWrite = _writeBuffer.bytesAvailable();
@@ -307,11 +307,13 @@ void SimCommDevice::sendData()
 bool SimCommDevice::sendCiprxget2()
 {
     if (_serial.spaceAvailable() > 8 && _readBuffer.spaceAvailable() > 0) {
-        Size bytesToReceive = _serial.spaceAvailable() - 8;
+        Size bytesToReceive = _serial.readBufferSize() - _serial.bytesAvailable() - 8;
         if (bytesToReceive > _bytesToReceive)
             bytesToReceive = _bytesToReceive;
         if (bytesToReceive > _readBuffer.spaceAvailable())
             bytesToReceive = _readBuffer.spaceAvailable();
+        if (bytesToReceive > _modemMaxReceiveSize)
+            bytesToReceive = _modemMaxReceiveSize;
 
         const char str[] = "AT+CIPRXGET=2,0,";
         char sizeStr[6];

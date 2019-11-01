@@ -90,7 +90,8 @@ class BufferedSerial : public IBufferedSerial
 
     virtual void flushReceiveBuffers() override;
 
-    virtual Size bufferSize() override;
+    virtual Size readBufferSize() override;
+    virtual Size writeBufferSize() override;
 
     /*!
      * Actually perform read/write to the underlying
