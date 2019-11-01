@@ -31,6 +31,18 @@ using namespace Cicada;
 
 Stm32Uart* Stm32Uart::instance[E_MULTITON_MAX_INSTANCES] = { NULL };
 
+Stm32Uart::Stm32Uart(char* readBuffer, char* writeBuffer, Size readBufferSize, Size writeBufferSize,
+    USART_TypeDef* uartInstance, GPIO_TypeDef* uartPort, uint16_t txPin, uint16_t rxPin) :
+    BufferedSerial(readBuffer, writeBuffer, readBufferSize, writeBufferSize),
+    _flags(0),
+    _handle(),
+    _uartPort(uartPort),
+    _txPin(txPin),
+    _rxPin(rxPin),
+    _uartInterruptInstance()
+{
+    init(uartInstance);
+}
 Stm32Uart::Stm32Uart(char* readBuffer, char* writeBuffer, Size bufferSize,
     USART_TypeDef* uartInstance, GPIO_TypeDef* uartPort, uint16_t txPin, uint16_t rxPin) :
     BufferedSerial(readBuffer, writeBuffer, bufferSize),
@@ -40,6 +52,11 @@ Stm32Uart::Stm32Uart(char* readBuffer, char* writeBuffer, Size bufferSize,
     _txPin(txPin),
     _rxPin(rxPin),
     _uartInterruptInstance()
+{
+    init(uartInstance);
+}
+
+void Stm32Uart::init(USART_TypeDef* uartInstance)
 {
     _handle.Instance = uartInstance;
     _handle.Init.BaudRate = 115200;

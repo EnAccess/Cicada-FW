@@ -34,6 +34,11 @@ Sim800CommDevice::Sim800CommDevice(
     SimCommDevice(serial, readBuffer, writeBuffer, bufferSize)
 {}
 
+Sim800CommDevice::Sim800CommDevice(IBufferedSerial& serial, uint8_t* readBuffer,
+    uint8_t* writeBuffer, Size readBufferSize, Size writeBufferSize) :
+    SimCommDevice(serial, readBuffer, writeBuffer, readBufferSize, writeBufferSize)
+{}
+
 void Sim800CommDevice::run()
 {
     // If the serial device is net yet open, try to open it

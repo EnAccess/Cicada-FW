@@ -43,6 +43,9 @@ class Sim7x00CommDevice : public SimCommDevice
     Sim7x00CommDevice(
         IBufferedSerial& serial, uint8_t* readBuffer, uint8_t* writeBuffer, Size bufferSize);
 
+    Sim7x00CommDevice(IBufferedSerial& serial, uint8_t* readBuffer, uint8_t* writeBuffer,
+        Size readBufferSize, Size writeBufferSize);
+
     /*!
      * Actually performs communication with the modem.
      */

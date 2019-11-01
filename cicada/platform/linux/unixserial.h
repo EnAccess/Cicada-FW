@@ -54,6 +54,7 @@ class UnixSerial : public BufferedSerialTask
      * \param port Name of the serial port
      */
     UnixSerial(char* readBuffer, char* writeBuffer, Size bufferSize, const char* port = "/dev/ttyUSB0");
+    UnixSerial(char* readBuffer, char* writeBuffer, Size readBufferSize, Size writeBufferSize, const char* port = "/dev/ttyUSB0");
 
     virtual bool open();
 

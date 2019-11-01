@@ -49,6 +49,15 @@ SimCommDevice::SimCommDevice(
     resetStates();
 }
 
+SimCommDevice::SimCommDevice(IBufferedSerial& serial, uint8_t* readBuffer, uint8_t* writeBuffer,
+    Size readBufferSize, Size writeBufferSize) :
+    IPCommDevice(readBuffer, writeBuffer, readBufferSize, writeBufferSize),
+    _serial(serial),
+    _apn(NULL)
+{
+    resetStates();
+}
+
 void SimCommDevice::resetStates()
 {
     _serial.flushReceiveBuffers();

@@ -46,6 +46,17 @@ class BufferedSerial : public IBufferedSerial
      * \param readBuffer user supplied buffer for data arriving at the serial line
      * \param writeBuffer user supplied buffer to store data before being sent
      * on the serial line
+     * \param readBufferSize size of the read buffer
+     * \param writeBufferSize size of the write buffer
+     */
+    BufferedSerial(char* readBuffer, char* writeBuffer, Size readBufferSize, Size writeBufferSize);
+
+    /*
+     * Constructor with same size for read/write buffer
+     *
+     * \param readBuffer user supplied buffer for data arriving at the serial line
+     * \param writeBuffer user supplied buffer to store data before being sent
+     * on the serial line
      * \param bufferSize size of each buffer. Both buffers have the same size.
      */
     BufferedSerial(char* readBuffer, char* writeBuffer, Size bufferSize);
@@ -108,6 +119,10 @@ class BufferedSerial : public IBufferedSerial
 class BufferedSerialTask : public BufferedSerial, public Task
 {
   public:
+    BufferedSerialTask(
+        char* readBuffer, char* writeBuffer, Size readBufferSize, Size writeBufferSize) :
+        BufferedSerial(readBuffer, writeBuffer, readBufferSize, writeBufferSize)
+    {}
     BufferedSerialTask(char* readBuffer, char* writeBuffer, Size bufferSize) :
         BufferedSerial(readBuffer, writeBuffer, bufferSize)
     {}

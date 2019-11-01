@@ -35,6 +35,8 @@ class SimCommDevice : public IPCommDevice
   public:
     SimCommDevice(
         IBufferedSerial& serial, uint8_t* readBuffer, uint8_t* writeBuffer, Size bufferSize);
+    SimCommDevice(IBufferedSerial& serial, uint8_t* readBuffer, uint8_t* writeBuffer,
+        Size readBufferSize, Size writeBufferSize);
     virtual ~SimCommDevice() {}
 
     /*!

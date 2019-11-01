@@ -54,6 +54,9 @@ class Stm32Uart : public BufferedSerial
     Stm32Uart(char* readBuffer, char* writeBuffer, Size bufferSize,
         USART_TypeDef* uartInstance = USART2, GPIO_TypeDef* uartPort = GPIOA,
         uint16_t txPin = GPIO_PIN_2, uint16_t rxPin = GPIO_PIN_3);
+    Stm32Uart(char* readBuffer, char* writeBuffer, Size readBufferSize, Size writeBufferSize,
+        USART_TypeDef* uartInstance = USART2, GPIO_TypeDef* uartPort = GPIOA,
+        uint16_t txPin = GPIO_PIN_2, uint16_t rxPin = GPIO_PIN_3);
     ~Stm32Uart();
 
     static Stm32Uart* getInstance(USART_TypeDef* uartInstance);
@@ -73,6 +76,8 @@ class Stm32Uart : public BufferedSerial
     // Private constructors to avoid copying
     Stm32Uart(const Stm32Uart&);
     Stm32Uart& operator=(const Stm32Uart&);
+
+    void init(USART_TypeDef* uartInstance);
 
     static Stm32Uart* instance[E_MULTITON_MAX_INSTANCES];
 

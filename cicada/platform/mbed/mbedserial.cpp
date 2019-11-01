@@ -35,6 +35,15 @@ MbedSerial::MbedSerial(char* readBuffer, char* writeBuffer, Size bufferSize,
                       RawSerial::RxIrq);
 }
 
+MbedSerial::MbedSerial(char* readBuffer, char* writeBuffer, Size readBufferSize, Size writeBufferSize,
+                       PinName tx, PinName rx) :
+    BufferedSerial(readBuffer, writeBuffer, readBufferSize, writeBufferSize),
+    _rawSerial(tx, rx, 115200)
+{
+    _rawSerial.attach(mbed::callback(this, &MbedSerial::handleInterrupt),
+                      RawSerial::RxIrq);
+}
+
 bool MbedSerial::open()
 {
     return true;

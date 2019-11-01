@@ -36,6 +36,17 @@ IPCommDevice::IPCommDevice(uint8_t* readBuffer, uint8_t* writeBuffer, Size buffe
     _waitForReply(NULL)
 {}
 
+IPCommDevice::IPCommDevice(
+    uint8_t* readBuffer, uint8_t* writeBuffer, Size readBufferSize, Size writeBufferSize) :
+    _readBuffer(readBuffer, readBufferSize),
+    _writeBuffer(writeBuffer, writeBufferSize),
+    _host(NULL),
+    _port(0),
+    _stateBooleans(LINE_READ),
+    _connectState(notConnected),
+    _waitForReply(NULL)
+{}
+
 void IPCommDevice::setHostPort(const char* host, uint16_t port, IPCommDevice::ConnectionType type)
 {
     _host = host;

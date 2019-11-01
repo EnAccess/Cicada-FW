@@ -27,6 +27,12 @@
 
 using namespace Cicada;
 
+BufferedSerial::BufferedSerial(
+    char* readBuffer, char* writeBuffer, Size readBufferSize, Size writeBufferSize) :
+    _readBuffer(readBuffer, readBufferSize),
+    _writeBuffer(writeBuffer, writeBufferSize)
+{}
+
 BufferedSerial::BufferedSerial(char* readBuffer, char* writeBuffer, Size bufferSize) :
     _readBuffer(readBuffer, bufferSize),
     _writeBuffer(writeBuffer, bufferSize)

@@ -38,6 +38,15 @@ UnixSerial::UnixSerial(char* readBuffer, char* writeBuffer, Size bufferSize, con
     _dataBits(CS8)
 {}
 
+UnixSerial::UnixSerial(char* readBuffer, char* writeBuffer, Size readBufferSize, Size writeBufferSize, const char* port) :
+BufferedSerialTask(readBuffer, writeBuffer, readBufferSize, writeBufferSize),
+    _isOpen(false),
+    _port(port),
+    _fd(-1),
+    _speed(B115200),
+    _dataBits(CS8)
+{}
+
 bool UnixSerial::open()
 {
     struct termios config;

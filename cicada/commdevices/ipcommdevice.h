@@ -49,6 +49,8 @@ class IPCommDevice : public IIPCommDevice, public Task
      * \param bufferSize size of each buffer. Both buffers have the same size
      */
     IPCommDevice(uint8_t* readBuffer, uint8_t* writeBuffer, Size bufferSize);
+    IPCommDevice(
+        uint8_t* readBuffer, uint8_t* writeBuffer, Size readBufferSize, Size writeBufferSize);
     virtual ~IPCommDevice() {}
 
     virtual void setHostPort(const char* host, uint16_t port, ConnectionType type = TCP);
