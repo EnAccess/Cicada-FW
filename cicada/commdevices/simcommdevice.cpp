@@ -306,7 +306,8 @@ void SimCommDevice::sendData()
 
 bool SimCommDevice::sendCiprxget2()
 {
-    if (_serial.spaceAvailable() > 8 && _readBuffer.spaceAvailable() > 0) {
+    if (_serial.readBufferSize() - _serial.bytesAvailable() > 8
+        && _readBuffer.spaceAvailable() > 0) {
         Size bytesToReceive = _serial.readBufferSize() - _serial.bytesAvailable() - 8;
         if (bytesToReceive > _bytesToReceive)
             bytesToReceive = _bytesToReceive;
