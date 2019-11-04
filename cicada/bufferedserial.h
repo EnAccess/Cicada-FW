@@ -43,6 +43,8 @@ class BufferedSerial : public IBufferedSerial
 {
   public:
     /*
+     * Constructor with user supplied buffers for read/write buffers.
+     *
      * \param readBuffer user supplied buffer for data arriving at the serial line
      * \param writeBuffer user supplied buffer to store data before being sent
      * on the serial line
