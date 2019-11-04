@@ -42,7 +42,26 @@ namespace Cicada {
 class BufferedSerial : public IBufferedSerial
 {
   public:
-    BufferedSerial();
+    /*
+     * Constructor with user supplied buffers for read/write buffers.
+     *
+     * \param readBuffer user supplied buffer for data arriving at the serial line
+     * \param writeBuffer user supplied buffer to store data before being sent
+     * on the serial line
+     * \param readBufferSize size of the read buffer
+     * \param writeBufferSize size of the write buffer
+     */
+    BufferedSerial(char* readBuffer, char* writeBuffer, Size readBufferSize, Size writeBufferSize);
+
+    /*
+     * Constructor with same size for read/write buffer
+     *
+     * \param readBuffer user supplied buffer for data arriving at the serial line
+     * \param writeBuffer user supplied buffer to store data before being sent
+     * on the serial line
+     * \param bufferSize size of each buffer. Both buffers have the same size.
+     */
+    BufferedSerial(char* readBuffer, char* writeBuffer, Size bufferSize);
 
     virtual Size bytesAvailable() const override;
 
@@ -73,7 +92,8 @@ class BufferedSerial : public IBufferedSerial
 
     virtual void flushReceiveBuffers() override;
 
-    virtual Size bufferSize() override;
+    virtual Size readBufferSize() override;
+    virtual Size writeBufferSize() override;
 
     /*!
      * Actually perform read/write to the underlying
@@ -82,8 +102,8 @@ class BufferedSerial : public IBufferedSerial
     void transferToAndFromBuffer();
 
   protected:
-    LineCircularBuffer<E_SERIAL_BUFFERSIZE> _readBuffer;
-    LineCircularBuffer<E_SERIAL_BUFFERSIZE> _writeBuffer;
+    LineCircularBuffer _readBuffer;
+    LineCircularBuffer _writeBuffer;
 
   private:
     void copyToBuffer(uint8_t data);
@@ -102,6 +122,14 @@ class BufferedSerial : public IBufferedSerial
 class BufferedSerialTask : public BufferedSerial, public Task
 {
   public:
+    BufferedSerialTask(
+        char* readBuffer, char* writeBuffer, Size readBufferSize, Size writeBufferSize) :
+        BufferedSerial(readBuffer, writeBuffer, readBufferSize, writeBufferSize)
+    {}
+    BufferedSerialTask(char* readBuffer, char* writeBuffer, Size bufferSize) :
+        BufferedSerial(readBuffer, writeBuffer, bufferSize)
+    {}
+
     /*!
      * Calls BufferedSerial::performReadWrite().
      */

@@ -29,7 +29,17 @@
 
 using namespace Cicada;
 
-UnixSerial::UnixSerial(const char* port) :
+UnixSerial::UnixSerial(char* readBuffer, char* writeBuffer, Size bufferSize, const char* port) :
+    BufferedSerialTask(readBuffer, writeBuffer, bufferSize),
+    _isOpen(false),
+    _port(port),
+    _fd(-1),
+    _speed(B115200),
+    _dataBits(CS8)
+{}
+
+UnixSerial::UnixSerial(char* readBuffer, char* writeBuffer, Size readBufferSize, Size writeBufferSize, const char* port) :
+BufferedSerialTask(readBuffer, writeBuffer, readBufferSize, writeBufferSize),
     _isOpen(false),
     _port(port),
     _fd(-1),

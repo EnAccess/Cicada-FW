@@ -32,7 +32,10 @@ namespace Cicada {
 class MbedSerial : public BufferedSerial
 {
   public:
-    MbedSerial(PinName tx = SERIAL_TX, PinName rx = SERIAL_RX);
+    MbedSerial(char* readBuffer, char* writeBuffer, Size bufferSize,
+               PinName tx = SERIAL_TX, PinName rx = SERIAL_RX);
+    MbedSerial(char* readBuffer, char* writeBuffer, Size readBufferSize, Size writeBufferSize,
+               PinName tx = SERIAL_TX, PinName rx = SERIAL_RX);
 
     virtual bool open() override;
     virtual bool isOpen() override;

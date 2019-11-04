@@ -26,7 +26,20 @@
 
 using namespace Cicada;
 
-IPCommDevice::IPCommDevice() :
+IPCommDevice::IPCommDevice(uint8_t* readBuffer, uint8_t* writeBuffer, Size bufferSize) :
+    _readBuffer(readBuffer, bufferSize),
+    _writeBuffer(writeBuffer, bufferSize),
+    _host(NULL),
+    _port(0),
+    _stateBooleans(LINE_READ),
+    _connectState(notConnected),
+    _waitForReply(NULL)
+{}
+
+IPCommDevice::IPCommDevice(
+    uint8_t* readBuffer, uint8_t* writeBuffer, Size readBufferSize, Size writeBufferSize) :
+    _readBuffer(readBuffer, readBufferSize),
+    _writeBuffer(writeBuffer, writeBufferSize),
     _host(NULL),
     _port(0),
     _stateBooleans(LINE_READ),

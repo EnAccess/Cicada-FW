@@ -92,7 +92,8 @@ class IBufferedSerial : public ICommDevice, public ISerial
     /*!
      * \return Buffer size of read/write buffer
      */
-    virtual Size bufferSize() = 0;
+    virtual Size readBufferSize() = 0;
+    virtual Size writeBufferSize() = 0;
 };
 
 }

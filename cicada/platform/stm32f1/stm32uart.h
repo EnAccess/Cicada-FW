@@ -51,13 +51,54 @@ namespace Cicada {
 class Stm32Uart : public BufferedSerial
 {
   public:
-    Stm32Uart(USART_TypeDef* uartInstance = USART2, GPIO_TypeDef* uartPort = GPIOA,
+    /*
+     * Constructor with same size for read/write buffer
+     *
+     * \param readBuffer user supplied buffer for data arriving at the serial line
+     * \param writeBuffer user supplied buffer to store data before being sent
+     * on the serial line
+     * \param bufferSize size of each buffer. Both buffers have the same size.
+     * \param uartInstance UART/USART instance from HAL
+     * \param uartPort GPIO port (from HAL) used for this UART
+     * \param txPin TX pin (from HAL) used for this UART
+     * \param rxPin RX pin (from HAL) used for this UART
+     */
+    Stm32Uart(char* readBuffer, char* writeBuffer, Size bufferSize,
+        USART_TypeDef* uartInstance = USART2, GPIO_TypeDef* uartPort = GPIOA,
+        uint16_t txPin = GPIO_PIN_2, uint16_t rxPin = GPIO_PIN_3);
+
+    /*
+     * Constructor with user supplied buffers for read/write buffers.
+     *
+     * \param readBuffer user supplied buffer for data arriving at the serial line
+     * \param writeBuffer user supplied buffer to store data before being sent
+     * on the serial line
+     * \param readBufferSize size of the read buffer
+     * \param writeBufferSize size of the write buffer
+     * \param uartInstance UART/USART instance from HAL
+     * \param uartPort GPIO port (from HAL) used for this UART
+     * \param txPin TX pin (from HAL) used for this UART
+     * \param rxPin RX pin (from HAL) used for this UART
+     */
+    Stm32Uart(char* readBuffer, char* writeBuffer, Size readBufferSize, Size writeBufferSize,
+        USART_TypeDef* uartInstance = USART2, GPIO_TypeDef* uartPort = GPIOA,
         uint16_t txPin = GPIO_PIN_2, uint16_t rxPin = GPIO_PIN_3);
     ~Stm32Uart();
 
     static Stm32Uart* getInstance(USART_TypeDef* uartInstance);
 
+    /*!
+     * Opens the UART with a priority of 15 (lowest priority on STM32)
+     */
     virtual bool open() override;
+
+    /*!
+     * Opens the UART device with the given interrupt priority.
+     *
+     * \param priority Interrupt priority for this UART's NVIC
+     */
+    virtual bool open(uint8_t priority);
+
     virtual bool isOpen() override;
     virtual bool setSerialConfig(uint32_t baudRate, uint8_t dataBits) override;
     virtual void close() override;
@@ -72,6 +113,8 @@ class Stm32Uart : public BufferedSerial
     // Private constructors to avoid copying
     Stm32Uart(const Stm32Uart&);
     Stm32Uart& operator=(const Stm32Uart&);
+
+    void init(USART_TypeDef* uartInstance);
 
     static Stm32Uart* instance[E_MULTITON_MAX_INSTANCES];
 

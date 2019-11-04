@@ -31,14 +31,32 @@ using namespace Cicada;
 
 Stm32Uart* Stm32Uart::instance[E_MULTITON_MAX_INSTANCES] = { NULL };
 
-Stm32Uart::Stm32Uart(
+Stm32Uart::Stm32Uart(char* readBuffer, char* writeBuffer, Size readBufferSize, Size writeBufferSize,
     USART_TypeDef* uartInstance, GPIO_TypeDef* uartPort, uint16_t txPin, uint16_t rxPin) :
+    BufferedSerial(readBuffer, writeBuffer, readBufferSize, writeBufferSize),
     _flags(0),
     _handle(),
     _uartPort(uartPort),
     _txPin(txPin),
     _rxPin(rxPin),
     _uartInterruptInstance()
+{
+    init(uartInstance);
+}
+Stm32Uart::Stm32Uart(char* readBuffer, char* writeBuffer, Size bufferSize,
+    USART_TypeDef* uartInstance, GPIO_TypeDef* uartPort, uint16_t txPin, uint16_t rxPin) :
+    BufferedSerial(readBuffer, writeBuffer, bufferSize),
+    _flags(0),
+    _handle(),
+    _uartPort(uartPort),
+    _txPin(txPin),
+    _rxPin(rxPin),
+    _uartInterruptInstance()
+{
+    init(uartInstance);
+}
+
+void Stm32Uart::init(USART_TypeDef* uartInstance)
 {
     _handle.Instance = uartInstance;
     _handle.Init.BaudRate = 115200;
@@ -92,6 +110,11 @@ bool Stm32Uart::setSerialConfig(uint32_t baudRate, uint8_t dataBits)
 }
 
 bool Stm32Uart::open()
+{
+    return open(15);
+}
+
+bool Stm32Uart::open(uint8_t priority)
 {
     // Enable USART/UART Clock
     if (_handle.Instance == USART1) {
@@ -162,7 +185,7 @@ bool Stm32Uart::open()
         return false;
 
     // Configure interrupt
-    NVIC_SetPriority(_uartInterruptInstance, E_INTERRUPT_PRIORITY);
+    NVIC_SetPriority(_uartInterruptInstance, priority);
     NVIC_EnableIRQ(_uartInterruptInstance);
     SET_BIT(_handle.Instance->CR1, USART_CR1_RXNEIE);
 

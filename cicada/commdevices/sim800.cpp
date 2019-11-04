@@ -29,7 +29,21 @@
 
 using namespace Cicada;
 
-Sim800CommDevice::Sim800CommDevice(IBufferedSerial& serial) : SimCommDevice(serial) {}
+const uint16_t SIM800_MAX_RX = 1460;
+
+Sim800CommDevice::Sim800CommDevice(
+    IBufferedSerial& serial, uint8_t* readBuffer, uint8_t* writeBuffer, Size bufferSize) :
+    SimCommDevice(serial, readBuffer, writeBuffer, bufferSize)
+{
+    _modemMaxReceiveSize = SIM800_MAX_RX;
+}
+
+Sim800CommDevice::Sim800CommDevice(IBufferedSerial& serial, uint8_t* readBuffer,
+    uint8_t* writeBuffer, Size readBufferSize, Size writeBufferSize) :
+    SimCommDevice(serial, readBuffer, writeBuffer, readBufferSize, writeBufferSize)
+{
+    _modemMaxReceiveSize = SIM800_MAX_RX;
+}
 
 void Sim800CommDevice::run()
 {

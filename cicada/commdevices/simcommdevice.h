@@ -33,7 +33,10 @@ namespace Cicada {
 class SimCommDevice : public IPCommDevice
 {
   public:
-    SimCommDevice(IBufferedSerial& serial);
+    SimCommDevice(
+        IBufferedSerial& serial, uint8_t* readBuffer, uint8_t* writeBuffer, Size bufferSize);
+    SimCommDevice(IBufferedSerial& serial, uint8_t* readBuffer, uint8_t* writeBuffer,
+        Size readBufferSize, Size writeBufferSize);
     virtual ~SimCommDevice() {}
 
     /*!
@@ -141,6 +144,8 @@ class SimCommDevice : public IPCommDevice
     Size _bytesToRead;
 
     uint8_t _rssi;
+
+    uint16_t _modemMaxReceiveSize;
 
     static const char* _okStr;
     static const char* _lineEndStr;

@@ -10,7 +10,11 @@ TEST_GROUP(BufferedSerialTest)
     class BufferedSerialMock : public BufferedSerial
     {
       public:
-        BufferedSerialMock() {}
+        BufferedSerialMock() :
+            BufferedSerial(_rawReadBuffer, _rawWriteBuffer, 1200),
+            _inBufferMock(_rawInBuffer, 120),
+            _outBufferMock(_rawOutBuffer, 120)
+        {}
 
         bool open()
         {
@@ -58,8 +62,12 @@ TEST_GROUP(BufferedSerialTest)
             mock().actualCall("startTransmit");
         }
 
-        CircularBuffer<char, 120> _inBufferMock;
-        CircularBuffer<char, 120> _outBufferMock;
+        char _rawReadBuffer[1200];
+        char _rawWriteBuffer[1200];
+        char _rawInBuffer[120];
+        char _rawOutBuffer[120];
+        CircularBuffer<char> _inBufferMock;
+        CircularBuffer<char> _outBufferMock;
     };
 };
 

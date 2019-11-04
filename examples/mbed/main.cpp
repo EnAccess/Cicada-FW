@@ -70,8 +70,16 @@ class IPCommTask : public Task
 
 void runEnAccess()
 {
-    MbedSerial serial(PA_9, PA_10);
-    Sim7x00CommDevice commDev(serial);
+    const uint16_t serialBufferSize = 1504;
+    char readBufferDebug[serialBufferSize];
+    char writeBufferDebug[serialBufferSize];
+    MbedSerial serial(readBufferDebug, writeBufferDebug, serialBufferSize, PA_9, PA_10);
+
+    const uint16_t commBufferSize = 1200;
+    uint8_t commReadBuffer[commBufferSize];
+    uint8_t commWriteBuffer[commBufferSize];
+    Sim7x00CommDevice commDev(serial, commReadBuffer, commWriteBuffer, commBufferSize);
+
     IPCommTask task(commDev);
 
     Task* taskList[] = { &task, &commDev, NULL };

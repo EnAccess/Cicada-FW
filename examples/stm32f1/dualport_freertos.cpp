@@ -24,8 +24,14 @@ extern "C" void vApplicationGetIdleTaskMemory(StaticTask_t** ppxIdleTaskTCBBuffe
 
 void serialTask(void* parameters)
 {
-    Stm32Uart debug;
-    Stm32Uart serial(USART1, GPIOA, GPIO_PIN_9, GPIO_PIN_10);
+    const uint16_t bufferSize = 1504;
+    char readBufferDebug[bufferSize];
+    char writeBufferDebug[bufferSize];
+    char readBuffer[bufferSize];
+    char writeBuffer[bufferSize];
+    Stm32Uart debug(readBufferDebug, writeBufferDebug, bufferSize);
+    Stm32Uart serial(readBuffer, writeBuffer, bufferSize,
+                     USART1, GPIOA, GPIO_PIN_9, GPIO_PIN_10);
 
     debug.open();
     serial.open();

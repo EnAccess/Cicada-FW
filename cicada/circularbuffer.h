@@ -35,15 +35,22 @@ namespace Cicada {
  * Implementation of a circular buffer.
  */
 
-template <typename T, Size BUFFER_SIZE>
+template <typename T>
 class CircularBuffer
 {
   public:
-    CircularBuffer() :
+    /*!
+     * Constructs a CirculerBuffer with a user provided underlying raw buffer.
+     * \param buffer Pointer to the raw buffer to store data. This buffer must
+     * remain valid during the whole lifetime of the CircularBuffer accessing it.
+     * \bufferSize Number of entries available in the buffer.
+     */
+    CircularBuffer(T* buffer, Size bufferSize) :
         _writeHead(0),
         _readHead(0),
         _availableData(0),
-        _buffer()
+        _bufferSize(bufferSize),
+        _buffer(buffer)
     { }
 
     virtual ~CircularBuffer()
@@ -82,7 +89,7 @@ class CircularBuffer
     {
         _buffer[_writeHead] = data;
         incrementOrResetHead(_writeHead);
-        if (_availableData < BUFFER_SIZE)
+        if (_availableData < _bufferSize)
             _availableData++;
     }
 
@@ -158,7 +165,7 @@ class CircularBuffer
      */
     virtual bool isFull() const
     {
-        return _availableData == BUFFER_SIZE;
+        return _availableData == _bufferSize;
     }
 
     /*!
@@ -174,7 +181,7 @@ class CircularBuffer
      */
     virtual Size spaceAvailable() const
     {
-        return BUFFER_SIZE - _availableData;
+        return _bufferSize - _availableData;
     }
 
     /*!
@@ -182,19 +189,20 @@ class CircularBuffer
      */
     virtual Size size() const
     {
-        return BUFFER_SIZE;
+        return _bufferSize;
     }
 
   private:
     Size _writeHead;
     Size _readHead;
     Size _availableData;
-    T _buffer[BUFFER_SIZE];
+    const Size _bufferSize;
+    T* _buffer;
 
     void incrementOrResetHead(Size& head)
     {
         head++;
-        if (head >= BUFFER_SIZE)
+        if (head >= _bufferSize)
             head = 0;
     }
 };

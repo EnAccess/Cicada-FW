@@ -11,7 +11,9 @@ TEST_GROUP(LineCircularBufferTest){};
 
 TEST(LineCircularBufferTest, ShouldDetectLineBreaksAndReadIndividualLines)
 {
-    LineCircularBuffer<255> buffer;
+    const uint16_t bufferSize = 255;
+    char rawBuffer[bufferSize];
+    LineCircularBuffer buffer(rawBuffer, bufferSize);
 
     const char* line1 = "Hello world!\n";
     const char* line2 = "Another line\nYet another line\n";

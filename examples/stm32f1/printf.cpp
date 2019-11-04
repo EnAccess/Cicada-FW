@@ -53,7 +53,10 @@ int main(int argc, char* argv[])
     HAL_Init();
     SystemClock_Config();
 
-    Stm32Uart serial;
+    const uint16_t bufferSize = 1504;
+    char readBuffer[bufferSize];
+    char writeBuffer[bufferSize];
+    Stm32Uart serial(readBuffer, writeBuffer, bufferSize);
     SerialTask task(serial);
 
     Task* taskList[] = { &task, NULL };

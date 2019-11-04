@@ -30,7 +30,21 @@
 
 using namespace Cicada;
 
-Sim7x00CommDevice::Sim7x00CommDevice(IBufferedSerial& serial) : SimCommDevice(serial) {}
+const uint16_t SIM7x00_MAX_RX = 1500;
+
+Sim7x00CommDevice::Sim7x00CommDevice(
+    IBufferedSerial& serial, uint8_t* readBuffer, uint8_t* writeBuffer, Size bufferSize) :
+    SimCommDevice(serial, readBuffer, writeBuffer, bufferSize)
+{
+    _modemMaxReceiveSize = SIM7x00_MAX_RX;
+}
+
+Sim7x00CommDevice::Sim7x00CommDevice(IBufferedSerial& serial, uint8_t* readBuffer,
+    uint8_t* writeBuffer, Size readBufferSize, Size writeBufferSize) :
+    SimCommDevice(serial, readBuffer, writeBuffer, readBufferSize, writeBufferSize)
+{
+    _modemMaxReceiveSize = SIM7x00_MAX_RX;
+}
 
 void Sim7x00CommDevice::run()
 {

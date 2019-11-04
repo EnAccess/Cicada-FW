@@ -62,8 +62,14 @@ int main(int argc, char* argv[])
     HAL_Init();
     SystemClock_Config();
 
-    Stm32Uart debug;
-    Stm32Uart serial(USART1, GPIOA, GPIO_PIN_9, GPIO_PIN_10);
+    const uint16_t bufferSize = 1504;
+    char readBufferDebug[bufferSize];
+    char writeBufferDebug[bufferSize];
+    char readBuffer[bufferSize];
+    char writeBuffer[bufferSize];
+    Stm32Uart debug(readBufferDebug, writeBufferDebug, bufferSize);
+    Stm32Uart serial(readBuffer, writeBuffer, bufferSize,
+                     USART1, GPIOA, GPIO_PIN_9, GPIO_PIN_10);
     SerialTask task(serial);
 
     Task* taskList[] = { &task, NULL };
