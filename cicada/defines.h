@@ -36,8 +36,4 @@
 #define E_SIZE_TYPE uint64_t
 #endif
 
-#ifndef E_INTERRUPT_PRIORITY
-#define E_INTERRUPT_PRIORITY 15
-#endif
-
 #endif

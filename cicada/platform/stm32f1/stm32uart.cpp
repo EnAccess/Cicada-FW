@@ -111,7 +111,7 @@ bool Stm32Uart::setSerialConfig(uint32_t baudRate, uint8_t dataBits)
 
 bool Stm32Uart::open()
 {
-    return open(E_INTERRUPT_PRIORITY);
+    return open(15);
 }
 
 bool Stm32Uart::open(uint8_t priority)

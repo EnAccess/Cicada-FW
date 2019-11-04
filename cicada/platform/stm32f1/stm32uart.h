@@ -61,6 +61,9 @@ class Stm32Uart : public BufferedSerial
 
     static Stm32Uart* getInstance(USART_TypeDef* uartInstance);
 
+    /*!
+     * Opens the UART with a priority of 15 (lowest priority on STM32)
+     */
     virtual bool open() override;
 
     /*!
