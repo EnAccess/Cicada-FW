@@ -61,6 +61,8 @@ SimCommDevice::SimCommDevice(IBufferedSerial& serial, uint8_t* readBuffer, uint8
 void SimCommDevice::resetStates()
 {
     _serial.flushReceiveBuffers();
+    _readBuffer.flush();
+    _writeBuffer.flush();
     _lbFill = 0;
     _sendState = 0;
     _replyState = 0;
