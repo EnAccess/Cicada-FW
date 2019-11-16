@@ -285,9 +285,10 @@ void Sim800CommDevice::run()
             }
         } else if (_stateBooleans & DATA_PENDING) {
             _stateBooleans &= ~DATA_PENDING;
-            _connectState = IPCommDevice::transmitting;
+            _connectState = IPCommDevice::receiving;
             _sendState = sendCiprxget4;
         } else {
+            _connectState = IPCommDevice::connected;
             handleDisconnect(sendCipclose);
         }
         break;
@@ -297,7 +298,6 @@ void Sim800CommDevice::run()
     case sendData:
         SimCommDevice::sendData();
         _waitForReply = "0, SEND OK";
-        _connectState = IPCommDevice::connected;
         _sendState = connected;
         break;
 
@@ -318,7 +318,6 @@ void Sim800CommDevice::run()
                 _replyState = ciprxget2;
             }
         } else if (_stateBooleans & IP_CONNECTED) {
-            _connectState = IPCommDevice::connected;
             _sendState = connected;
         } else {
             _sendState = ipUnconnected;

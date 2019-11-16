@@ -105,3 +105,8 @@ void MbedSerial::handleInterrupt()
         _rawSerial.attach(NULL, RawSerial::TxIrq);
     }
 }
+
+bool MbedSerial::writeBufferProcessed() const
+{
+    return _writeBuffer.bytesAvailable() == 0;
+}

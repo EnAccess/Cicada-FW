@@ -246,3 +246,8 @@ void Stm32Uart::handleInterrupt()
     if (!_writeBuffer.bytesAvailable())
         CLEAR_BIT(_handle.Instance->CR1, USART_CR1_TXEIE);
 }
+
+bool Stm32Uart::writeBufferProcessed() const
+{
+    return _writeBuffer.bytesAvailable() == 0 && __HAL_UART_GET_FLAG(&_handle, UART_FLAG_TC);
+}

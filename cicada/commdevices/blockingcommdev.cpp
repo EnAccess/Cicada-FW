@@ -64,5 +64,11 @@ int BlockingCommDevice::write(unsigned char* buffer, int len, int timeout)
         _yieldFunction(_yieldUserData);
     }
 
-    return _commDev.write(buffer, len);
+    Size res = _commDev.write(buffer, len);
+
+    while (!_commDev.writeBufferProcessed()) {
+        _yieldFunction(_yieldUserData);
+    }
+
+    return res;
 }
