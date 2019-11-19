@@ -178,10 +178,8 @@ void BufferedSerial::transferToAndFromBuffer()
         }
     }
 
-    if (!_readBuffer.isFull()) {
-        uint8_t data;
-        if (rawRead(data)) {
-            _readBuffer.push(data);
-        }
+    uint8_t data;
+    if (rawRead(data) && !_readBuffer.isFull()) {
+        _readBuffer.push(data);
     }
 }
