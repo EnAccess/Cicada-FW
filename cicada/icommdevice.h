@@ -60,6 +60,17 @@ class ICommDevice
     virtual Size spaceAvailable() const = 0;
 
     /*!
+     * Check if all data in the write buffer already have been processed,
+     * for example  transmitted on the wire on a UART. This may be used
+     * after write(), which only copies data into the write buffer, to
+     * verify the data actually have been sent to the peer.
+     *
+     * \return true if the write buffer is empty and all data has been
+     * sent to the device.
+     */
+    virtual bool writeBufferProcessed() const = 0;
+
+    /*!
      * Reads data from the device. This method is non-blocking and only
      * copies data already in the receive buffer. If no data is
      * currently available, the method does not copy anything and will

@@ -74,7 +74,8 @@ void IPCommDevice::disconnect()
 
 bool IPCommDevice::isConnected()
 {
-    return _connectState == connected || _connectState == transmitting;
+    return _connectState == connected || _connectState == transmitting
+        || _connectState == receiving;
 }
 
 bool IPCommDevice::isIdle()
@@ -106,4 +107,9 @@ Size IPCommDevice::write(const uint8_t* data, Size size)
         return 0;
 
     return _writeBuffer.push(data, size);
+}
+
+bool IPCommDevice::writeBufferProcessed() const
+{
+    return _writeBuffer.bytesAvailable() == 0 && _connectState != transmitting;
 }

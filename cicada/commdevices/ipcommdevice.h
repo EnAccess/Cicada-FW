@@ -62,6 +62,7 @@ class IPCommDevice : public IIPCommDevice, public Task
     virtual Size spaceAvailable() const;
     virtual Size read(uint8_t* data, Size maxSize);
     virtual Size write(const uint8_t* data, Size size);
+    virtual bool writeBufferProcessed() const;
 
   protected:
     enum ConnectState {
@@ -69,6 +70,7 @@ class IPCommDevice : public IIPCommDevice, public Task
         intermediate,
         connected,
         transmitting,
+        receiving,
         generalError,
         dnsError,
     };

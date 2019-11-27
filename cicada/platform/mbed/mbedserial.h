@@ -45,6 +45,7 @@ class MbedSerial : public BufferedSerial
     virtual bool rawRead(uint8_t& data) override;
     virtual bool rawWrite(uint8_t data) override;
     virtual void startTransmit() override;
+    virtual bool writeBufferProcessed() const override;
 
     void handleInterrupt();
 

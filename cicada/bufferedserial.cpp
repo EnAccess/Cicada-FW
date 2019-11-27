@@ -172,16 +172,14 @@ Size BufferedSerial::writeBufferSize()
 
 void BufferedSerial::transferToAndFromBuffer()
 {
+    uint8_t data;
+    if (rawRead(data) && !_readBuffer.isFull()) {
+        _readBuffer.push(data);
+    }
+
     if (_writeBuffer.bytesAvailable()) {
         if (rawWrite(_writeBuffer.read())) {
             _writeBuffer.pull();
-        }
-    }
-
-    if (!_readBuffer.isFull()) {
-        uint8_t data;
-        if (rawRead(data)) {
-            _readBuffer.push(data);
         }
     }
 }

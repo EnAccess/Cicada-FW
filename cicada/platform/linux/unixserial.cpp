@@ -38,8 +38,9 @@ UnixSerial::UnixSerial(char* readBuffer, char* writeBuffer, Size bufferSize, con
     _dataBits(CS8)
 {}
 
-UnixSerial::UnixSerial(char* readBuffer, char* writeBuffer, Size readBufferSize, Size writeBufferSize, const char* port) :
-BufferedSerialTask(readBuffer, writeBuffer, readBufferSize, writeBufferSize),
+UnixSerial::UnixSerial(char* readBuffer, char* writeBuffer, Size readBufferSize,
+    Size writeBufferSize, const char* port) :
+    BufferedSerialTask(readBuffer, writeBuffer, readBufferSize, writeBufferSize),
     _isOpen(false),
     _port(port),
     _fd(-1),
@@ -51,7 +52,7 @@ bool UnixSerial::open()
 {
     struct termios config;
 
-    _fd = ::open(_port, O_RDWR | O_NOCTTY | O_NDELAY);
+    _fd = ::open(_port, O_RDWR | O_NOCTTY);
     if (_fd == -1) {
         return false;
     }
@@ -214,6 +215,11 @@ void UnixSerial::close()
         ::close(_fd);
 
     _fd = -1;
+}
+
+bool UnixSerial::writeBufferProcessed() const
+{
+    return _writeBuffer.isEmpty();
 }
 
 bool UnixSerial::rawRead(uint8_t& data)

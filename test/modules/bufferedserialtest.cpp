@@ -62,6 +62,11 @@ TEST_GROUP(BufferedSerialTest)
             mock().actualCall("startTransmit");
         }
 
+        virtual bool writeBufferProcessed() const
+        {
+            return true;
+        }
+
         char _rawReadBuffer[1200];
         char _rawWriteBuffer[1200];
         char _rawInBuffer[120];
