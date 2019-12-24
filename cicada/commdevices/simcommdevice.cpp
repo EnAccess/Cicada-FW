@@ -73,6 +73,8 @@ void SimCommDevice::resetStates()
     _waitForReply = NULL;
     _stateBooleans = LINE_READ;
     _rssi = 99;
+    _idStringBuffer[0] = '\0';
+    _idStringBuffer[1] = noRequest;
 }
 
 void SimCommDevice::setApn(const char* apn)
@@ -227,6 +229,23 @@ bool SimCommDevice::parseCsq()
     return false;
 }
 
+bool SimCommDevice::parseIDReply()
+{
+    // Avoid parsing command echo in case it's turned on
+    if (strncmp(_lineBuffer, "AT", 2) == 0) {
+        return false;
+    }
+
+    int copiedChars = 0;
+    char* src = _lineBuffer;
+    while (*src != '\n' && copiedChars < IDSTRING_MAX_LENGTH - 1) {
+        _idStringBuffer[copiedChars++] = *src++;
+    }
+    _idStringBuffer[copiedChars] = '\0';
+
+    return true;
+}
+
 void SimCommDevice::flushReadBuffer()
 {
     while (_bytesToRead && _serial.bytesAvailable()) {
@@ -361,6 +380,29 @@ void SimCommDevice::sendCommand(const char* cmd)
     _serial.write((const uint8_t*)_lineEndStr);
 }
 
+bool SimCommDevice::sendIDRequest()
+{
+    if (_idStringBuffer[1] != noRequest && _idStringBuffer[0] == 0 && _stateBooleans & LINE_READ) {
+        switch (_idStringBuffer[1]) {
+        case Manufacturer:
+            sendCommand("AT+CGMI");
+            return true;
+        case Model:
+            sendCommand("AT+CGMM");
+            return true;
+        case IMEI:
+            sendCommand("AT+CGSN");
+            return true;
+        case IMSI:
+            sendCommand("AT+CIMI");
+            return true;
+        default:
+            break;
+        }
+    }
+    return false;
+}
+
 void SimCommDevice::requestRSSI()
 {
     _rssi = UINT8_MAX;
@@ -369,4 +411,33 @@ void SimCommDevice::requestRSSI()
 uint8_t SimCommDevice::getRSSI()
 {
     return _rssi;
+}
+
+void SimCommDevice::requestManufacturer()
+{
+    _idStringBuffer[0] = '\0';
+    _idStringBuffer[1] = Manufacturer;
+}
+
+void SimCommDevice::requestModel()
+{
+    _idStringBuffer[0] = '\0';
+    _idStringBuffer[1] = Model;
+}
+
+void SimCommDevice::requestIMEI()
+{
+    _idStringBuffer[0] = '\0';
+    _idStringBuffer[1] = IMEI;
+}
+
+void SimCommDevice::requestIMSI()
+{
+    _idStringBuffer[0] = '\0';
+    _idStringBuffer[1] = IMSI;
+}
+
+char* SimCommDevice::getIDString()
+{
+    return _idStringBuffer;
 }

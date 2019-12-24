@@ -55,6 +55,7 @@ class Sim7x00CommDevice : public SimCommDevice
     enum ReplyState {
         okReply = 0,
         csq,
+        requestID,
         expectConnect,
         netopen,
         cdnsgip,
