@@ -418,3 +418,8 @@ void SimCommDevice::requestIDString(RequestIDType type)
     _idStringBuffer[0] = '\0';
     _idStringBuffer[1] = type;
 }
+
+char* SimCommDevice::getIDString()
+{
+    return _idStringBuffer;
+}
