@@ -413,7 +413,7 @@ uint8_t SimCommDevice::getRSSI()
     return _rssi;
 }
 
-void SimCommDevice::requestID(RequestIDType type)
+void SimCommDevice::requestIDString(RequestIDType type)
 {
     _idStringBuffer[0] = '\0';
     _idStringBuffer[1] = type;

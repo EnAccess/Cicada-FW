@@ -117,7 +117,7 @@ class SimCommDevice : public IPCommDevice
      * Request one of the identifications from the modem. It can then be
      * retreieved with getIDString();
      */
-    void requestID(RequestIDType type);
+    void requestIDString(RequestIDType type);
 
     /*!
      * Actually returns the identification strings requested before
