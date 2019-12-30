@@ -27,6 +27,7 @@
 #include "cicada/commdevices/ipcommdevice.h"
 
 #define LINE_MAX_LENGTH 60
+#define IDSTRING_MAX_LENGTH 24
 
 namespace Cicada {
 
@@ -110,6 +111,23 @@ class SimCommDevice : public IPCommDevice
      */
     uint8_t getRSSI();
 
+    enum RequestIDType { noRequest, manufacturer, model, imei, imsi };
+
+    /*!
+     * Request one of the identifications from the modem. It can then be
+     * retreieved with getIDString();
+     */
+    void requestID(RequestIDType type);
+
+    /*!
+     * Actually returns the identification strings requested before
+     * with one of the request*() methods. The string is 0-terminated.
+     * This points to the internal string buffer and stays unchanged until
+     * another request*() method is called. The buffer is valid during the
+     * lifetime of this class.
+     * */
+    char* getIDString();
+
   protected:
     bool fillLineBuffer();
     void logStates(int8_t sendState, int8_t replyState);
@@ -117,6 +135,7 @@ class SimCommDevice : public IPCommDevice
     bool parseCiprxget4();
     bool parseCiprxget2();
     bool parseCsq();
+    bool parseIDReply();
     void checkConnectionState(const char* closeVariant);
     void flushReadBuffer();
     bool handleDisconnect(int8_t nextState);
@@ -126,6 +145,7 @@ class SimCommDevice : public IPCommDevice
     bool prepareSending();
     void sendData();
     bool sendCiprxget2();
+    bool sendIDRequest();
     bool receive();
     void sendCommand(const char* cmd);
 
@@ -136,6 +156,8 @@ class SimCommDevice : public IPCommDevice
     uint8_t _lbFill;
 
     char _ip[16];
+
+    char _idStringBuffer[IDSTRING_MAX_LENGTH];
 
     int8_t _sendState;
     int8_t _replyState;

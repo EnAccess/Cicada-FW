@@ -149,6 +149,12 @@ void Sim800CommDevice::run()
                 _replyState = okReply;
             }
 
+        case requestID:
+            if (parseIDReply()) {
+                _replyState = okReply;
+            }
+            break;
+
         default:
             break;
         }
@@ -177,6 +183,13 @@ void Sim800CommDevice::run()
         _replyState = csq;
         _waitForReply = _okStr;
         sendCommand("AT+CSQ");
+        return;
+    }
+
+    // When one of the identifications was requested, send the command to the modem
+    if (sendIDRequest()) {
+        _replyState = requestID;
+        _waitForReply = _okStr;
         return;
     }
 
