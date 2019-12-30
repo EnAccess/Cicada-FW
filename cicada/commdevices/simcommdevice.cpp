@@ -384,16 +384,16 @@ bool SimCommDevice::sendIDRequest()
 {
     if (_idStringBuffer[1] != noRequest && _idStringBuffer[0] == 0 && _stateBooleans & LINE_READ) {
         switch (_idStringBuffer[1]) {
-        case Manufacturer:
+        case manufacturer:
             sendCommand("AT+CGMI");
             return true;
-        case Model:
+        case model:
             sendCommand("AT+CGMM");
             return true;
-        case IMEI:
+        case imei:
             sendCommand("AT+CGSN");
             return true;
-        case IMSI:
+        case imsi:
             sendCommand("AT+CIMI");
             return true;
         default:
@@ -416,25 +416,25 @@ uint8_t SimCommDevice::getRSSI()
 void SimCommDevice::requestManufacturer()
 {
     _idStringBuffer[0] = '\0';
-    _idStringBuffer[1] = Manufacturer;
+    _idStringBuffer[1] = manufacturer;
 }
 
 void SimCommDevice::requestModel()
 {
     _idStringBuffer[0] = '\0';
-    _idStringBuffer[1] = Model;
+    _idStringBuffer[1] = model;
 }
 
 void SimCommDevice::requestIMEI()
 {
     _idStringBuffer[0] = '\0';
-    _idStringBuffer[1] = IMEI;
+    _idStringBuffer[1] = imei;
 }
 
 void SimCommDevice::requestIMSI()
 {
     _idStringBuffer[0] = '\0';
-    _idStringBuffer[1] = IMSI;
+    _idStringBuffer[1] = imsi;
 }
 
 char* SimCommDevice::getIDString()

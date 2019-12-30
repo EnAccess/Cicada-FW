@@ -190,7 +190,7 @@ class SimCommDevice : public IPCommDevice
     static const char* _lineEndStr;
     static const char* _quoteEndStr;
 
-    enum RequestIDType { noRequest, Manufacturer, Model, IMEI, IMSI };
+    enum RequestIDType { noRequest, manufacturer, model, imei, imsi };
 };
 }
 
