@@ -111,30 +111,13 @@ class SimCommDevice : public IPCommDevice
      */
     uint8_t getRSSI();
 
+    enum RequestIDType { noRequest, manufacturer, model, imei, imsi };
+
     /*!
-     * Request the manufacturer identification from the modem. It can then be
+     * Request one of the identifications from the modem. It can then be
      * retreieved with getIDString();
      */
-    void requestManufacturer();
-
-    /*!
-     * Request the model identification from the modem. It can then be
-     * retreieved with getIDString();
-     */
-    void requestModel();
-
-    /*!
-     * Request the product serial number identification from the modem.
-     * It can then be retreieved with getIDString();
-     */
-    void requestIMEI();
-
-    /*!
-     * Request the international mobile subscriber identity from the modem.
-     * The simcard must be unlocked before the string can be retrieved.
-     * It can then be retreieved with getIDString();
-     */
-    void requestIMSI();
+    void requestID(RequestIDType type);
 
     /*!
      * Actually returns the identification strings requested before
@@ -189,8 +172,6 @@ class SimCommDevice : public IPCommDevice
     static const char* _okStr;
     static const char* _lineEndStr;
     static const char* _quoteEndStr;
-
-    enum RequestIDType { noRequest, manufacturer, model, imei, imsi };
 };
 }
 

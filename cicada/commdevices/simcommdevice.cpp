@@ -413,31 +413,8 @@ uint8_t SimCommDevice::getRSSI()
     return _rssi;
 }
 
-void SimCommDevice::requestManufacturer()
+void SimCommDevice::requestID(RequestIDType type)
 {
     _idStringBuffer[0] = '\0';
-    _idStringBuffer[1] = manufacturer;
-}
-
-void SimCommDevice::requestModel()
-{
-    _idStringBuffer[0] = '\0';
-    _idStringBuffer[1] = model;
-}
-
-void SimCommDevice::requestIMEI()
-{
-    _idStringBuffer[0] = '\0';
-    _idStringBuffer[1] = imei;
-}
-
-void SimCommDevice::requestIMSI()
-{
-    _idStringBuffer[0] = '\0';
-    _idStringBuffer[1] = imsi;
-}
-
-char* SimCommDevice::getIDString()
-{
-    return _idStringBuffer;
+    _idStringBuffer[1] = type;
 }
