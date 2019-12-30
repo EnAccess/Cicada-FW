@@ -238,7 +238,7 @@ bool SimCommDevice::parseIDReply()
 
     int copiedChars = 0;
     char* src = _lineBuffer;
-    while (*src != '\n' && copiedChars < IDSTRING_MAX_LENGTH - 1) {
+    while (*src != '\r' && copiedChars < IDSTRING_MAX_LENGTH - 1) {
         _idStringBuffer[copiedChars++] = *src++;
     }
     _idStringBuffer[copiedChars] = '\0';
