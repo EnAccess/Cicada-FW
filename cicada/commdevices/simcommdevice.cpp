@@ -232,7 +232,7 @@ bool SimCommDevice::parseCsq()
 bool SimCommDevice::parseIDReply()
 {
     // Avoid parsing command echo in case it's turned on
-    if (strncmp(_lineBuffer, "AT", 2) == 0) {
+    if (strncmp(_lineBuffer, "AT", 2) == 0 || _lineBuffer[0] == '\r') {
         return false;
     }
 
@@ -383,7 +383,9 @@ void SimCommDevice::sendCommand(const char* cmd)
 bool SimCommDevice::sendIDRequest()
 {
     if (_idStringBuffer[1] != noRequest && _idStringBuffer[0] == 0 && _stateBooleans & LINE_READ) {
-        switch (_idStringBuffer[1]) {
+        RequestIDType type = (RequestIDType)_idStringBuffer[1];
+        _idStringBuffer[1] = noRequest;
+        switch (type) {
         case manufacturer:
             sendCommand("AT+CGMI");
             return true;
