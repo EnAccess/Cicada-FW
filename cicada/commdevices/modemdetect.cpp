@@ -27,13 +27,16 @@
 
 using namespace Cicada;
 
-ModemDetect::ModemDetect(IBufferedSerial& serial) : _serial(serial), _detectedModem(NULL)
+ModemDetect::ModemDetect(IBufferedSerial& serial) :
+    _serial(serial),
+    _detectState(noState),
+    _startDetection(false),
+    _detectedModem(NULL)
+{}
+
+void ModemDetect::startDetection()
 {
-    // Sim800CommDevice modem(serial, readBuffer, writeBuffer, readBufferSize, writeBufferSize);
-    // ModemDriver md(serial, readBuffer, writeBuffer, readBufferSize, writeBufferSize);
-    ModemDriver md;
-    // new (&md.sim800) Sim800CommDevice(serial, readBuffer, writeBuffer, readBufferSize,
-    // writeBufferSize); new (&md.sim800) Test; md.sim800 = modem; md.sim800.setApn("internet");
+    _startDetection = true;
 }
 
 bool ModemDetect::modemDetected()
@@ -81,24 +84,30 @@ void ModemDetect::run()
     }
 
     switch (_detectState) {
+    case noState:
+        if (_startDetection) {
+            _detectState = beginState;
+        }
+        break;
     case beginState:
         _serial.flushReceiveBuffers();
         _serial.write((const uint8_t*)"AT+CGMM\r\n");
         _detectState = cgmmSent;
+        setDelay(10);
         break;
     case cgmmSent:
-        while (_serial.canReadLine()) {
-            uint16_t bufSize = _serial.bytesAvailable();
+        if (_serial.canReadLine()) {
+            uint16_t bufSize = _serial.bytesAvailable() + 1;
             char readBuf[bufSize];
-            _serial.readLine((uint8_t*)readBuf, bufSize);
+            bufSize = _serial.readLine((uint8_t*)readBuf, bufSize);
+            readBuf[bufSize] = '\0';
 
-            if (strcmp("SIMCOM_SIM800", readBuf) == 0) {
+            if (strncmp("SIMCOM_SIM800", readBuf, 13) == 0) {
                 _detectState = detectedSim800;
-            } else if (strcmp("SIMCOM_SIM7600C", readBuf) == 0) {
+            } else if (strncmp("SIMCOM_SIM7600", readBuf, 14) == 0) {
                 _detectState = detectedSim7x00;
             }
         }
-        _serial.flushReceiveBuffers();
         break;
     default:
         break;

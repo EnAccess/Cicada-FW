@@ -35,6 +35,7 @@ class ModemDetect : public Task
   public:
     ModemDetect(IBufferedSerial& serial);
 
+    void startDetection();
     bool modemDetected();
     SimCommDevice* getDetectedModem(
         uint8_t* readBuffer, uint8_t* writeBuffer, Size readBufferSize, Size writeBufferSize);
@@ -53,6 +54,7 @@ class ModemDetect : public Task
     IBufferedSerial& _serial;
 
     enum DetectState {
+        noState,
         beginState,
         errorState,
         cgmmSent,
@@ -61,6 +63,7 @@ class ModemDetect : public Task
         detectedSim7x00
     } _detectState;
 
+    bool _startDetection;
     SimCommDevice* _detectedModem;
 };
 }
