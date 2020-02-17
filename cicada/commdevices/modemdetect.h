@@ -30,17 +30,45 @@
 
 namespace Cicada {
 
+/*!
+ * Autodetects the modem and returns the correct driver.
+ */
+
 class ModemDetect : public Task
 {
   public:
     ModemDetect(IBufferedSerial& serial);
 
+    /*!
+     * Starts detection of the modem, which is then performed in run()
+     * */
     void startDetection();
+
+    /*!
+     * Stays false until the modem is detected.
+     * \return true when the modem has been detected
+     */
     bool modemDetected();
+
+    /*!
+     * Constructs a modem driver for the detected device and returns a pointer to it.
+     * The parameters are passed to the constructor of the actual driver.
+     * The pointer to the driver stays valid as long as the ModemDetect class
+     * is valid. The ModemDetect class must not go out of scope as long as the
+     * driver is in use.
+     * \return Pointer to the modem driver for the detected device.
+     */
     SimCommDevice* getDetectedModem(
         uint8_t* readBuffer, uint8_t* writeBuffer, Size readBufferSize, Size writeBufferSize);
+
+    /*!
+     * \return Pointer to the modem driver created
+     */
     SimCommDevice* getDetectedModem();
 
+    /*!
+     * Performs the actual modem detection task
+     */
     virtual void run();
 
   private:
