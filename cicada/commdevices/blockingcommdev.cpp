@@ -26,13 +26,18 @@
 
 using namespace Cicada;
 
-BlockingCommDevice::BlockingCommDevice(ICommDevice& dev, E_TICK_TYPE (*tickFunction)(void),
+BlockingCommDevice::BlockingCommDevice(ICommDevice* dev, E_TICK_TYPE (*tickFunction)(void),
     void (*yieldFunction)(void*), void* yieldUserData) :
     _commDev(dev),
     _tickFunction(tickFunction),
     _yieldFunction(yieldFunction),
     _yieldUserData(yieldUserData)
 {}
+
+void BlockingCommDevice::setCommDevice(ICommDevice* dev)
+{
+    _commDev = dev;
+}
 
 int BlockingCommDevice::read(unsigned char* buffer, int len, int timeout)
 {
@@ -43,7 +48,7 @@ int BlockingCommDevice::read(unsigned char* buffer, int len, int timeout)
         if (_tickFunction() - startTime > (E_TICK_TYPE)timeout)
             break;
 
-        int bytesRead = _commDev.read(buffer + totalBytes, len);
+        int bytesRead = _commDev->read(buffer + totalBytes, len);
         len -= bytesRead;
         totalBytes += bytesRead;
 
@@ -57,16 +62,16 @@ int BlockingCommDevice::write(unsigned char* buffer, int len, int timeout)
 {
     E_TICK_TYPE startTime = _tickFunction();
 
-    while (_commDev.spaceAvailable() < (Size)len) {
+    while (_commDev->spaceAvailable() < (Size)len) {
         if (_tickFunction() - startTime > (E_TICK_TYPE)timeout)
             return 0;
 
         _yieldFunction(_yieldUserData);
     }
 
-    Size res = _commDev.write(buffer, len);
+    Size res = _commDev->write(buffer, len);
 
-    while (!_commDev.writeBufferProcessed()) {
+    while (!_commDev->writeBufferProcessed()) {
         if (_tickFunction() - startTime > (E_TICK_TYPE)timeout)
             return 0;
 

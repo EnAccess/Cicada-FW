@@ -85,7 +85,7 @@ void mqttTask(void* parameters)
     xTaskCreateStatic(runTask, "runTask", STACK_SIZE_RUNTASK, static_cast<Task*>(&commDev),
         tskIDLE_PRIORITY, xStackTask, &xTaskBuffer);
 
-    BlockingCommDevice bld(commDev, xTaskGetTickCount, yieldFunction, NULL);
+    BlockingCommDevice bld(&commDev, xTaskGetTickCount, yieldFunction, NULL);
 
     const char* topic = "enaccess/test";
 

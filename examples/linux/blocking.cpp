@@ -32,7 +32,7 @@ int main(int argc, char* argv[])
 
     Scheduler s(&eTickFunction, taskList);
 
-    BlockingCommDevice bld(commDev, eTickFunction, yieldFunction, &s);
+    BlockingCommDevice bld(&commDev, eTickFunction, yieldFunction, &s);
 
     commDev.setApn("internet");
     commDev.setHostPort("wttr.in", 80);
