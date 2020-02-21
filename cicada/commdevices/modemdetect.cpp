@@ -52,10 +52,12 @@ SimCommDevice* ModemDetect::getDetectedModem(
         new (&_md.sim800)
             Sim800CommDevice(_serial, readBuffer, writeBuffer, readBufferSize, writeBufferSize);
         _detectedModem = &_md.sim800;
+        break;
     case detectedSim7x00:
         new (&_md.sim7x00)
             Sim7x00CommDevice(_serial, readBuffer, writeBuffer, readBufferSize, writeBufferSize);
         _detectedModem = &_md.sim7x00;
+        break;
     default:
         break;
     }
