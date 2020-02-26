@@ -49,8 +49,13 @@ class BlockingCommDevice
      * while waiting for buffers. This is usually the operating system's
      * yield() or a user defined function to process other tasks.
      */
-    BlockingCommDevice(ICommDevice& dev, E_TICK_TYPE (*tickFunction)(void),
+    BlockingCommDevice(ICommDevice* dev, E_TICK_TYPE (*tickFunction)(void),
         void (*yieldFunction)(void*), void* yieldUserData = NULL);
+
+    /*!
+     * Changes the reference to the ICommDevice
+     */
+    void setCommDevice(ICommDevice* dev);
 
     /*!
      * Blocking read.
@@ -63,7 +68,7 @@ class BlockingCommDevice
     int write(unsigned char* buffer, int len, int timeout);
 
   private:
-    ICommDevice& _commDev;
+    ICommDevice* _commDev;
     E_TICK_TYPE (*_tickFunction)(void);
     void (*_yieldFunction)(void*);
     void* _yieldUserData;

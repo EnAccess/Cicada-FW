@@ -72,7 +72,7 @@ int main(int argc, char* argv[])
     Scheduler s(&eTickFunction, taskList);
 
     // Set up MQTT client
-    BlockingCommDevice bld(commDev, eTickFunction, yieldFunction, &s);
+    BlockingCommDevice bld(&commDev, eTickFunction, yieldFunction, &s);
     MQTT::Client<BlockingCommDevice, MQTTCountdown> client
         = MQTT::Client<BlockingCommDevice, MQTTCountdown>(bld);
 

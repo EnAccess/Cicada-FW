@@ -120,6 +120,12 @@ class LineCircularBuffer : public CircularBuffer<char>
         return readCount;
     }
 
+    virtual void flush()
+    {
+        _bufferedLines = 0;
+        CircularBuffer::flush();
+    }
+
   private:
     uint16_t _bufferedLines;
 };

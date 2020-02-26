@@ -9,6 +9,8 @@ src_files = files([
     'commdevices/sim800.cpp',
     'commdevices/blockingcommdev.h',
     'commdevices/blockingcommdev.cpp',
+    'commdevices/modemdetect.h',
+    'commdevices/modemdetect.cpp',
     'bufferedserial.h',
     'bufferedserial.cpp',
     'defines.h',

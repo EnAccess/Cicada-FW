@@ -70,7 +70,7 @@ int main(int argc, char* argv[])
 
     Scheduler s(&eTickFunction, taskList);
 
-    BlockingCommDevice bld(commDev, eTickFunction, yieldFunction, &s);
+    BlockingCommDevice bld(&commDev, eTickFunction, yieldFunction, &s);
 
     const char* topic = "enaccess/test";
 
