@@ -111,7 +111,7 @@ class SimCommDevice : public IPCommDevice
      */
     uint8_t getRSSI();
 
-    enum RequestIDType { noRequest, manufacturer, model, imei, imsi };
+    enum RequestIDType { noRequest, manufacturer, model, imei, imsi, iccid };
 
     /*!
      * Request one of the identifications from the modem. It can then be
@@ -145,7 +145,7 @@ class SimCommDevice : public IPCommDevice
     bool prepareSending();
     void sendData();
     bool sendCiprxget2();
-    bool sendIDRequest();
+    bool sendIDRequest(const char* modemSpecificICCIDCommand);
     bool receive();
     void sendCommand(const char* cmd);
 

@@ -187,7 +187,7 @@ void Sim800CommDevice::run()
     }
 
     // When one of the identifications was requested, send the command to the modem
-    if (sendIDRequest()) {
+    if (sendIDRequest(iccidCommand)) {
         _replyState = requestID;
         _waitForReply = _okStr;
         return;
