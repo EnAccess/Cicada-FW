@@ -87,6 +87,8 @@ class Sim7x00CommDevice : public SimCommDevice
         sendNetclose,
         finalizeDisconnect
     };
+
+    const char* iccidCommand = "AT+CICCID";
 };
 }
 

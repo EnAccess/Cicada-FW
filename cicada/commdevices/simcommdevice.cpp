@@ -380,12 +380,14 @@ void SimCommDevice::sendCommand(const char* cmd)
     _serial.write((const uint8_t*)_lineEndStr);
 }
 
-bool SimCommDevice::sendIDRequest()
+bool SimCommDevice::sendIDRequest(const char* modemSpecificICCIDCommand)
 {
     if (_idStringBuffer[1] != noRequest && _idStringBuffer[0] == 0 && _stateBooleans & LINE_READ) {
         RequestIDType type = (RequestIDType)_idStringBuffer[1];
         _idStringBuffer[1] = noRequest;
+
         switch (type) {
+        // ID Requests according to 3GPP TS 27.007
         case manufacturer:
             sendCommand("AT+CGMI");
             return true;
@@ -397,6 +399,11 @@ bool SimCommDevice::sendIDRequest()
             return true;
         case imsi:
             sendCommand("AT+CIMI");
+            return true;
+
+        // Modem specific ID requests
+        case iccid:
+            sendCommand(modemSpecificICCIDCommand);
             return true;
         default:
             break;

@@ -78,6 +78,8 @@ class Sim800CommDevice : public SimCommDevice
         sendCipshut,
         finalizeDisconnect
     };
+
+    const char* iccidCommand = "AT+CCID";
 };
 }
 
