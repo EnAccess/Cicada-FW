@@ -236,8 +236,14 @@ bool SimCommDevice::parseIDReply()
         return false;
     }
 
-    int copiedChars = 0;
     char* src = _lineBuffer;
+
+    // For Sim7x00: "AT+CICCID" replys with "+ICCID: <ICCID>"
+    if (strncmp(_lineBuffer, "+ICCID: ", 8) == 0) {
+        src = _lineBuffer + 8;
+    }
+
+    int copiedChars = 0;
     while (*src != '\r' && copiedChars < IDSTRING_MAX_LENGTH - 1) {
         _idStringBuffer[copiedChars++] = *src++;
     }
