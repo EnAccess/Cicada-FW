@@ -116,13 +116,15 @@ class SimCommDevice : public IPCommDevice
     /*!
      * Request one of the identifications from the modem. It can then be
      * retreieved with getIDString();
+     * Note: This method flushes the recieve buffer.
      */
     void requestIDString(RequestIDType type);
 
     /*!
      * Actually returns the identification strings requested before
-     * with one of the request*() methods. The string is 0-terminated.
-     * This points to the internal string buffer and stays unchanged until
+     * with one of the request*() methods, or NULL if the string is
+     * not yet available. The string is 0-terminated. When returned,
+     * this points to the internal string buffer and stays unchanged until
      * another request*() method is called. The buffer is valid during the
      * lifetime of this class.
      * */
