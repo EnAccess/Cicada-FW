@@ -430,11 +430,16 @@ uint8_t SimCommDevice::getRSSI()
 
 void SimCommDevice::requestIDString(RequestIDType type)
 {
+    _serial.flushReceiveBuffers();
     _idStringBuffer[0] = '\0';
     _idStringBuffer[1] = type;
 }
 
 char* SimCommDevice::getIDString()
 {
-    return _idStringBuffer;
+    if (_waitForReply == NULL && _idStringBuffer[0] != '\0') {
+        return _idStringBuffer;
+    } else {
+        return NULL;
+    }
 }
