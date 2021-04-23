@@ -39,11 +39,6 @@ else
     cicada_build_target = meson.get_cross_property('cicada_build_target')
 endif
 
-# Add embedded printf dependancy
-embedded_printf    = subproject('printf')
-embedded_printf_dep = embedded_printf.get_variable('embedded_printf_dep')
-embedded_printf_inc = embedded_printf.get_variable('embedded_printf_inc')
-
 # Add mqtt dependancy
 eclipse_paho_mqtt     = subproject('paho.mqtt.embedded-c')
 eclipse_paho_mqtt_dep = eclipse_paho_mqtt.get_variable('eclipse_paho_mqtt_dep')
@@ -58,7 +53,7 @@ cicada_lib = static_library(
     'Cicada',
     [ src_files, platform_src_files ],
     include_directories : [ target_inc  ],
-    dependencies        : [ embedded_printf_dep, eclipse_paho_mqtt_dep ],
+    dependencies        : [ eclipse_paho_mqtt_dep ],
     c_args              : [ mcu_args, target_c_args, debug_args ],
     cpp_args            : [ mcu_args, target_cpp_args, debug_args ],
     link_args           : [ mcu_args, target_link_args ],
