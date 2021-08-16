@@ -7,6 +7,8 @@ src_files = files([
     'commdevices/sim7x00.cpp',
     'commdevices/sim800.h',
     'commdevices/sim800.cpp',
+    'commdevices/esp8266.cpp',
+    'commdevices/esp8266.h',
     'commdevices/blockingcommdev.h',
     'commdevices/blockingcommdev.cpp',
     'commdevices/modemdetect.h',
