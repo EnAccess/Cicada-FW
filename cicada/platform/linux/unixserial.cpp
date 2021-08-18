@@ -52,7 +52,7 @@ bool UnixSerial::open()
 {
     struct termios config;
 
-    _fd = ::open(_port, O_RDWR | O_NOCTTY);
+    _fd = ::open(_port, O_RDWR | O_NOCTTY | O_NONBLOCK);
     if (_fd == -1) {
         return false;
     }
