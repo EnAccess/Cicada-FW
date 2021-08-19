@@ -70,7 +70,8 @@ class Esp8266Device : public IPCommDevice
 
     enum ReplyState {
         okReply = 0,
-        ciprecvdata
+        waitCiprecvdata,
+        parseCiprecvdata
     };
 
     enum SendState {
@@ -88,7 +89,6 @@ class Esp8266Device : public IPCommDevice
         sendCiprecvdata,
         waitReceive,
         receiving,
-        ipUnconnected,
         sendCipclose,
         sendCwqap,
         finalizeDisconnect
@@ -105,6 +105,7 @@ class Esp8266Device : public IPCommDevice
     bool sendCiprcvdata();
     bool parseCiprcvdata();
     void flushReadBuffer();
+    bool receive();
 
     IBufferedSerial& _serial;
     const char* _ssid;
