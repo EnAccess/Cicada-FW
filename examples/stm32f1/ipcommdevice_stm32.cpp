@@ -28,6 +28,8 @@ class IPCommTask : public Task
     {
         E_BEGIN_TASK
 
+        m_detector.startDetection();
+
         E_REENTER_COND(m_detector.modemDetected());
         m_commDev = m_detector.getDetectedModem(_commReadBuffer, _commWriteBuffer, _commBufferSize, _commBufferSize);
 
@@ -101,7 +103,6 @@ int main(int argc, char* argv[])
     Stm32Uart serial(readBufferSerial, writeBufferSerial, serialBufferSize,
                      USART1, GPIOA, GPIO_PIN_9, GPIO_PIN_10);
 
-    // Change this class to the modem driver you want
     ModemDetect detector(serial);
 
     IPCommTask task(detector);

@@ -27,6 +27,7 @@
 #include "cicada/commdevices/iipcommdevice.h"
 #include "cicada/commdevices/sim7x00.h"
 #include "cicada/commdevices/sim800.h"
+#include "cicada/commdevices/esp8266.h"
 
 namespace Cicada {
 
@@ -58,13 +59,13 @@ class ModemDetect : public Task
      * driver is in use.
      * \return Pointer to the modem driver for the detected device.
      */
-    SimCommDevice* getDetectedModem(
+    IPCommDevice* getDetectedModem(
         uint8_t* readBuffer, uint8_t* writeBuffer, Size readBufferSize, Size writeBufferSize);
 
     /*!
      * \return Pointer to the modem driver created
      */
-    SimCommDevice* getDetectedModem();
+    IPCommDevice* getDetectedModem();
 
     /*!
      * Performs the actual modem detection task
@@ -77,6 +78,7 @@ class ModemDetect : public Task
         ~ModemDriver() {}
         Sim800CommDevice sim800;
         Sim7x00CommDevice sim7x00;
+        Esp8266Device esp8266;
     } _md;
 
     IBufferedSerial& _serial;
@@ -86,13 +88,16 @@ class ModemDetect : public Task
         beginState,
         errorState,
         cgmmSent,
+        gmrSent,
+        esp8266WaitOk,
         modemDetectedState,
         detectedSim800,
-        detectedSim7x00
+        detectedSim7x00,
+        detectedEsp8266
     } _detectState;
 
     bool _startDetection;
-    SimCommDevice* _detectedModem;
+    IPCommDevice* _detectedModem;
 };
 }
 

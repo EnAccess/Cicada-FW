@@ -2,7 +2,7 @@
  * Example code for IP communication
  */
 
-#include "cicada/commdevices/sim7x00.h"
+#include "cicada/commdevices/modemdetect.h"
 #include "cicada/platform/linux/unixserial.h"
 #include "cicada/scheduler.h"
 #include "cicada/tick.h"
@@ -15,17 +15,37 @@ using namespace Cicada;
 class IPCommTask : public Task
 {
   public:
-    IPCommTask(Sim7x00CommDevice& commDev) : m_commDev(commDev), m_i(0) {}
+    IPCommTask(ModemDetect& detector) :
+        m_detector(detector),
+        m_commDev(NULL),
+        m_i(0) {}
 
     virtual void run()
     {
+        SimCommDevice* simCommDev;
+        Esp8266Device* esp8266Dev;
+
         E_BEGIN_TASK
 
-        m_commDev.setApn("internet");
-        m_commDev.setHostPort("wttr.in", 80);
-        m_commDev.connect();
+        m_detector.startDetection();
 
-        E_REENTER_COND(m_commDev.isConnected());
+        E_REENTER_COND(m_detector.modemDetected());
+        m_commDev = m_detector.getDetectedModem(_commReadBuffer, _commWriteBuffer, _commBufferSize, _commBufferSize);
+
+        simCommDev = dynamic_cast<SimCommDevice*>(m_commDev);
+        if (simCommDev) {
+            simCommDev->setApn("iot-eu.aer.net");
+        }
+        esp8266Dev = dynamic_cast<Esp8266Device*>(m_commDev);
+        if (esp8266Dev) {
+            esp8266Dev->setSSID("your_ssid");
+            esp8266Dev->setPassword("your_pass");
+        }
+
+        m_commDev->setHostPort("wttr.in", 80);
+        m_commDev->connect();
+
+        E_REENTER_COND(m_commDev->isConnected());
 
         printf("*** Connected! ***\n");
 
@@ -34,15 +54,15 @@ class IPCommTask : public Task
                                "Host: wttr.in\r\n"
                                "User-Agent: curl\r\n"
                                "Connection: close\r\n\r\n";
-            m_commDev.write((uint8_t*)str, sizeof(str) - 1);
+            m_commDev->write((uint8_t*)str, sizeof(str) - 1);
         }
 
-        E_REENTER_COND(m_commDev.bytesAvailable());
+        E_REENTER_COND(m_commDev->bytesAvailable());
 
         for (m_i = 0; m_i < 400; m_i++) {
-            if (m_commDev.bytesAvailable()) {
+            if (m_commDev->bytesAvailable()) {
                 char buf[41];
-                uint16_t bytesRead = m_commDev.read((uint8_t*)buf, 40);
+                uint16_t bytesRead = m_commDev->read((uint8_t*)buf, 40);
                 buf[bytesRead] = '\0';
                 printf("%s", buf);
             } else {
@@ -50,8 +70,8 @@ class IPCommTask : public Task
             }
         }
 
-        m_commDev.disconnect();
-        E_REENTER_COND(m_commDev.isIdle());
+        m_commDev->disconnect();
+        E_REENTER_COND(m_commDev->isIdle());
 
         printf("*** Disconnected ***\n");
 
@@ -59,7 +79,12 @@ class IPCommTask : public Task
     }
 
   private:
-    Sim7x00CommDevice& m_commDev;
+    static const uint16_t _commBufferSize = 1200;
+    uint8_t _commReadBuffer[_commBufferSize];
+    uint8_t _commWriteBuffer[_commBufferSize];
+
+    ModemDetect& m_detector;
+    IPCommDevice* m_commDev;
     int m_i;
 };
 
@@ -69,13 +94,12 @@ int main(int argc, char* argv[])
     char serialReadBuffer[serialBufferSize];
     char serialWriteBuffer[serialBufferSize];
     UnixSerial serial(serialReadBuffer, serialWriteBuffer, serialBufferSize);
-    const uint16_t commBufferSize = 1200;
-    uint8_t commReadBuffer[commBufferSize];
-    uint8_t commWriteBuffer[commBufferSize];
-    Sim7x00CommDevice commDev(serial, commReadBuffer, commWriteBuffer, commBufferSize);
-    IPCommTask task(commDev);
 
-    Task* taskList[] = { &task, &commDev, &serial, NULL };
+    ModemDetect detector(serial);
+
+    IPCommTask task(detector);
+
+    Task* taskList[] = { &task, &detector, &serial, NULL };
 
     Scheduler s(&eTickFunction, taskList);
     s.start();

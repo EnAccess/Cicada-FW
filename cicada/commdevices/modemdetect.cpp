@@ -44,7 +44,7 @@ bool ModemDetect::modemDetected()
     return _detectState > modemDetectedState;
 }
 
-SimCommDevice* ModemDetect::getDetectedModem(
+IPCommDevice* ModemDetect::getDetectedModem(
     uint8_t* readBuffer, uint8_t* writeBuffer, Size readBufferSize, Size writeBufferSize)
 {
     switch (_detectState) {
@@ -58,6 +58,11 @@ SimCommDevice* ModemDetect::getDetectedModem(
             Sim7x00CommDevice(_serial, readBuffer, writeBuffer, readBufferSize, writeBufferSize);
         _detectedModem = &_md.sim7x00;
         break;
+    case detectedEsp8266:
+        new (&_md.sim7x00)
+            Esp8266Device(_serial, readBuffer, writeBuffer, readBufferSize, writeBufferSize);
+        _detectedModem = &_md.esp8266;
+        break;
     default:
         break;
     }
@@ -65,7 +70,7 @@ SimCommDevice* ModemDetect::getDetectedModem(
     return _detectedModem;
 }
 
-SimCommDevice* ModemDetect::getDetectedModem()
+IPCommDevice* ModemDetect::getDetectedModem()
 {
     return _detectedModem;
 }
@@ -97,21 +102,38 @@ void ModemDetect::run()
         _detectState = cgmmSent;
         setDelay(10);
         break;
-    case cgmmSent:
-        if (_serial.canReadLine()) {
+    default:
+        break;
+    }
+
+    if (_serial.canReadLine()) {
             uint16_t bufSize = _serial.bytesAvailable() + 1;
             char readBuf[bufSize];
             bufSize = _serial.readLine((uint8_t*)readBuf, bufSize);
             readBuf[bufSize] = '\0';
 
+        switch (_detectState) {
+        case cgmmSent:
             if (strncmp("SIMCOM_SIM800", readBuf, 13) == 0) {
                 _detectState = detectedSim800;
             } else if (strncmp("SIMCOM_SIM7600", readBuf, 14) == 0) {
                 _detectState = detectedSim7x00;
+            } else if (strncmp("ERROR", readBuf, 5) == 0) {
+                _serial.write((const uint8_t*)"AT+GMR\r\n");
+                _detectState = gmrSent;
             }
+            break;
+        case gmrSent:
+            if (strncmp("AT version:1.7", readBuf, 14) == 0) {
+                _detectState = esp8266WaitOk;
+            }
+            break;
+        case esp8266WaitOk:
+            if (strncmp("OK\r\n", readBuf, 4) == 0) {
+                _detectState = detectedEsp8266;
+            }
+        default:
+            break;
         }
-        break;
-    default:
-        break;
     }
 }
