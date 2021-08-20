@@ -248,6 +248,27 @@ void Esp8266Device::run()
         return;
     }
 
+    // If a modem reset is pending, handle it
+    if (_stateBooleans & RESET_PENDING) {
+        _serial.flushReceiveBuffers();
+        _stateBooleans = LINE_READ;
+        _bytesToRead = 0;
+        _bytesToReceive = 0;
+        _bytesToWrite = 0;
+        if (_sendState >= connecting && _sendState <= receiving)
+            _sendState = connecting;
+        else
+            _sendState = notConnected;
+        _serial.write((const uint8_t*)"AT+RST");
+        _serial.write((const uint8_t*)_lineEndStr);
+        _replyState = okReply;
+        _waitForReply = "ready";
+
+        setDelay(10);
+
+        return;
+    }
+
     // Buffer data from the modem
     bool parseLine = fillLineBuffer();
 
@@ -414,7 +435,6 @@ void Esp8266Device::run()
                 _replyState = waitCiprecvdata;
             }
         } else {
-            printf("Back to connect\n");
             _sendState = connected;
         }
 
