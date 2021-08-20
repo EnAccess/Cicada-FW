@@ -11,7 +11,7 @@
 #include <string.h>
 
 #include "cicada/commdevices/blockingcommdev.h"
-#include "cicada/commdevices/sim7x00.h"
+#include "cicada/commdevices/esp8266.h"
 #include "cicada/mqttcountdown.h"
 #include "cicada/platform/linux/unixserial.h"
 #include "cicada/scheduler.h"
@@ -47,7 +47,7 @@ int main(int argc, char* argv[])
     const uint16_t commBufferSize = 1200;
     uint8_t commReadBuffer[commBufferSize];
     uint8_t commWriteBuffer[commBufferSize];
-    Sim7x00CommDevice commDev(serial, commReadBuffer, commWriteBuffer, commBufferSize);
+    Esp8266Device commDev(serial, commReadBuffer, commWriteBuffer, commBufferSize);
 
     Task* taskList[] = { &commDev, &serial, NULL };
 
@@ -60,10 +60,11 @@ int main(int argc, char* argv[])
     MQTT::Client<BlockingCommDevice, MQTTCountdown> client
         = MQTT::Client<BlockingCommDevice, MQTTCountdown>(bld);
 
-    const char* hostname = "iot.eclipse.org";
+    const char* hostname = "test.mosquitto.org";
     int port = 1883;
     printf("Connecting to %s:%d\n", hostname, port);
-    commDev.setApn("internet");
+    commDev.setSSID("your_ssid");
+    commDev.setPassword("your_password");
     commDev.setHostPort(hostname, port);
     commDev.connect();
     while (!commDev.isConnected()) {
