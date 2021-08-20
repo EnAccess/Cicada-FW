@@ -306,7 +306,6 @@ void Esp8266Device::run()
                 _bytesToReceive = bytesToReceive;
                 _stateBooleans |= DATA_PENDING;
             } else if (strncmp(_lineBuffer, "CLOSED", 6) == 0) {
-                _waitForReply = NULL;
                 _stateBooleans &= ~IP_CONNECTED;
             }
         }
@@ -410,7 +409,9 @@ void Esp8266Device::run()
         } else {
             _connectState = IPCommDevice::connected;
             if (_stateBooleans & IP_CONNECTED) {
-                handleDisconnect(sendCipclose);
+                if (handleDisconnect(sendCipclose)) {
+                    setDelay(100);
+                }
             } else {
                 handleDisconnect(sendCwqap);
             }
@@ -426,8 +427,10 @@ void Esp8266Device::run()
         break;
 
     case sendCiprecvdata:
-        if (handleDisconnect(sendCipclose))
+        if (handleDisconnect(sendCipclose)) {
+            setDelay(100);
             break;
+        }
 
         if (_bytesToReceive > 0) {
             if (sendCiprcvdata()) {
@@ -457,14 +460,13 @@ void Esp8266Device::run()
         break;
 
     case sendCipclose:
+        setDelay(0);
         _connectState = IPCommDevice::intermediate;
         if (_stateBooleans & IP_CONNECTED) {
             _waitForReply = _okStr;
-            _sendState = sendCwqap;
             sendCommand("AT+CIPCLOSE");
-        } else {
-            _sendState = sendCwqap;
         }
+        _sendState = sendCwqap;
         break;
 
     case sendCwqap:
