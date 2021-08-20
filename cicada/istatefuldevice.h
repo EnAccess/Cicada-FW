@@ -63,6 +63,11 @@ class IStatefulDevice : public ICommDevice
      * establish a new connection.
      */
     virtual bool isIdle() = 0;
+
+    /*!
+     * Hard resets internal states and flush buffers.
+     */
+    virtual void resetStates() = 0;
 };
 
 }
