@@ -71,7 +71,6 @@ class Esp8266Device : public IPCommDevice
     enum ReplyState {
         okReply = 0,
         waitCiprecvdata,
-        parseCiprecvdata
     };
 
     enum SendState {
@@ -103,7 +102,7 @@ class Esp8266Device : public IPCommDevice
     bool prepareSending();
     void sendData();
     bool sendCiprcvdata();
-    bool parseCiprcvdata();
+    bool parseCiprecvdata();
     void flushReadBuffer();
     bool receive();
 
