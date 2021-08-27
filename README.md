@@ -1,14 +1,14 @@
 # Cicada - IoT Communications Module for Energy Access
 
-An easy way to get production ready, bi-directional communications for your 
-IoT embedded device. 
+An easy way to get production ready, bi-directional communications for your
+IoT embedded device.
 
 This repository contains the source code for UART drivers, 2G, 3G, 4G modems
 (and wifi in the future). **This library is platform agnostic, designed to be
 portable** - including examples for mbed, FreeRTOS, or bare metal.
 
-Cicada uses the MQTT protocol to connect to the cloud but it can be used for 
-general IP communication as well. 
+Cicada uses the MQTT protocol to connect to the cloud but it can be used for
+general IP communication as well.
 
 Dialing up the cellular modem, opening an IP channel and sending a MQTT packet
 can be done in less than 50 lines of code.
@@ -22,9 +22,10 @@ access to actual microcontroller hardware.
 - Mbed
 - Unix (Linux / OS X) termios
 
-## Supported cellular modems:
+## Supported communication modules:
 - Simcom SIM7x00
 - Simcom SIM800
+- Espressif ESP8266 based modules
 
 ## Documentation
 [View the hosted Doxygen here](https://enaccess.github.io/Cicada/doc/).
@@ -38,9 +39,9 @@ access to actual microcontroller hardware.
 - CppUnit
 
 ### Build setup
-To setup build dependencies, do:  
-`git submodule init`  
-`git submodule update`  
+To setup build dependencies, do:
+`git submodule init`
+`git submodule update`
 
 ### Native build (for testing an a host PC):
 Run `meson <builddirectory>` to generate build files. Finally, change

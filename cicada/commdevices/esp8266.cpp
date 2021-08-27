@@ -69,7 +69,9 @@ void Esp8266Device::setPassword(const char* passwd)
 
 bool Esp8266Device::connect()
 {
-    // TODO: Check for SSID / password
+    if (_ssid == NULL || _passwd == NULL || strlen(_ssid) == 0) {
+        return false;
+    }
 
     return IPCommDevice::connect();
 }

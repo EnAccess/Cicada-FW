@@ -32,6 +32,10 @@
 
 namespace Cicada {
 
+/*!
+ * Driver for Wifi modules based on Espressif Esp8266 chip. Firware NonOS_AT v1.7 or later
+ * is required to work with the driver.
+ */
 class Esp8266Device : public IPCommDevice
 {
   public:
