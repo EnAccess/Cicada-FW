@@ -69,6 +69,56 @@ class Esp8266Device : public IPCommDevice
 
     /*!
      * Actually performs communication with the wifi module.
+     * Each time, run() is called, it roughly perorms these steps:
+     * -# If a reset is pending, reset device and internal states
+     * -# Process any incoming data from the device, including:
+     *   - Error messages
+     *   - Incoming data
+     *   - Connection close
+     * -# If the device is ready to process new commands, run() will then
+     * proceed to the connection state machine:
+     * \startuml
+     * top to bottom direction
+     * [*] --> notConnected
+     * notConnected --> notConnected
+     * notConnected --> connecting : connection request via API
+     * connecting --> sendCwjap
+     * connecting : ""ATE0""
+     * sendCwjap --> sendCiprecvmode
+     * sendCwjap --> finalizeDisconnect : connection close via API
+     * sendCwjap : ""AT+CWJAP="<ssid>","<password>"""
+     * sendCiprecvmode --> sendCipmode
+     * sendCiprecvmode : ""AT+CIPRECVMODE=1""
+     * sendCipmode --> sendCipstart
+     * sendCipmode : ""AT+CIPMODE=0""
+     * sendCipstart --> finalizeConnect
+     * sendCipstart : ""AT+CIPSTART="UDP",<host>,<port>""
+     * sendCipstart : ""AT+CIPSTART="TCP",<host>,<port>""
+     * finalizeConnect --> connected
+     * connected --> sendDataState : bytes in write buffer
+     * connected --> sendCiprecvdata : incoming data pending & TCP
+     * connected --> receiving : incoming data pending & UDP
+     * connected --> sendCipclose : connection closed via API
+     * connected --> sendCwqap : connection closed by peer
+     * connected --> connected
+     * connected : bytes in write buffer: ""AT+CIPSEND=<numOfBytes>""
+     * sendDataState --> connected
+     * sendDataState : send data
+     * sendCiprecvdata --> sendCipclose : connection closed via API
+     * sendCiprecvdata --> waitReceive : bytesToReceive > 0
+     * sendCiprecvdata --> connected : no bytes to receive
+     * sendCiprecvdata : bytesToReceive > 0: ""AT+CIPRECVDATA=<numBytesReceive>""
+     * waitReceive --> waitReceive : no data
+     * waitReceive --> receiving : data available
+     * receiving --> receiving : bytesToRead > 0
+     * receiving --> sendCiprecvdata : bytesToReceive > 0
+     * receiving --> connected : no bytes to receive/read
+     * sendCipclose --> sendCwqap
+     * sendCipclose : ""AT+CIPCLOSE""
+     * sendCwqap --> finalizeDisconnect
+     * sendCwqap : ""AT+CWQAP""
+     * finalizeDisconnect --> notConnected
+     * \enduml
      */
     virtual void run();
 

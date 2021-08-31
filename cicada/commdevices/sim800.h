@@ -48,6 +48,66 @@ class Sim800CommDevice : public SimCommDevice
 
     /*!
      * Actually performs communication with the modem.
+     * Each time, run() is called, it roughly perorms these steps:
+     * -# If a reset is pending, reset modem and internal states
+     * -# Process any incoming data from the device, including:
+     *   - Error messages
+     *   - Incoming data
+     *   - Connection close
+     * -# If the modem is ready to process new commands, run() will then
+     * proceed to the connection state machine:
+     * \startuml
+     * top to bottom direction
+     * [*] --> notConnected
+     * notConnected --> notConnected
+     * notConnected --> connecting : connection request via API
+     * connecting --> sendCiprxget
+     * connecting : ""ATE0""
+     * sendCiprxget --> sendCipmux
+     * sendCiprxget : ""AT+CIPRXGET=1""
+     * sendCipmux --> sendCstt
+     * sendCipmux : ""AT+CIPMUX=1""
+     * sendCstt --> sendCiicr
+     * sendCstt : ""AT+CSTT=<apn>""
+     * sendCiicr --> sendCifsr
+     * sendCiicr : AT+CIICR
+     * sendCifsr --> sendCipshut : connection closed via API
+     * sendCifsr --> sendDnsQuery
+     * sendCifsr : AT+CIFSR
+     * sendDnsQuery --> sendDnsQuery
+     * sendDnsQuery --> sendCipstart : can send DNS query
+     * sendDnsQuery : ""AT+CDNSGIP="<hostname>" ""
+     * sendCipstart --> finalizeConnect
+     * sendCipstart : ""AT+CIPSTART=0,"UDP",<ip>""
+     * sendCipstart : ""AT+CIPSTART=0,"TCP",<ip>""
+     * finalizeConnect --> connected
+     * connected --> sendData : bytes in write buffer
+     * connected --> sendCiprxget4 : incoming data pending
+     * connected --> sendCipclose : connection closed via API
+     * connected --> connected
+     * connected : bytes in write buffer: ""AT+CIPSEND=0,<numOfBytes>""
+     * sendData --> connected
+     * sendData : send data
+     * sendCiprxget4 --> sendCiprxget2
+     * sendCiprxget4 : ""AT+CIPRXGET=4,0""
+     * sendCiprxget2 --> sendCipclose : connection closed via API
+     * sendCiprxget2 --> waitReceive : bytesToReceive > 0
+     * sendCiprxget2 --> connected
+     * sendCiprxget2 --> ipUnconnected : connection close by peer
+     * sendCiprxget2 : ""AT+CIPRXGET=2,0,<numBytesReceive>""
+     * waitReceive --> waitReceive : no data
+     * waitReceive --> receiving : data available
+     * receiving --> receiving : bytesToRead > 0
+     * receiving --> sendCiprxget2 : bytesToReceive > 0
+     * receiving --> sendCiprxget4 : no bytes to receive/read
+     * ipUnconnected --> finalizeDisconnect : connection closed via API
+     * ipUnconnected --> sendCipstart : connection close by peer
+     * sendCipclose --> sendCipshut
+     * sendCipclose : ""AT+CIPCLOSE=0""
+     * sendCipshut --> finalizeDisconnect
+     * sendCipshut : ""AT+CIPSHUT""
+     * finalizeDisconnect --> notConnected
+     * \enduml
      */
     virtual void run();
 

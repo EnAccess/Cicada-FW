@@ -342,7 +342,7 @@ void Esp8266Device::run()
         _stateBooleans |= LINE_READ;
         _waitForReply = _okStr;
         _sendState = sendCwjap;
-        sendCommand("ATE1");
+        sendCommand("ATE0");
         break;
 
     case sendCwjap:

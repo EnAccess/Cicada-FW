@@ -356,6 +356,7 @@ void Sim800CommDevice::run()
 
     case ipUnconnected:
         _connectState = IPCommDevice::intermediate;
+        // TODO: Should this be sendCipshut?
         if (handleDisconnect(finalizeDisconnect))
             break;
 
