@@ -24,14 +24,13 @@
 #ifndef SIMCOMMDEVICE_H
 #define SIMCOMMDEVICE_H
 
-#include "cicada/commdevices/ipcommdevice.h"
+#include "cicada/commdevices/atcommdevice.h"
 
-#define LINE_MAX_LENGTH 60
 #define IDSTRING_MAX_LENGTH 24
 
 namespace Cicada {
 
-class SimCommDevice : public IPCommDevice
+class SimCommDevice : public ATCommDevice
 {
   public:
     SimCommDevice(
@@ -131,49 +130,26 @@ class SimCommDevice : public IPCommDevice
     char* getIDString();
 
   protected:
-    bool fillLineBuffer();
-    void logStates(int8_t sendState, int8_t replyState);
     bool parseDnsReply();
     bool parseCiprxget4();
     bool parseCiprxget2();
     bool parseCsq();
     bool parseIDReply();
     void checkConnectionState(const char* closeVariant);
-    void flushReadBuffer();
-    bool handleDisconnect(int8_t nextState);
-    bool handleConnect(int8_t nextState);
     bool sendDnsQuery();
     void sendCipstart(const char* openVariant);
-    bool prepareSending();
-    void sendData();
     bool sendCiprxget2();
     bool sendIDRequest(const char* modemSpecificICCIDCommand);
-    bool receive();
-    void sendCommand(const char* cmd);
 
-    IBufferedSerial& _serial;
     const char* _apn;
-
-    char _lineBuffer[LINE_MAX_LENGTH + 1];
-    uint8_t _lbFill;
 
     char _ip[16];
 
     char _idStringBuffer[IDSTRING_MAX_LENGTH];
 
-    int8_t _sendState;
-    int8_t _replyState;
-    Size _bytesToWrite;
-    Size _bytesToReceive;
-    Size _bytesToRead;
-
     uint8_t _rssi;
 
     uint16_t _modemMaxReceiveSize;
-
-    static const char* _okStr;
-    static const char* _lineEndStr;
-    static const char* _quoteEndStr;
 };
 }
 

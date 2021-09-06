@@ -28,10 +28,7 @@
 using namespace Cicada;
 
 ModemDetect::ModemDetect(IBufferedSerial& serial) :
-    _serial(serial),
-    _detectState(noState),
-    _startDetection(false),
-    _detectedModem(NULL)
+    _serial(serial), _detectState(noState), _startDetection(false), _detectedModem(NULL)
 {}
 
 void ModemDetect::startDetection()
@@ -107,10 +104,10 @@ void ModemDetect::run()
     }
 
     if (_serial.canReadLine()) {
-            uint16_t bufSize = _serial.bytesAvailable() + 1;
-            char readBuf[bufSize];
-            bufSize = _serial.readLine((uint8_t*)readBuf, bufSize);
-            readBuf[bufSize] = '\0';
+        uint16_t bufSize = _serial.bytesAvailable() + 1;
+        char readBuf[bufSize];
+        bufSize = _serial.readLine((uint8_t*)readBuf, bufSize);
+        readBuf[bufSize] = '\0';
 
         switch (_detectState) {
         case cgmmSent:

@@ -25,10 +25,8 @@
 #define ESP8266DEVICE_H
 
 #include "cicada/bufferedserial.h"
-#include "cicada/commdevices/ipcommdevice.h"
+#include "cicada/commdevices/atcommdevice.h"
 #include <stdint.h>
-
-#define LINE_MAX_LENGTH 60
 
 namespace Cicada {
 
@@ -36,7 +34,7 @@ namespace Cicada {
  * Driver for Wifi modules based on Espressif Esp8266 chip. Firware NonOS_AT v1.7 or later
  * is required to work with the driver.
  */
-class Esp8266Device : public IPCommDevice
+class Esp8266Device : public ATCommDevice
 {
   public:
     Esp8266Device(
@@ -148,34 +146,11 @@ class Esp8266Device : public IPCommDevice
     };
 
   protected:
-    bool fillLineBuffer();
-    void logStates(int8_t sendState, int8_t replyState);
-    bool handleDisconnect(int8_t nextState);
-    bool handleConnect(int8_t nextState);
-    void sendCommand(const char* cmd);
-    bool prepareSending();
-    void sendData();
     bool sendCiprcvdata();
     bool parseCiprecvdata();
-    void flushReadBuffer();
-    bool receive();
 
-    IBufferedSerial& _serial;
     const char* _ssid;
     const char* _passwd;
-
-    char _lineBuffer[LINE_MAX_LENGTH + 1];
-    uint8_t _lbFill;
-
-    int8_t _sendState;
-    int8_t _replyState;
-    Size _bytesToWrite;
-    Size _bytesToReceive;
-    Size _bytesToRead;
-
-    static const char* _okStr;
-    static const char* _lineEndStr;
-    static const char* _quoteEndStr;
 };
 }
 

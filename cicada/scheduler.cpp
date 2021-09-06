@@ -27,9 +27,7 @@
 using namespace Cicada;
 
 Scheduler::Scheduler(E_TICK_TYPE (*tickFunction)(), Task** taskList) :
-    _tickFunction(tickFunction),
-    _taskList(taskList),
-    _currentTask(taskList)
+    _tickFunction(tickFunction), _taskList(taskList), _currentTask(taskList)
 {}
 
 void Scheduler::runTask()

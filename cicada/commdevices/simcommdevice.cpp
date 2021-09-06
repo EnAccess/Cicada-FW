@@ -22,7 +22,6 @@
  */
 
 #include "cicada/commdevices/simcommdevice.h"
-#include "cicada/commdevices/ipcommdevice.h"
 #include <cinttypes>
 #include <cstddef>
 #include <cstdio>
@@ -32,28 +31,18 @@
 #include "printf.h"
 #endif
 
-#define MIN_SPACE_AVAILABLE 22
-
 using namespace Cicada;
-
-const char* SimCommDevice::_okStr = "OK";
-const char* SimCommDevice::_lineEndStr = "\r\n";
-const char* SimCommDevice::_quoteEndStr = "\"\r\n";
 
 SimCommDevice::SimCommDevice(
     IBufferedSerial& serial, uint8_t* readBuffer, uint8_t* writeBuffer, Size bufferSize) :
-    IPCommDevice(readBuffer, writeBuffer, bufferSize),
-    _serial(serial),
-    _apn(NULL)
+    ATCommDevice(serial, readBuffer, writeBuffer, bufferSize), _apn(NULL)
 {
     resetStates();
 }
 
 SimCommDevice::SimCommDevice(IBufferedSerial& serial, uint8_t* readBuffer, uint8_t* writeBuffer,
     Size readBufferSize, Size writeBufferSize) :
-    IPCommDevice(readBuffer, writeBuffer, readBufferSize, writeBufferSize),
-    _serial(serial),
-    _apn(NULL)
+    ATCommDevice(serial, readBuffer, writeBuffer, readBufferSize, writeBufferSize), _apn(NULL)
 {
     resetStates();
 }
@@ -66,7 +55,7 @@ void SimCommDevice::resetStates()
     _lbFill = 0;
     _sendState = 0;
     _replyState = 0;
-    _connectState = notConnected;
+    _connectState = IPCommDevice::notConnected;
     _bytesToWrite = 0;
     _bytesToReceive = 0;
     _bytesToRead = 0;
@@ -120,40 +109,6 @@ Size SimCommDevice::serialRead(char* data, Size maxSize)
     }
 
     return 0;
-}
-
-bool SimCommDevice::fillLineBuffer()
-{
-    // Buffer reply from modem in line buffer
-    // Returns true when enough data to be parsed is available.
-    if (_stateBooleans & LINE_READ) {
-        while (_serial.bytesAvailable()) {
-            char c = _serial.read();
-            _lineBuffer[_lbFill++] = c;
-            if (c == '\n' || c == '>' || _lbFill == LINE_MAX_LENGTH) {
-                _lineBuffer[_lbFill] = '\0';
-                _lbFill = 0;
-                return true;
-            }
-        }
-    }
-    return false;
-}
-
-void SimCommDevice::logStates(int8_t sendState, int8_t replyState)
-{
-#ifdef CICADA_DEBUG
-    if (_connectState < connected) {
-        if (_waitForReply)
-            printf("_sendState=%d, _replyState=%d, "
-                   "_waitForReply=\"%s\", data: %s",
-                sendState, replyState, _waitForReply, _lineBuffer);
-        else
-            printf("_sendState=%d, _replyState=%d, "
-                   "_waitForReply=NULL, data: %s",
-                sendState, replyState, _lineBuffer);
-    }
-#endif
 }
 
 bool SimCommDevice::parseDnsReply()
@@ -252,43 +207,6 @@ bool SimCommDevice::parseIDReply()
     return true;
 }
 
-void SimCommDevice::flushReadBuffer()
-{
-    while (_bytesToRead && _serial.bytesAvailable()) {
-        _serial.read();
-        _bytesToRead--;
-    }
-    _bytesToReceive = 0;
-
-    if (_bytesToRead == 0) {
-        _stateBooleans |= LINE_READ;
-    }
-}
-
-bool SimCommDevice::handleDisconnect(int8_t nextState)
-{
-    if (_stateBooleans & DISCONNECT_PENDING) {
-        _stateBooleans &= ~DISCONNECT_PENDING;
-        _sendState = nextState;
-
-        return true;
-    }
-
-    return false;
-}
-
-bool SimCommDevice::handleConnect(int8_t nextState)
-{
-    if (_stateBooleans & CONNECT_PENDING) {
-        _stateBooleans &= ~CONNECT_PENDING;
-        _sendState = nextState;
-
-        return true;
-    }
-
-    return false;
-}
-
 bool SimCommDevice::sendDnsQuery()
 {
     if (_serial.spaceAvailable() < strlen(_host) + 20)
@@ -299,36 +217,6 @@ bool SimCommDevice::sendDnsQuery()
     _serial.write((const uint8_t*)_quoteEndStr);
 
     return true;
-}
-
-bool SimCommDevice::prepareSending()
-{
-    if (_serial.spaceAvailable() < MIN_SPACE_AVAILABLE)
-        return false;
-
-    _bytesToWrite = _writeBuffer.bytesAvailable();
-    if (_bytesToWrite > _serial.spaceAvailable() - MIN_SPACE_AVAILABLE) {
-        _bytesToWrite = _serial.spaceAvailable() - MIN_SPACE_AVAILABLE;
-    }
-
-    // cmd
-    _serial.write((const uint8_t*)"AT+CIPSEND=0,");
-
-    // length
-    char sizeStr[6];
-    snprintf(sizeStr, sizeof(sizeStr), "%u", (int)_bytesToWrite);
-    _serial.write((const uint8_t*)sizeStr);
-
-    _waitForReply = ">";
-
-    return true;
-}
-
-void SimCommDevice::sendData()
-{
-    while (_bytesToWrite--) {
-        _serial.write(_writeBuffer.pull());
-    }
 }
 
 bool SimCommDevice::sendCiprxget2()
@@ -363,27 +251,6 @@ void SimCommDevice::checkConnectionState(const char* closeVariant)
         _waitForReply = NULL;
         _stateBooleans &= ~IP_CONNECTED;
     }
-}
-
-bool SimCommDevice::receive()
-{
-    if (_serial.bytesAvailable() >= _bytesToRead) {
-        while (_bytesToRead) {
-            _readBuffer.push(_serial.read());
-            _bytesToRead--;
-        }
-        _stateBooleans |= LINE_READ;
-
-        return true;
-    } else {
-        return false;
-    }
-}
-
-void SimCommDevice::sendCommand(const char* cmd)
-{
-    _serial.write((const uint8_t*)cmd);
-    _serial.write((const uint8_t*)_lineEndStr);
 }
 
 bool SimCommDevice::sendIDRequest(const char* modemSpecificICCIDCommand)

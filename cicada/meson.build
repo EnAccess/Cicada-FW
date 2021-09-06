@@ -1,4 +1,6 @@
 src_files = files([
+    'commdevices/atcommdevice.h',
+    'commdevices/atcommdevice.cpp',
     'commdevices/ipcommdevice.h',
     'commdevices/ipcommdevice.cpp',
     'commdevices/simcommdevice.h',

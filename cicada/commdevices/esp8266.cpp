@@ -22,31 +22,23 @@
  */
 
 #include "cicada/commdevices/esp8266.h"
+#include "cicada/commdevices/ipcommdevice.h"
 #include <cstdio>
 #include <cstring>
 
-#define MIN_SPACE_AVAILABLE 22
-
 using namespace Cicada;
-
-const char* Esp8266Device::_okStr = "OK";
-const char* Esp8266Device::_lineEndStr = "\r\n";
-const char* Esp8266Device::_quoteEndStr = "\"\r\n";
 
 const uint16_t ESP8266_MAX_RX = 2048;
 
 Esp8266Device::Esp8266Device(
     IBufferedSerial& serial, uint8_t* readBuffer, uint8_t* writeBuffer, Size bufferSize) :
-    IPCommDevice(readBuffer, writeBuffer, bufferSize),
-    _serial(serial)
+    ATCommDevice(serial, readBuffer, writeBuffer, bufferSize)
 {}
 
 Esp8266Device::Esp8266Device(IBufferedSerial& serial, uint8_t* readBuffer, uint8_t* writeBuffer,
     Size readBufferSize, Size writeBufferSize) :
-    IPCommDevice(readBuffer, writeBuffer, readBufferSize, writeBufferSize),
-    _serial(serial)
+    ATCommDevice(serial, readBuffer, writeBuffer, readBufferSize, writeBufferSize)
 {}
-
 
 void Esp8266Device::resetStates()
 {
@@ -74,100 +66,6 @@ bool Esp8266Device::connect()
     }
 
     return IPCommDevice::connect();
-}
-
-bool Esp8266Device::fillLineBuffer()
-{
-    // Buffer reply from modem in line buffer
-    // Returns true when enough data to be parsed is available.
-    if (_stateBooleans & LINE_READ) {
-        while (_serial.bytesAvailable()) {
-            char c = _serial.read();
-            _lineBuffer[_lbFill++] = c;
-            if (c == '\n' || c == '>' || c == ':' || _lbFill == LINE_MAX_LENGTH) {
-                _lineBuffer[_lbFill] = '\0';
-                _lbFill = 0;
-                return true;
-            }
-        }
-    }
-    return false;
-}
-
-void Esp8266Device::logStates(int8_t sendState, int8_t replyState)
-{
-#ifdef CICADA_DEBUG
-    if (_connectState < IPCommDevice::connected) {
-        if (_waitForReply)
-            printf("_sendState=%d, _replyState=%d, "
-                   "_waitForReply=\"%s\", data: %s",
-                sendState, replyState, _waitForReply, _lineBuffer);
-        else
-            printf("_sendState=%d, _replyState=%d, "
-                   "_waitForReply=NULL, data: %s",
-                sendState, replyState, _lineBuffer);
-    }
-#endif
-}
-
-bool Esp8266Device::handleDisconnect(int8_t nextState)
-{
-    if (_stateBooleans & DISCONNECT_PENDING) {
-        _stateBooleans &= ~DISCONNECT_PENDING;
-        _sendState = nextState;
-
-        return true;
-    }
-
-    return false;
-}
-
-bool Esp8266Device::handleConnect(int8_t nextState)
-{
-    if (_stateBooleans & CONNECT_PENDING) {
-        _stateBooleans &= ~CONNECT_PENDING;
-        _sendState = nextState;
-
-        return true;
-    }
-
-    return false;
-}
-
-void Esp8266Device::sendCommand(const char* cmd)
-{
-    _serial.write((const uint8_t*)cmd);
-    _serial.write((const uint8_t*)_lineEndStr);
-}
-
-bool Esp8266Device::prepareSending()
-{
-    if (_serial.spaceAvailable() < MIN_SPACE_AVAILABLE)
-        return false;
-
-    _bytesToWrite = _writeBuffer.bytesAvailable();
-    if (_bytesToWrite > _serial.spaceAvailable() - MIN_SPACE_AVAILABLE) {
-        _bytesToWrite = _serial.spaceAvailable() - MIN_SPACE_AVAILABLE;
-    }
-
-    // cmd
-    _serial.write((const uint8_t*)"AT+CIPSEND=");
-
-    // length
-    char sizeStr[6];
-    snprintf(sizeStr, sizeof(sizeStr), "%u", (int)_bytesToWrite);
-    _serial.write((const uint8_t*)sizeStr);
-
-    _waitForReply = ">";
-
-    return true;
-}
-
-void Esp8266Device::sendData()
-{
-    while (_bytesToWrite--) {
-        _serial.write(_writeBuffer.pull());
-    }
 }
 
 bool Esp8266Device::sendCiprcvdata()
@@ -207,34 +105,6 @@ bool Esp8266Device::parseCiprecvdata()
     }
 
     return false;
-}
-
-void Esp8266Device::flushReadBuffer()
-{
-    while (_bytesToRead && _serial.bytesAvailable()) {
-        _serial.read();
-        _bytesToRead--;
-    }
-    _bytesToReceive = 0;
-
-    if (_bytesToRead == 0) {
-        _stateBooleans |= LINE_READ;
-    }
-}
-
-bool Esp8266Device::receive()
-{
-    if (_serial.bytesAvailable() >= _bytesToRead) {
-        while (_bytesToRead) {
-            _readBuffer.push(_serial.read());
-            _bytesToRead--;
-        }
-        _stateBooleans |= LINE_READ;
-
-        return true;
-    } else {
-        return false;
-    }
 }
 
 void Esp8266Device::run()
@@ -426,7 +296,7 @@ void Esp8266Device::run()
         }
         break;
 
-    // States after connecting
+        // States after connecting
 
     case sendDataState:
         sendData();
