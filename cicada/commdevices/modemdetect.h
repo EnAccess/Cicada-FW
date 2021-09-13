@@ -26,6 +26,7 @@
 
 #include "cicada/commdevices/esp8266.h"
 #include "cicada/commdevices/iipcommdevice.h"
+#include "cicada/commdevices/atcommdevice.h"
 #include "cicada/commdevices/sim7x00.h"
 #include "cicada/commdevices/sim800.h"
 
@@ -59,13 +60,13 @@ class ModemDetect : public Task
      * driver is in use.
      * \return Pointer to the modem driver for the detected device.
      */
-    IPCommDevice* getDetectedModem(
+    ATCommDevice* getDetectedModem(
         uint8_t* readBuffer, uint8_t* writeBuffer, Size readBufferSize, Size writeBufferSize);
 
     /*!
      * \return Pointer to the modem driver created
      */
-    IPCommDevice* getDetectedModem();
+    ATCommDevice* getDetectedModem();
 
     /*!
      * Performs the actual modem detection task
@@ -97,7 +98,7 @@ class ModemDetect : public Task
     } _detectState;
 
     bool _startDetection;
-    IPCommDevice* _detectedModem;
+    ATCommDevice* _detectedModem;
 };
 }
 

@@ -41,7 +41,7 @@ bool ModemDetect::modemDetected()
     return _detectState > modemDetectedState;
 }
 
-IPCommDevice* ModemDetect::getDetectedModem(
+ATCommDevice* ModemDetect::getDetectedModem(
     uint8_t* readBuffer, uint8_t* writeBuffer, Size readBufferSize, Size writeBufferSize)
 {
     switch (_detectState) {
@@ -67,7 +67,7 @@ IPCommDevice* ModemDetect::getDetectedModem(
     return _detectedModem;
 }
 
-IPCommDevice* ModemDetect::getDetectedModem()
+ATCommDevice* ModemDetect::getDetectedModem()
 {
     return _detectedModem;
 }
