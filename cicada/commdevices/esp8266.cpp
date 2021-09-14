@@ -33,20 +33,31 @@ const uint16_t ESP8266_MAX_RX = 2048;
 Esp8266Device::Esp8266Device(
     IBufferedSerial& serial, uint8_t* readBuffer, uint8_t* writeBuffer, Size bufferSize) :
     ATCommDevice(serial, readBuffer, writeBuffer, bufferSize)
-{}
+{
+    resetStates();
+}
 
 Esp8266Device::Esp8266Device(IBufferedSerial& serial, uint8_t* readBuffer, uint8_t* writeBuffer,
     Size readBufferSize, Size writeBufferSize) :
     ATCommDevice(serial, readBuffer, writeBuffer, readBufferSize, writeBufferSize)
-{}
+{
+    resetStates();
+}
 
 void Esp8266Device::resetStates()
 {
     _serial.flushReceiveBuffers();
     _readBuffer.flush();
     _writeBuffer.flush();
+    _lbFill = 0;
     _sendState = 0;
     _replyState = 0;
+    _connectState = IPCommDevice::notConnected;
+    _bytesToWrite = 0;
+    _bytesToReceive = 0;
+    _bytesToRead = 0;
+    _waitForReply = NULL;
+    _stateBooleans = LINE_READ;
 }
 
 void Esp8266Device::setSSID(const char* ssid)
