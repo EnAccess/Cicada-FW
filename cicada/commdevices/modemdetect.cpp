@@ -121,7 +121,9 @@ void ModemDetect::run()
             }
             break;
         case gmrSent:
-            if (strncmp("AT version:1.7", readBuf, 14) == 0) {
+            if (strncmp("AT version:2.1", readBuf, 14) == 0) {
+                _detectState = esp8266WaitOk;
+            }else if (strncmp("AT version:1.7", readBuf, 14) == 0) {
                 _detectState = esp8266WaitOk;
             }
             break;

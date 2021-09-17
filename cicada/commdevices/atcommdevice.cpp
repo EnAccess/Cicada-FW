@@ -49,35 +49,17 @@ ATCommDevice::ATCommDevice(IBufferedSerial& serial, uint8_t* readBuffer, uint8_t
     IPCommDevice(readBuffer, writeBuffer, readBufferSize, writeBufferSize), _serial(serial)
 {}
 
-bool ATCommDevice::fillLineBuffer()
-{
-    // Buffer reply from modem in line buffer
-    // Returns true when enough data to be parsed is available.
-    if (_stateBooleans & LINE_READ) {
-        while (_serial.bytesAvailable()) {
-            char c = _serial.read();
-            _lineBuffer[_lbFill++] = c;
-            if (c == '\n' || c == '>' || _lbFill == LINE_MAX_LENGTH) {
-                _lineBuffer[_lbFill] = '\0';
-                _lbFill = 0;
-                return true;
-            }
-        }
-    }
-    return false;
-}
-
 void ATCommDevice::logStates(int8_t sendState, int8_t replyState)
 {
 #ifdef CICADA_DEBUG
     if (_connectState < connected) {
         if (_waitForReply)
             printf("_sendState=%d, _replyState=%d, "
-                   "_waitForReply=\"%s\", data: %s",
+                    "_waitForReply=\"%s\", data: %s",
                 sendState, replyState, _waitForReply, _lineBuffer);
         else
             printf("_sendState=%d, _replyState=%d, "
-                   "_waitForReply=NULL, data: %s",
+                    "_waitForReply=NULL, data: %s",
                 sendState, replyState, _lineBuffer);
     }
 #endif
@@ -131,7 +113,7 @@ bool ATCommDevice::prepareSending()
     }
 
     // cmd
-    _serial.write((const uint8_t*)"AT+CIPSEND=0,");
+    _serial.write((const uint8_t*)"AT+CIPSEND=");
 
     // length
     char sizeStr[6];

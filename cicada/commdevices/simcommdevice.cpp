@@ -66,6 +66,24 @@ void SimCommDevice::resetStates()
     _idStringBuffer[1] = noRequest;
 }
 
+bool SimCommDevice::fillLineBuffer()
+{
+    // Buffer reply from modem in line buffer
+    // Returns true when enough data to be parsed is available.
+    if (_stateBooleans & LINE_READ) {
+        while (_serial.bytesAvailable()) {
+            char c = _serial.read();
+            _lineBuffer[_lbFill++] = c;
+            if (c == '\n' || c == '>' || _lbFill == LINE_MAX_LENGTH) {
+                _lineBuffer[_lbFill] = '\0';
+                _lbFill = 0;
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 void SimCommDevice::setApn(const char* apn)
 {
     _apn = apn;

@@ -130,6 +130,7 @@ class SimCommDevice : public ATCommDevice
     char* getIDString();
 
   protected:
+    bool fillLineBuffer();
     bool parseDnsReply();
     bool parseCiprxget4();
     bool parseCiprxget2();

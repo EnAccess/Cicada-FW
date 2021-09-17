@@ -79,6 +79,38 @@ bool Esp8266Device::connect()
     return IPCommDevice::connect();
 }
 
+bool Esp8266Device::fillLineBuffer()
+{
+    // Buffer reply from modem in line buffer
+    // Returns true when enough data to be parsed is available.
+    if (_stateBooleans & LINE_READ) {
+        while (_serial.bytesAvailable()) {
+            char c = _serial.read();
+            _lineBuffer[_lbFill++] = c;
+            if (c == '\n' || c == '>' || _lbFill == LINE_MAX_LENGTH) {
+                _lineBuffer[_lbFill] = '\0';
+                _lbFill = 0;
+                return true;
+            }
+            if (_replyState == waitCiprecvdata && c == ':' && _lbFill > 14 &&
+                strncmp(_lineBuffer, "+CIPRECVDATA,", 13) == 0) {
+                _replyState = parseStateCiprecvdata;
+                _lineBuffer[_lbFill] = '\0';
+                _lbFill = 0;
+                return true;
+            }
+            if (_replyState == waitCiprecvdata && c == ',' && _lbFill > 14 &&
+                strncmp(_lineBuffer, "+CIPRECVDATA:", 13) == 0) {
+                _replyState = parseStateCiprecvdata;
+                _lineBuffer[_lbFill] = '\0';
+                _lbFill = 0;
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 bool Esp8266Device::sendCiprcvdata()
 {
     if (_serial.readBufferSize() - _serial.bytesAvailable() > 30
@@ -106,7 +138,7 @@ bool Esp8266Device::sendCiprcvdata()
 
 bool Esp8266Device::parseCiprecvdata()
 {
-    if (strncmp(_lineBuffer, "+CIPRECVDATA,", 13) == 0) {
+    if (strncmp(_lineBuffer, "+CIPRECVDATA:", 13) == 0) {
         int bytesToRead;
         sscanf(_lineBuffer + 13, "%d", &bytesToRead);
         _bytesToReceive -= bytesToRead;
@@ -171,7 +203,7 @@ void Esp8266Device::run()
         }
 
         // Process incoming data which need special treatment
-        if (_replyState == waitCiprecvdata) {
+        if (_replyState == parseStateCiprecvdata) {
             if (parseCiprecvdata()) {
                 _replyState = okReply;
                 _sendState = receiving;
@@ -180,7 +212,7 @@ void Esp8266Device::run()
 
         // In connected state, check for new data or IP connection close
         if (_sendState >= connected) {
-            if (strncmp(_lineBuffer, "+IPD,", 5) == 0) {
+            if (strncmp(_lineBuffer, "+IPD,", 4) == 0) {
                 int bytes;
                 sscanf(_lineBuffer + 5, "%d", &bytes);
                 if (_type == IIPCommDevice::TCP) {
@@ -221,15 +253,23 @@ void Esp8266Device::run()
         setDelay(10);
         _connectState = IPCommDevice::intermediate;
         _stateBooleans |= LINE_READ;
+        sendCommand("ATE1");
+        _waitForReply = _okStr;
+        _sendState = sendCwmode;
+        break;
+
+    case sendCwmode:
+        _serial.write((const uint8_t*)"AT+CWMODE=");
+        _serial.write((const uint8_t*)"3");
+        _serial.write((const uint8_t*)_lineEndStr);
+
         _waitForReply = _okStr;
         _sendState = sendCwjap;
-        sendCommand("ATE0");
         break;
 
     case sendCwjap:
         if (handleDisconnect(finalizeDisconnect))
             break;
-
         _serial.write((const uint8_t*)"AT+CWJAP=\"");
         _serial.write((const uint8_t*)_ssid, strlen(_ssid));
         _serial.write((const uint8_t*)"\",\"");
@@ -237,7 +277,13 @@ void Esp8266Device::run()
         _serial.write((const uint8_t*)_quoteEndStr);
 
         _waitForReply = _okStr;
+        _sendState = sendCipmux;
+        break;
+
+    case sendCipmux:
+        _waitForReply = _okStr;
         _sendState = sendCiprecvmode;
+        sendCommand("AT+CIPMUX=0");
         break;
 
     case sendCiprecvmode:

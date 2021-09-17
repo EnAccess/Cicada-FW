@@ -120,11 +120,6 @@ class Esp8266Device : public ATCommDevice
      */
     virtual void run();
 
-    enum ReplyState {
-        okReply = 0,
-        waitCiprecvdata,
-    };
-
     enum SendState {
         notConnected,
         serialError,
@@ -132,6 +127,7 @@ class Esp8266Device : public ATCommDevice
         sendCwmode,
         sendCwjap,
         sendCiprecvmode,
+        sendCipmux,
         sendCipmode,
         sendCipstart,
         finalizeConnect,
@@ -146,6 +142,7 @@ class Esp8266Device : public ATCommDevice
     };
 
   protected:
+    bool fillLineBuffer();
     bool sendCiprcvdata();
     bool parseCiprecvdata();
 

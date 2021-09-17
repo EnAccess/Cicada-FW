@@ -48,6 +48,7 @@ class ATCommDevice : public IPCommDevice
     enum ReplyState {
         okReply = 0,
         waitCiprecvdata,
+        parseStateCiprecvdata
     };
 
     enum SendState {
@@ -71,7 +72,6 @@ class ATCommDevice : public IPCommDevice
     };
 
   protected:
-    bool fillLineBuffer();
     void logStates(int8_t sendState, int8_t replyState);
     bool handleDisconnect(int8_t nextState);
     bool handleConnect(int8_t nextState);
