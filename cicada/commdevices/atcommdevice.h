@@ -45,32 +45,6 @@ class ATCommDevice : public IPCommDevice
         Size readBufferSize, Size writeBufferSize);
     virtual ~ATCommDevice() {}
 
-    enum ReplyState {
-        okReply = 0,
-        waitCiprecvdata,
-        parseStateCiprecvdata
-    };
-
-    enum SendState {
-        notConnected,
-        serialError,
-        connecting,
-        sendCwmode,
-        sendCwjap,
-        sendCiprecvmode,
-        sendCipmode,
-        sendCipstart,
-        finalizeConnect,
-        connected,
-        sendDataState,
-        sendCiprecvdata,
-        waitReceive,
-        receiving,
-        sendCipclose,
-        sendCwqap,
-        finalizeDisconnect
-    };
-
   protected:
     void logStates(int8_t sendState, int8_t replyState);
     bool handleDisconnect(int8_t nextState);
