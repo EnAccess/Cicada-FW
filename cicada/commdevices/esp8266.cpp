@@ -92,6 +92,7 @@ bool Esp8266Device::fillLineBuffer()
                 _lbFill = 0;
                 return true;
             }
+            // AT 1.7.0 Firmware compatibility
             if (_replyState == waitCiprecvdata && c == ':' && _lbFill > 14 &&
                 strncmp(_lineBuffer, "+CIPRECVDATA,", 13) == 0) {
                 _replyState = parseStateCiprecvdata;
@@ -99,9 +100,16 @@ bool Esp8266Device::fillLineBuffer()
                 _lbFill = 0;
                 return true;
             }
+            // AT 2.1.0 Firmware compatibility
             if (_replyState == waitCiprecvdata && c == ',' && _lbFill > 14 &&
                 strncmp(_lineBuffer, "+CIPRECVDATA:", 13) == 0) {
                 _replyState = parseStateCiprecvdata;
+                _lineBuffer[_lbFill] = '\0';
+                _lbFill = 0;
+                return true;
+            }
+            if (_type == UDP && _replyState != waitCiprecvdata && c == ':' && _lbFill > 5 &&
+                strncmp(_lineBuffer, "+IPD,", 4) == 0) {
                 _lineBuffer[_lbFill] = '\0';
                 _lbFill = 0;
                 return true;
@@ -289,7 +297,11 @@ void Esp8266Device::run()
     case sendCiprecvmode:
         _waitForReply = _okStr;
         _sendState = sendCipmode;
-        sendCommand("AT+CIPRECVMODE=1");
+        if(_type == UDP){
+            sendCommand("AT+CIPRECVMODE=0");
+        } else {
+            sendCommand("AT+CIPRECVMODE=1");
+        }
         break;
 
     case sendCipmode:
