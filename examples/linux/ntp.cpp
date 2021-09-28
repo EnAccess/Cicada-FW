@@ -19,7 +19,7 @@ class NTPTask : public Task
   public:
     NTPTask(ModemDetect& detector) :
         m_detector(detector),
-        m_commDev(NULL) 
+        m_commDev(NULL)
         {}
 
     virtual void run()

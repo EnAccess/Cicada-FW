@@ -1,6 +1,6 @@
 /*
- * E-Lib
- * Copyright (C) 2019 EnAccess
+ * Cicada communication library
+ * Copyright (C) 2021 Okrasolar
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in

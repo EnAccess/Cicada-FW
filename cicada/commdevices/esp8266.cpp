@@ -146,7 +146,7 @@ bool Esp8266Device::sendCiprcvdata()
 
 bool Esp8266Device::parseCiprecvdata()
 {
-    if (strncmp(_lineBuffer, "+CIPRECVDATA:", 13) == 0) {
+    if (strncmp(_lineBuffer, "+CIPRECVDATA", 12) == 0) {
         int bytesToRead;
         sscanf(_lineBuffer + 13, "%d", &bytesToRead);
         _bytesToReceive -= bytesToRead;
@@ -261,7 +261,7 @@ void Esp8266Device::run()
         setDelay(10);
         _connectState = IPCommDevice::intermediate;
         _stateBooleans |= LINE_READ;
-        sendCommand("ATE1");
+        sendCommand("ATE0");
         _waitForReply = _okStr;
         _sendState = sendCwmode;
         break;
@@ -365,7 +365,7 @@ void Esp8266Device::run()
         }
         break;
 
-        // States after connecting
+    // States after connecting
 
     case sendDataState:
         sendData();
