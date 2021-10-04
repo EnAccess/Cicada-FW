@@ -24,9 +24,9 @@
 #ifndef MODEMDETECT_H
 #define MODEMDETECT_H
 
+#include "cicada/commdevices/atcommdevice.h"
 #include "cicada/commdevices/esp8266.h"
 #include "cicada/commdevices/iipcommdevice.h"
-#include "cicada/commdevices/atcommdevice.h"
 #include "cicada/commdevices/sim7x00.h"
 #include "cicada/commdevices/sim800.h"
 

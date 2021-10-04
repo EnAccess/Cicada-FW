@@ -55,11 +55,11 @@ void ATCommDevice::logStates(int8_t sendState, int8_t replyState)
     if (_connectState < connected) {
         if (_waitForReply)
             printf("_sendState=%d, _replyState=%d, "
-                    "_waitForReply=\"%s\", data: %s",
+                   "_waitForReply=\"%s\", data: %s",
                 sendState, replyState, _waitForReply, _lineBuffer);
         else
             printf("_sendState=%d, _replyState=%d, "
-                    "_waitForReply=NULL, data: %s",
+                   "_waitForReply=NULL, data: %s",
                 sendState, replyState, _lineBuffer);
     }
 #endif

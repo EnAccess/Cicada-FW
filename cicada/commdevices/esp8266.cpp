@@ -93,23 +93,23 @@ bool Esp8266Device::fillLineBuffer()
                 return true;
             }
             // AT 1.7.0 Firmware compatibility
-            if (_replyState == waitCiprecvdata && c == ':' && _lbFill > 14 &&
-                strncmp(_lineBuffer, "+CIPRECVDATA,", 13) == 0) {
+            if (_replyState == waitCiprecvdata && c == ':' && _lbFill > 14
+                && strncmp(_lineBuffer, "+CIPRECVDATA,", 13) == 0) {
                 _replyState = parseStateCiprecvdata;
                 _lineBuffer[_lbFill] = '\0';
                 _lbFill = 0;
                 return true;
             }
             // AT 2.1.0 Firmware compatibility
-            if (_replyState == waitCiprecvdata && c == ',' && _lbFill > 14 &&
-                strncmp(_lineBuffer, "+CIPRECVDATA:", 13) == 0) {
+            if (_replyState == waitCiprecvdata && c == ',' && _lbFill > 14
+                && strncmp(_lineBuffer, "+CIPRECVDATA:", 13) == 0) {
                 _replyState = parseStateCiprecvdata;
                 _lineBuffer[_lbFill] = '\0';
                 _lbFill = 0;
                 return true;
             }
-            if (_type == UDP && _replyState != waitCiprecvdata && c == ':' && _lbFill > 5 &&
-                strncmp(_lineBuffer, "+IPD,", 4) == 0) {
+            if (_type == UDP && _replyState != waitCiprecvdata && c == ':' && _lbFill > 5
+                && strncmp(_lineBuffer, "+IPD,", 4) == 0) {
                 _lineBuffer[_lbFill] = '\0';
                 _lbFill = 0;
                 return true;
@@ -267,8 +267,7 @@ void Esp8266Device::run()
         break;
 
     case sendCwmode:
-        _serial.write((const uint8_t*)"AT+CWMODE=");
-        _serial.write((const uint8_t*)"3");
+        _serial.write((const uint8_t*)"AT+CWMODE=3");
         _serial.write((const uint8_t*)_lineEndStr);
 
         _waitForReply = _okStr;
@@ -297,7 +296,7 @@ void Esp8266Device::run()
     case sendCiprecvmode:
         _waitForReply = _okStr;
         _sendState = sendCipmode;
-        if(_type == UDP){
+        if (_type == UDP) {
             sendCommand("AT+CIPRECVMODE=0");
         } else {
             sendCommand("AT+CIPRECVMODE=1");
@@ -340,7 +339,7 @@ void Esp8266Device::run()
 
     case connected:
         if (_writeBuffer.bytesAvailable()) {
-            if (prepareSending()) {
+            if (prepareSending(false)) {
                 _serial.write((const uint8_t*)_lineEndStr);
                 _connectState = IPCommDevice::transmitting;
                 _sendState = sendDataState;
@@ -365,7 +364,7 @@ void Esp8266Device::run()
         }
         break;
 
-    // States after connecting
+        // States after connecting
 
     case sendDataState:
         sendData();

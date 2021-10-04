@@ -120,11 +120,7 @@ class Esp8266Device : public ATCommDevice
      */
     virtual void run();
 
-    enum ReplyState {
-        okReply = 0,
-        waitCiprecvdata,
-        parseStateCiprecvdata
-    };
+    enum ReplyState { okReply = 0, waitCiprecvdata, parseStateCiprecvdata };
 
     enum SendState {
         notConnected,
