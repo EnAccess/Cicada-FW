@@ -87,32 +87,23 @@ bool Esp8266Device::fillLineBuffer()
         while (_serial.bytesAvailable()) {
             char c = _serial.read();
             _lineBuffer[_lbFill++] = c;
-            if (c == '\n' || c == '>' || _lbFill == LINE_MAX_LENGTH) {
+            if (c == '\n' || c == '>'
+                || (_type == UDP && _replyState != waitCiprecvdata && c == ':')
+                || _lbFill == LINE_MAX_LENGTH) {
                 _lineBuffer[_lbFill] = '\0';
                 _lbFill = 0;
                 return true;
             }
-            // AT 1.7.0 Firmware compatibility
-            if (_replyState == waitCiprecvdata && c == ':' && _lbFill > 14
-                && strncmp(_lineBuffer, "+CIPRECVDATA,", 13) == 0) {
-                _replyState = parseStateCiprecvdata;
-                _lineBuffer[_lbFill] = '\0';
-                _lbFill = 0;
-                return true;
-            }
-            // AT 2.1.0 Firmware compatibility
-            if (_replyState == waitCiprecvdata && c == ',' && _lbFill > 14
-                && strncmp(_lineBuffer, "+CIPRECVDATA:", 13) == 0) {
-                _replyState = parseStateCiprecvdata;
-                _lineBuffer[_lbFill] = '\0';
-                _lbFill = 0;
-                return true;
-            }
-            if (_type == UDP && _replyState != waitCiprecvdata && c == ':' && _lbFill > 5
-                && strncmp(_lineBuffer, "+IPD,", 4) == 0) {
-                _lineBuffer[_lbFill] = '\0';
-                _lbFill = 0;
-                return true;
+            if (_replyState == waitCiprecvdata) {
+                // AT 1.7.0 and AT 2.1.0 firmware compatibility
+                if (((c == ':' && strncmp(_lineBuffer, "+CIPRECVDATA,", 13) == 0)
+                        || (c == ',' && strncmp(_lineBuffer, "+CIPRECVDATA:", 13) == 0))
+                    && _lbFill > 14) {
+                    _replyState = parseStateCiprecvdata;
+                    _lineBuffer[_lbFill] = '\0';
+                    _lbFill = 0;
+                    return true;
+                }
             }
         }
     }
