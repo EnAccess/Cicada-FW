@@ -50,7 +50,7 @@ class ATCommDevice : public IPCommDevice
     bool handleDisconnect(int8_t nextState);
     bool handleConnect(int8_t nextState);
     void sendCommand(const char* cmd);
-    bool prepareSending();
+    bool prepareSending(bool sendChannel);
     void sendData();
     void flushReadBuffer();
     bool receive();

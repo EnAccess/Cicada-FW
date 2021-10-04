@@ -293,7 +293,7 @@ void Sim7x00CommDevice::run()
 
     case connected:
         if (_writeBuffer.bytesAvailable()) {
-            if (prepareSending()) {
+            if (prepareSending(true)) {
                 if (_type == UDP) {
                     // IP address
                     _serial.write((const uint8_t*)",\"");

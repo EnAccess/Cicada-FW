@@ -291,7 +291,7 @@ void Sim800CommDevice::run()
 
     case connected:
         if (_writeBuffer.bytesAvailable()) {
-            if (prepareSending()) {
+            if (prepareSending(true)) {
                 _serial.write((const uint8_t*)_lineEndStr);
                 _connectState = IPCommDevice::transmitting;
                 _sendState = sendData;

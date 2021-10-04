@@ -102,7 +102,7 @@ bool ATCommDevice::handleConnect(int8_t nextState)
     return false;
 }
 
-bool ATCommDevice::prepareSending()
+bool ATCommDevice::prepareSending(bool sendChannel)
 {
     if (_serial.spaceAvailable() < MIN_SPACE_AVAILABLE)
         return false;
@@ -114,6 +114,9 @@ bool ATCommDevice::prepareSending()
 
     // cmd
     _serial.write((const uint8_t*)"AT+CIPSEND=");
+    if (sendChannel) {
+        _serial.write((const uint8_t*)"0,");
+    }
 
     // length
     char sizeStr[6];
