@@ -96,9 +96,9 @@ bool Esp8266Device::fillLineBuffer()
             }
             if (_replyState == waitCiprecvdata) {
                 // AT 1.7.0 and AT 2.1.0 firmware compatibility
-                if (((c == ':' && strncmp(_lineBuffer, "+CIPRECVDATA,", 13) == 0)
-                        || (c == ',' && strncmp(_lineBuffer, "+CIPRECVDATA:", 13) == 0))
-                    && _lbFill > 14) {
+                if (_lbFill > 14
+                    && ((c == ':' && strncmp(_lineBuffer, "+CIPRECVDATA,", 13) == 0)
+                        || (c == ',' && strncmp(_lineBuffer, "+CIPRECVDATA:", 13) == 0))) {
                     _replyState = parseStateCiprecvdata;
                     _lineBuffer[_lbFill] = '\0';
                     _lbFill = 0;
