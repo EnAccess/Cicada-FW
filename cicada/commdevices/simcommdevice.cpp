@@ -27,10 +27,6 @@
 #include <cstdio>
 #include <cstring>
 
-#ifdef CICADA_DEBUG
-#include "printf.h"
-#endif
-
 using namespace Cicada;
 
 SimCommDevice::SimCommDevice(
