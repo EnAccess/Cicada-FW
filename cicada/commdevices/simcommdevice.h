@@ -69,31 +69,6 @@ class SimCommDevice : public ATCommDevice
     virtual void serialUnlock();
 
     /*!
-     * The purpose of this function is to send custom AT commands to the modem.
-     * To do so, first lock the serial device for the modem driver by calling
-     * serialLock(). When serialLock() returns true, no data will be sent or
-     * recieved by the driver, so it does not interfere with the custom
-     * user data. The function is non-blocking. Data are copied to the write
-     * buffer and actually sent later.
-     *
-     * \param data zero-Terminated string of data to send to the modem
-     * \return Actual number of bytes written
-     */
-    virtual Size serialWrite(char* data);
-
-    /*!
-     * After acquiring the lock with serialLock(), this function may be used
-     * to read data directly from the modem. It's purpose is to read a reply
-     * after sending a command with serialWrite(). This function is non-blocking,
-     * it returns immediately even if there are no data available for reading.
-     *
-     * \param data Buffer to write data into.
-     * \maxSize maximum space available in the buffer.
-     * \return Number of bytes actually copied to data.
-     */
-    virtual Size serialRead(char* data, Size maxSize);
-
-    /*!
      * Request the RSSI (signal strength) from the modem. It can then be
      * retreieved with getRSSI();
      */

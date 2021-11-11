@@ -32,6 +32,8 @@
 #include "cicada/defines.h"
 #include <stdint.h>
 
+#include <stdio.h>
+
 /*!
  * \def E_BEGIN_TASK
  * Use this at the beginning of run() to setup the
@@ -81,7 +83,7 @@
     return;                                                                                        \
     case ENTRY_POINT:
 
-/*!
+/*!isTimeout
  * \def E_REENTER_COND(COND)
  * Continues if the condition is met, otherwise yields to the task
  * scheduler, allowing other tasks to run. The tasks delay is set to
@@ -114,6 +116,47 @@
     case ENTRY_POINT:                                                                              \
         if (!(COND))                                                                               \
             return;
+
+/*!
+ * \def E_REENTER_COND_TIMEOUT(COND, TIMEOUT)
+ * Sets the timeout and continues if the condition or timeout is met,
+ * otherwise yields to the task scheduler. Does the same as
+ * E_REENTER_COND(), but sets a timeout to a user defined.
+ * \param COND Condition to be met to continue
+ * \param TIMEOUT Minimum delay after which the task scheduler
+ * will call run() again.
+ */
+#define E_REENTER_COND_TIMEOUT(COND, TIMEOUT) E_REENTER_COND_TIMEOUT_ARG(__COUNTER__, COND, TIMEOUT)
+#define E_REENTER_COND_TIMEOUT_ARG(ENTRY_POINT, COND, TIMEOUT)                                     \
+    startTimeout();                                                                                \
+    setDelay(0);                                                                                   \
+    entrypoint = ENTRY_POINT;                                                                      \
+    case ENTRY_POINT:                                                                              \
+        if (!isTimeout(TIMEOUT) && !(COND)) {                                                      \
+            return;                                                                                \
+        };                                                                                         \
+        resetTimeout();                                                                            \
+
+/*!
+ * \def E_REENTER_COND_TIMEOUT_DELAY(COND, TIMEOUT, DELAY)
+ * Sets the delay and the timeout and continues if the condition or timeout is met,
+ * otherwise yields to the task scheduler. Does the same as
+ * E_REENTER_COND_TIMEOUT(), but sets a timeout and a delay to a user defined.
+ * \param COND Condition to be met to continue
+ * \param TIMEOUT Minimum delay after which the task scheduler
+ * \param DELAY Minimum delay after which the task scheduler
+ * will call run() again.
+ */
+#define E_REENTER_COND_TIMEOUT_DELAY(COND, TIMEOUT, DELAY) E_REENTER_COND_TIMEOUT_DELAY_ARG(__COUNTER__, COND, TIMEOUT, DELAY)
+#define E_REENTER_COND_TIMEOUT_DELAY_ARG(ENTRY_POINT, COND, TIMEOUT, DELAY)                        \
+    startTimeout();                                                                                \
+    setDelay(DELAY);                                                                               \
+    entrypoint = ENTRY_POINT;                                                                      \
+    case ENTRY_POINT:                                                                              \
+        if (!isTimeout(TIMEOUT) && !(COND)) {                                                      \
+            return;                                                                                \
+        };                                                                                         \
+        resetTimeout();                                                                            \
 
 namespace Cicada {
 
@@ -203,6 +246,36 @@ class Task
      */
     virtual void run() = 0;
 
+  protected:
+    /*!
+     * Set the start timeout and raise its flag.
+     */
+    inline void startTimeout()
+    {
+        if(_isTimeoutRunning)
+            return;
+        _isTimeoutRunning = true;
+        _timeout = _lastRun;
+    }
+
+    /*!
+     * Reset the timeout flag.
+     */
+    inline void resetTimeout()
+    {
+        _isTimeoutRunning = false;
+    }
+
+    /*!
+     * Check if timeout is triggered.
+     * \param timeout timeout to check
+     * \return true if timeout triggered
+     */
+    inline bool isTimeout(uint32_t timeout)
+    {
+        return (_lastRun - _timeout > timeout);
+    }
+
   private:
     /*
      * Doesn't make sense to copy an Task object
@@ -210,6 +283,8 @@ class Task
     Task(const Task&);
 
     uint16_t _delay;      /**< Time before the task will run again */
+    uint32_t _timeout;    /**< Time before the cond will timeout */
+    bool _isTimeoutRunning = false;  /**< Flag for timeout running */
     E_TICK_TYPE _lastRun; /**< Stores the tick when the task last ran */
 };
 }

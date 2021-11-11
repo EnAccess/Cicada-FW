@@ -107,24 +107,6 @@ void SimCommDevice::serialUnlock()
     _stateBooleans &= ~SERIAL_LOCKED;
 }
 
-Size SimCommDevice::serialWrite(char* data)
-{
-    if (_stateBooleans & SERIAL_LOCKED) {
-        return _serial.write((const uint8_t*)data);
-    }
-
-    return 0;
-}
-
-Size SimCommDevice::serialRead(char* data, Size maxSize)
-{
-    if (_stateBooleans & SERIAL_LOCKED) {
-        return _serial.read((uint8_t*)data, maxSize);
-    }
-
-    return 0;
-}
-
 bool SimCommDevice::parseDnsReply()
 {
     if (strncmp(_lineBuffer, "+CDNSGIP: 1", 11) == 0) {

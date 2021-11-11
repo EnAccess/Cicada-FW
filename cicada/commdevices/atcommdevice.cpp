@@ -151,3 +151,21 @@ void ATCommDevice::sendCommand(const char* cmd)
     _serial.write((const uint8_t*)cmd);
     _serial.write((const uint8_t*)_lineEndStr);
 }
+
+Size ATCommDevice::serialWrite(char* data)
+{
+    if (_stateBooleans & SERIAL_LOCKED) {
+        return _serial.write((const uint8_t*)data);
+    }
+
+    return 0;
+}
+
+Size ATCommDevice::serialRead(char* data, Size maxSize)
+{
+    if (_stateBooleans & SERIAL_LOCKED) {
+        return _serial.read((uint8_t*)data, maxSize);
+    }
+
+    return 0;
+}
