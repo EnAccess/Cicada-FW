@@ -4,5 +4,6 @@ examples_list = [
     'ipcommdevice',
     'blocking',
     'blockingmqtt',
-    'ntp'
+    'ntp',
+    'eol'
 ]
