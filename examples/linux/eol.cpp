@@ -97,7 +97,7 @@ class EOLTask : public Task
 
     void checkExitEol(bool condition, const char* message){
         if(!condition){
-            printf("%s\n", message);
+            printf("*** FAILED EOL TEST %s\n", message);
             exit(EXIT_FAILURE);
         }
     }
