@@ -5,5 +5,5 @@ examples_list = [
     'blocking',
     'blockingmqtt',
     'ntp',
-    'eol'
+    'autodetectntp'
 ]

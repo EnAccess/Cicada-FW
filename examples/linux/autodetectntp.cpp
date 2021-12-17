@@ -1,5 +1,5 @@
 /*
- * Example code EOL testing
+ * Example code to autodetect comms module and update NTP Time
  */
 
 #define MQTTCLIENT_QOS2 1
@@ -21,10 +21,10 @@
 
 using namespace Cicada;
 
-class EOLTask : public Task
+class AutodetectNtp : public Task
 {
   public:
-    EOLTask(ModemDetect& detector, const char* apn, const char* ssid, const char* pw) :
+    AutodetectNtp(ModemDetect& detector, const char* apn, const char* ssid, const char* pw) :
         m_detector(detector),
         m_commDev(NULL),
         _apn(apn),
@@ -141,7 +141,7 @@ int main(int argc, char* argv[])
 
     ModemDetect detector(serial);
 
-    EOLTask task(detector, apn, ssid, pw);
+    AutodetectNtp task(detector, apn, ssid, pw);
 
     Task* taskList[] = { &task, &detector, &serial, NULL };
 
