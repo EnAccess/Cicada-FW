@@ -21,30 +21,30 @@
  *
  */
 
-#include "cicada/commdevices/esp8266.h"
+#include "cicada/commdevices/espressif.h"
 #include "cicada/commdevices/ipcommdevice.h"
 #include <cstdio>
 #include <cstring>
 
 using namespace Cicada;
 
-const uint16_t ESP8266_MAX_RX = 2048;
+const uint16_t ESPRESSIF_MAX_RX = 2048;
 
-Esp8266Device::Esp8266Device(
+EspressifDevice::EspressifDevice(
     IBufferedSerial& serial, uint8_t* readBuffer, uint8_t* writeBuffer, Size bufferSize) :
     ATCommDevice(serial, readBuffer, writeBuffer, bufferSize)
 {
     resetStates();
 }
 
-Esp8266Device::Esp8266Device(IBufferedSerial& serial, uint8_t* readBuffer, uint8_t* writeBuffer,
+EspressifDevice::EspressifDevice(IBufferedSerial& serial, uint8_t* readBuffer, uint8_t* writeBuffer,
     Size readBufferSize, Size writeBufferSize) :
     ATCommDevice(serial, readBuffer, writeBuffer, readBufferSize, writeBufferSize)
 {
     resetStates();
 }
 
-void Esp8266Device::resetStates()
+void EspressifDevice::resetStates()
 {
     _serial.flushReceiveBuffers();
     _readBuffer.flush();
@@ -60,17 +60,17 @@ void Esp8266Device::resetStates()
     _stateBooleans = LINE_READ;
 }
 
-void Esp8266Device::setSSID(const char* ssid)
+void EspressifDevice::setSSID(const char* ssid)
 {
     _ssid = ssid;
 }
 
-void Esp8266Device::setPassword(const char* passwd)
+void EspressifDevice::setPassword(const char* passwd)
 {
     _passwd = passwd;
 }
 
-bool Esp8266Device::connect()
+bool EspressifDevice::connect()
 {
     if (_ssid == NULL || _passwd == NULL || strlen(_ssid) == 0) {
         return false;
@@ -79,7 +79,7 @@ bool Esp8266Device::connect()
     return IPCommDevice::connect();
 }
 
-bool Esp8266Device::fillLineBuffer()
+bool EspressifDevice::fillLineBuffer()
 {
     // Buffer reply from modem in line buffer
     // Returns true when enough data to be parsed is available.
@@ -110,7 +110,7 @@ bool Esp8266Device::fillLineBuffer()
     return false;
 }
 
-bool Esp8266Device::sendCiprcvdata()
+bool EspressifDevice::sendCiprcvdata()
 {
     if (_serial.readBufferSize() - _serial.bytesAvailable() > 30
         && _readBuffer.spaceAvailable() > 0) {
@@ -121,8 +121,8 @@ bool Esp8266Device::sendCiprcvdata()
         // Make sure there is enough space in the local device buffer
         if (bytesToReceive > _readBuffer.spaceAvailable())
             bytesToReceive = _readBuffer.spaceAvailable();
-        if (bytesToReceive > ESP8266_MAX_RX)
-            bytesToReceive = ESP8266_MAX_RX;
+        if (bytesToReceive > ESPRESSIF_MAX_RX)
+            bytesToReceive = ESPRESSIF_MAX_RX;
 
         char sizeStr[6];
         sprintf(sizeStr, "%u", (unsigned int)bytesToReceive);
@@ -135,7 +135,7 @@ bool Esp8266Device::sendCiprcvdata()
     }
 }
 
-bool Esp8266Device::parseCiprecvdata()
+bool EspressifDevice::parseCiprecvdata()
 {
     if (strncmp(_lineBuffer, "+CIPRECVDATA", 12) == 0) {
         int bytesToRead;
@@ -149,7 +149,7 @@ bool Esp8266Device::parseCiprecvdata()
     return false;
 }
 
-void Esp8266Device::run()
+void EspressifDevice::run()
 {
     // If the serial device is net yet open, try to open it
     if (!_serial.isOpen()) {

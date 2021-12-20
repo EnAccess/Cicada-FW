@@ -8,7 +8,7 @@
 #include "cicada/scheduler.h"
 #include "cicada/tick.h"
 #include "cicada/commdevices/blockingcommdev.h"
-#include "cicada/commdevices/esp8266.h"
+#include "cicada/commdevices/espressif.h"
 #include "cicada/mqttcountdown.h"
 #include <arpa/inet.h>
 #include <stdio.h>
@@ -34,7 +34,7 @@ class AutodetectNtp : public Task
     virtual void run()
     {
         SimCommDevice* simCommDev;
-        Esp8266Device* esp8266Dev;
+        EspressifDevice* espressifDev;
 
         E_BEGIN_TASK
         printf("*** EOL Begin! ***\n");
@@ -50,12 +50,12 @@ class AutodetectNtp : public Task
             printf("*** SimCommDevice Detected ***\n");
             simCommDev->setApn(_apn);
         }
-        esp8266Dev = dynamic_cast<Esp8266Device*>(m_commDev);
-        if (esp8266Dev) {
+        espressifDev = dynamic_cast<EspressifDevice*>(m_commDev);
+        if (espressifDev) {
             printf("*** ATCommDevice Detected ***\n");
             printf("Set SSID : \"%s\" and PW: \"%s\"\n", _ssid, _pw);
-            esp8266Dev->setSSID(_ssid);
-            esp8266Dev->setPassword(_pw);
+            espressifDev->setSSID(_ssid);
+            espressifDev->setPassword(_pw);
         }
 
 

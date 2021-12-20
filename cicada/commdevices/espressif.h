@@ -21,8 +21,8 @@
  *
  */
 
-#ifndef ESP8266DEVICE_H
-#define ESP8266DEVICE_H
+#ifndef ESPRESSIFDEVICE_H
+#define ESPRESSIFDEVICE_H
 
 #include "cicada/bufferedserial.h"
 #include "cicada/commdevices/atcommdevice.h"
@@ -31,17 +31,17 @@
 namespace Cicada {
 
 /*!
- * Driver for Wifi modules based on Espressif Esp8266 chip. Firware NonOS_AT v1.7 or later
+ * Driver for Wifi modules based on Espressif chip with Firware NonOS_AT v1.7 or v2.1
  * is required to work with the driver.
  */
-class Esp8266Device : public ATCommDevice
+class EspressifDevice : public ATCommDevice
 {
   public:
-    Esp8266Device(
+    EspressifDevice(
         IBufferedSerial& serial, uint8_t* readBuffer, uint8_t* writeBuffer, Size bufferSize);
-    Esp8266Device(IBufferedSerial& serial, uint8_t* readBuffer, uint8_t* writeBuffer,
+    EspressifDevice(IBufferedSerial& serial, uint8_t* readBuffer, uint8_t* writeBuffer,
         Size readBufferSize, Size writeBufferSize);
-    virtual ~Esp8266Device() {}
+    virtual ~EspressifDevice() {}
 
     /*!
      * Resets the drivers states. The internal states will be initialized

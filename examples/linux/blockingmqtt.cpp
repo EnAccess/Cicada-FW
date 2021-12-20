@@ -11,7 +11,7 @@
 #include <string.h>
 
 #include "cicada/commdevices/blockingcommdev.h"
-#include "cicada/commdevices/esp8266.h"
+#include "cicada/commdevices/espressif.h"
 #include "cicada/mqttcountdown.h"
 #include "cicada/platform/linux/unixserial.h"
 #include "cicada/scheduler.h"
@@ -47,7 +47,7 @@ int main(int argc, char* argv[])
     const uint16_t commBufferSize = 1200;
     uint8_t commReadBuffer[commBufferSize];
     uint8_t commWriteBuffer[commBufferSize];
-    Esp8266Device commDev(serial, commReadBuffer, commWriteBuffer, commBufferSize);
+    EspressifDevice commDev(serial, commReadBuffer, commWriteBuffer, commBufferSize);
 
     Task* taskList[] = { &commDev, &serial, NULL };
 
