@@ -26,6 +26,8 @@ class IPCommTask : public Task
 
     virtual void run()
     {
+        SimCommDevice* simCommDev;
+
         E_BEGIN_TASK
 
         m_detector.startDetection();
@@ -35,7 +37,9 @@ class IPCommTask : public Task
 
         printf("Connecting ...\r\n");
 
-        m_commDev->setApn("internet");
+        simCommDev = dynamic_cast<SimCommDevice*>(m_commDev);
+        if (simCommDev)
+            simCommDev->setApn("internet");
         m_commDev->setHostPort("wttr.in", 80);
         m_commDev->connect();
 
@@ -82,7 +86,7 @@ class IPCommTask : public Task
     uint8_t _commWriteBuffer[_commBufferSize];
 
     ModemDetect& m_detector;
-    SimCommDevice* m_commDev;
+    ATCommDevice* m_commDev;
     int m_i;
 };
 
