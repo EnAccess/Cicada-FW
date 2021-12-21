@@ -25,7 +25,7 @@ access to actual microcontroller hardware.
 ## Supported communication modules:
 - Simcom SIM7x00
 - Simcom SIM800
-- Espressif ESP8266 based modules
+- Espressif modules with AT Firmware V1.7 or V2.1
 
 ## Documentation
 [View the hosted Doxygen here](https://enaccess.github.io/Cicada/doc/).

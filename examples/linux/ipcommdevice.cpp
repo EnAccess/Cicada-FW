@@ -23,7 +23,7 @@ class IPCommTask : public Task
     virtual void run()
     {
         SimCommDevice* simCommDev;
-        Esp8266Device* esp8266Dev;
+        EspressifDevice* espressifDev;
 
         E_BEGIN_TASK
 
@@ -36,10 +36,10 @@ class IPCommTask : public Task
         if (simCommDev) {
             simCommDev->setApn("iot-eu.aer.net");
         }
-        esp8266Dev = dynamic_cast<Esp8266Device*>(m_commDev);
-        if (esp8266Dev) {
-            esp8266Dev->setSSID("your_ssid");
-            esp8266Dev->setPassword("your_pass");
+        espressifDev = dynamic_cast<EspressifDevice*>(m_commDev);
+        if (espressifDev) {
+            espressifDev->setSSID("your_ssid");
+            espressifDev->setPassword("your_pass");
         }
 
         m_commDev->setHostPort("wttr.in", 80);

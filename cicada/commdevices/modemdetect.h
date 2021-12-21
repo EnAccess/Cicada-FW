@@ -25,7 +25,7 @@
 #define MODEMDETECT_H
 
 #include "cicada/commdevices/atcommdevice.h"
-#include "cicada/commdevices/esp8266.h"
+#include "cicada/commdevices/espressif.h"
 #include "cicada/commdevices/iipcommdevice.h"
 #include "cicada/commdevices/sim7x00.h"
 #include "cicada/commdevices/sim800.h"
@@ -79,7 +79,7 @@ class ModemDetect : public Task
         ~ModemDriver() {}
         Sim800CommDevice sim800;
         Sim7x00CommDevice sim7x00;
-        Esp8266Device esp8266;
+        EspressifDevice espressif;
     } _md;
 
     IBufferedSerial& _serial;
@@ -90,11 +90,11 @@ class ModemDetect : public Task
         errorState,
         cgmmSent,
         gmrSent,
-        esp8266WaitOk,
+        espressifWaitOk,
         modemDetectedState,
         detectedSim800,
         detectedSim7x00,
-        detectedEsp8266
+        detectedEspressif
     } _detectState;
 
     bool _startDetection;

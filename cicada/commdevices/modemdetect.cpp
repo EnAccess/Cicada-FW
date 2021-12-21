@@ -55,10 +55,10 @@ ATCommDevice* ModemDetect::getDetectedModem(
             Sim7x00CommDevice(_serial, readBuffer, writeBuffer, readBufferSize, writeBufferSize);
         _detectedModem = &_md.sim7x00;
         break;
-    case detectedEsp8266:
-        new (&_md.sim7x00)
-            Esp8266Device(_serial, readBuffer, writeBuffer, readBufferSize, writeBufferSize);
-        _detectedModem = &_md.esp8266;
+    case detectedEspressif:
+        new (&_md.espressif)
+            EspressifDevice(_serial, readBuffer, writeBuffer, readBufferSize, writeBufferSize);
+        _detectedModem = &_md.espressif;
         break;
     default:
         break;
@@ -123,12 +123,12 @@ void ModemDetect::run()
         case gmrSent:
             if (strncmp("AT version:1.7", readBuf, 14) == 0
                 || strncmp("AT version:2.1", readBuf, 14) == 0) {
-                _detectState = esp8266WaitOk;
+                _detectState = espressifWaitOk;
             }
             break;
-        case esp8266WaitOk:
+        case espressifWaitOk:
             if (strncmp("OK\r\n", readBuf, 4) == 0) {
-                _detectState = detectedEsp8266;
+                _detectState = detectedEspressif;
             }
         default:
             break;

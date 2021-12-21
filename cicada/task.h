@@ -32,8 +32,6 @@
 #include "cicada/defines.h"
 #include <stdint.h>
 
-#include <stdio.h>
-
 /*!
  * \def E_BEGIN_TASK
  * Use this at the beginning of run() to setup the

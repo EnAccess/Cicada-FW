@@ -25,7 +25,7 @@ class NTPTask : public Task
     virtual void run()
     {
         SimCommDevice* simCommDev;
-        Esp8266Device* esp8266Dev;
+        EspressifDevice* espressifDev;
 
         E_BEGIN_TASK
 
@@ -38,10 +38,10 @@ class NTPTask : public Task
         if (simCommDev) {
             simCommDev->setApn("iot-eu.aer.net");
         }
-        esp8266Dev = dynamic_cast<Esp8266Device*>(m_commDev);
-        if (esp8266Dev) {
-            esp8266Dev->setSSID("SSID");
-            esp8266Dev->setPassword("password");
+        espressifDev = dynamic_cast<EspressifDevice*>(m_commDev);
+        if (espressifDev) {
+            espressifDev->setSSID("SSID");
+            espressifDev->setPassword("password");
         }
 
         memset(m_ntpPacket, 0, sizeof(m_ntpPacket));
