@@ -149,6 +149,22 @@ bool EspressifDevice::parseCiprecvdata()
     return false;
 }
 
+void EspressifDevice::requestMac()
+{
+    _serial.flushReceiveBuffers();
+    _macStringBuffer[0] = '\0';
+    _macStringBuffer[1] = 0xFF;
+}
+
+char* EspressifDevice::getMacString()
+{
+    if (_waitForReply == NULL && _macStringBuffer[0] != '\0') {
+        return _macStringBuffer;
+    } else {
+        return NULL;
+    }
+}
+
 void EspressifDevice::run()
 {
     // If the serial device is net yet open, try to open it
@@ -202,11 +218,28 @@ void EspressifDevice::run()
         }
 
         // Process incoming data which need special treatment
-        if (_replyState == parseStateCiprecvdata) {
+        switch (_replyState) {
+        case parseStateCiprecvdata:
             if (parseCiprecvdata()) {
                 _replyState = okReply;
                 _sendState = receiving;
             }
+            break;
+
+        case reqMac:
+            if (strncmp(_lineBuffer, "+CIPSTAMAC: ", 12) == 0) {
+                char* src = _lineBuffer + 12;
+                int copiedChars = 0;
+                while (*src != '\r' && copiedChars < MACSTRING_MAX_LENGTH - 1) {
+                    _macStringBuffer[copiedChars++] = *src++;
+                }
+                _macStringBuffer[copiedChars] = '\0';
+                _replyState = okReply;
+            }
+            break;
+
+        default:
+            break;
         }
 
         // In connected state, check for new data or IP connection close
@@ -239,6 +272,15 @@ void EspressifDevice::run()
     // Don't go on if space in write buffer is low
     if (_serial.spaceAvailable() < 20)
         return;
+
+    // When mac address was requested, send the command to the modem
+    if (_macStringBuffer[1] == 0xFF && _macStringBuffer[0] == '\0' && _stateBooleans & LINE_READ) {
+        _macStringBuffer[1] = 0;
+        sendCommand("AT+CIPSTAMAC?");
+        _replyState = reqMac;
+        _waitForReply = _okStr;
+        return;
+    }
 
     // Connection state machine
     switch (_sendState) {
