@@ -88,7 +88,8 @@ bool EspressifDevice::fillLineBuffer()
             char c = _serial.read();
             _lineBuffer[_lbFill++] = c;
             if (c == '\n' || c == '>'
-                || (_type == UDP && _replyState != waitCiprecvdata && c == ':')
+                || (_type == UDP && _replyState != waitCiprecvdata
+                && _replyState != reqMac && c == ':')
                 || _lbFill == LINE_MAX_LENGTH) {
                 _lineBuffer[_lbFill] = '\0';
                 _lbFill = 0;
@@ -227,10 +228,10 @@ void EspressifDevice::run()
             break;
 
         case reqMac:
-            if (strncmp(_lineBuffer, "+CIPSTAMAC: ", 12) == 0) {
+            if (strncmp(_lineBuffer, "+CIPSTAMAC:\"", 12) == 0) {
                 char* src = _lineBuffer + 12;
                 int copiedChars = 0;
-                while (*src != '\r' && copiedChars < MACSTRING_MAX_LENGTH - 1) {
+                while (*src != '\"' && copiedChars < MACSTRING_MAX_LENGTH - 1) {
                     _macStringBuffer[copiedChars++] = *src++;
                 }
                 _macStringBuffer[copiedChars] = '\0';
