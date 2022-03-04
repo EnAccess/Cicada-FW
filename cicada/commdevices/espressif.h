@@ -28,6 +28,8 @@
 #include "cicada/commdevices/atcommdevice.h"
 #include <stdint.h>
 
+#define MACSTRING_MAX_LENGTH 18
+
 namespace Cicada {
 
 /*!
@@ -64,6 +66,23 @@ class EspressifDevice : public ATCommDevice
     virtual void setPassword(const char* passwd);
 
     virtual bool connect();
+
+    /*!
+     * Request one of the MAC address from the module. It can then be
+     * retreieved with getMACString();
+     * Note: This method flushes the recieve buffer.
+     */
+    void requestMac();
+
+    /*!
+     * Actually returns the MAC address string requested before
+     * with the requestMAC() method, or NULL if the string is
+     * not yet available. The string is 0-terminated. When returned,
+     * this points to the internal string buffer and stays unchanged until
+     * another request*() method is called. The buffer is valid during the
+     * lifetime of this class.
+     * */
+    char* getMacString();
 
     /*!
      * Actually performs communication with the wifi module.
@@ -120,7 +139,7 @@ class EspressifDevice : public ATCommDevice
      */
     virtual void run();
 
-    enum ReplyState { okReply = 0, waitCiprecvdata, parseStateCiprecvdata };
+    enum ReplyState { okReply = 0, waitCiprecvdata, parseStateCiprecvdata, reqMac };
 
     enum SendState {
         notConnected,
@@ -150,6 +169,8 @@ class EspressifDevice : public ATCommDevice
 
     const char* _ssid;
     const char* _passwd;
+
+    char _macStringBuffer[MACSTRING_MAX_LENGTH];
 };
 }
 
