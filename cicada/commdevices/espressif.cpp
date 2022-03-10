@@ -179,14 +179,16 @@ void EspressifDevice::run()
     // If a modem reset is pending, handle it
     if (_stateBooleans & RESET_PENDING) {
         _serial.flushReceiveBuffers();
+        if (_sendState >= connecting && _sendState <= receiving
+            && !(_stateBooleans & DISCONNECT_PENDING)) {
+            _sendState = connecting;
+        } else {
+            _sendState = notConnected;
+        }
         _stateBooleans = LINE_READ;
         _bytesToRead = 0;
         _bytesToReceive = 0;
         _bytesToWrite = 0;
-        if (_sendState >= connecting && _sendState <= receiving)
-            _sendState = connecting;
-        else
-            _sendState = notConnected;
         _serial.write((const uint8_t*)"AT+RST");
         _serial.write((const uint8_t*)_lineEndStr);
         _replyState = okReply;
@@ -206,15 +208,25 @@ void EspressifDevice::run()
         // Log the current modem states
         logStates(_sendState, _replyState);
 
+        // Handle error states
+        if (strncmp(_lineBuffer, "ERROR", 5) == 0
+            || strncmp(_lineBuffer, "FAIL", 4) == 0
+            || (_sendState != finalizeDisconnect
+            && strncmp(_lineBuffer, "WIFI DISCONNECT", 9) == 0)) {
+            _stateBooleans |= RESET_PENDING;
+            _connectState = generalError;
+            _waitForReply = NULL;
+            return;
+        } else if (_sendState == connected && strncmp(_lineBuffer, "SEND FAIL", 9) == 0) {
+            _connectState = generalError;
+            _sendState = connected;
+            _waitForReply = NULL;
+        }
+
         // If sent a command, process standard reply
         if (_waitForReply) {
             if (strncmp(_lineBuffer, _waitForReply, strlen(_waitForReply)) == 0) {
                 _waitForReply = NULL;
-            } else if (strncmp(_lineBuffer, "ERROR", 5) == 0) {
-                _stateBooleans |= RESET_PENDING;
-                _connectState = generalError;
-                _waitForReply = NULL;
-                return;
             }
         }
 
@@ -309,8 +321,6 @@ void EspressifDevice::run()
         break;
 
     case sendCwjap:
-        if (handleDisconnect(finalizeDisconnect))
-            break;
         _serial.write((const uint8_t*)"AT+CWJAP=\"");
         _serial.write((const uint8_t*)_ssid, strlen(_ssid));
         _serial.write((const uint8_t*)"\",\"");
