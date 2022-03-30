@@ -88,8 +88,8 @@ bool EspressifDevice::fillLineBuffer()
             char c = _serial.read();
             _lineBuffer[_lbFill++] = c;
             if (c == '\n' || c == '>'
-                || (_type == UDP && _replyState != waitCiprecvdata
-                && _replyState != reqMac && c == ':')
+                || (_type == UDP && _replyState != waitCiprecvdata && _replyState != reqMac
+                       && c == ':')
                 || _lbFill == LINE_MAX_LENGTH) {
                 _lineBuffer[_lbFill] = '\0';
                 _lbFill = 0;
@@ -99,7 +99,7 @@ bool EspressifDevice::fillLineBuffer()
                 // AT 1.7.0 and AT 2.1.0 firmware compatibility
                 if (_lbFill > 14
                     && ((c == ':' && strncmp(_lineBuffer, "+CIPRECVDATA,", 13) == 0)
-                        || (c == ',' && strncmp(_lineBuffer, "+CIPRECVDATA:", 13) == 0))) {
+                           || (c == ',' && strncmp(_lineBuffer, "+CIPRECVDATA:", 13) == 0))) {
                     _replyState = parseStateCiprecvdata;
                     _lineBuffer[_lbFill] = '\0';
                     _lbFill = 0;
@@ -209,10 +209,9 @@ void EspressifDevice::run()
         logStates(_sendState, _replyState);
 
         // Handle error states
-        if (strncmp(_lineBuffer, "ERROR", 5) == 0
-            || strncmp(_lineBuffer, "FAIL", 4) == 0
+        if (strncmp(_lineBuffer, "ERROR", 5) == 0 || strncmp(_lineBuffer, "FAIL", 4) == 0
             || (_sendState != finalizeDisconnect
-            && strncmp(_lineBuffer, "WIFI DISCONNECT", 9) == 0)) {
+                   && strncmp(_lineBuffer, "WIFI DISCONNECT", 9) == 0)) {
             _stateBooleans |= RESET_PENDING;
             _connectState = generalError;
             _waitForReply = NULL;
@@ -251,6 +250,24 @@ void EspressifDevice::run()
             }
             break;
 
+        case rssi:
+            if (strncmp(_lineBuffer, "+CWJAP:", 7) == 0) {
+                char* src = _lineBuffer + 7;
+                int nCommas = 0;
+                while (*src) {
+                    if (*src++ == ',') {
+                        if (++nCommas == 3) {
+                            unsigned int rssi;
+                            if (sscanf(src, "%u", &rssi) == 1) {
+                                _rssi = rssi;
+                            }
+                            break;
+                        }
+                    }
+                }
+                _replyState = okReply;
+            }
+
         default:
             break;
         }
@@ -285,6 +302,14 @@ void EspressifDevice::run()
     // Don't go on if space in write buffer is low
     if (_serial.spaceAvailable() < 20)
         return;
+
+    // When signal strength was requested, send the command to the modem
+    if (_rssi == INT16_MAX && _stateBooleans & LINE_READ) {
+        _replyState = rssi;
+        _waitForReply = _okStr;
+        sendCommand("AT+CWJAP?");
+        return;
+    }
 
     // When mac address was requested, send the command to the modem
     if (_macStringBuffer[1] == 0xFF && _macStringBuffer[0] == '\0' && _stateBooleans & LINE_READ) {
