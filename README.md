@@ -28,7 +28,7 @@ access to actual microcontroller hardware.
 - Espressif modules with AT Firmware V1.7 or V2.1
 
 ## Documentation
-[View the hosted Doxygen here](https://enaccess.github.io/Cicada/doc/).
+[View the hosted Doxygen here](https://okrasolar.github.io/Cicada/doc/).
 
 ## Build and test
 
