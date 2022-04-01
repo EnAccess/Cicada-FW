@@ -3,8 +3,7 @@
 An easy way to get production ready, bi-directional communications for your
 IoT embedded device.
 
-This repository contains the source code for UART drivers, 2G, 3G, 4G modems
-(and wifi in the future). **This library is platform agnostic, designed to be
+This repository contains the source code for UART drivers, 2G, 3G, 4G and Wifi modems. **This library is platform agnostic, designed to be
 portable** - including examples for mbed, FreeRTOS, or bare metal.
 
 Cicada uses the MQTT protocol to connect to the cloud but it can be used for
@@ -23,9 +22,14 @@ access to actual microcontroller hardware.
 - Unix (Linux / OS X) termios
 
 ## Supported communication modules:
-- Simcom SIM7x00
-- Simcom SIM800
-- Espressif modules with AT Firmware V1.7 or V2.1
+- Simcom SIM7x00 (3G/4G)
+- Simcom SIM800 (2G)
+- Espressif modules with AT Firmware V1.7 or V2.1 (Wifi)
+
+The source code for each of these modules can be found in the `cicada/commdevices` directory.
+
+## Hardware
+This library is designed to be adapted to different hardware use cases, but Okra has also designed and manufactured PCBAs for all three supported communication modules, which can be used in conjunction with this library. See the [Cicada Wifi](https://github.com/EnAccess/Cicada-WiFi-HW) and [Cicada Cellular](https://github.com/EnAccess/Cicada-GSM-HW) repos for further details.
 
 ## Documentation
 [View the hosted Doxygen here](https://okrasolar.github.io/Cicada/doc/).
