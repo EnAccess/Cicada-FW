@@ -139,7 +139,7 @@ class EspressifDevice : public ATCommDevice
      */
     virtual void run();
 
-    enum ReplyState { okReply = 0, waitCiprecvdata, parseStateCiprecvdata, reqMac };
+    enum ReplyState { okReply = 0, waitCiprecvdata, parseStateCiprecvdata, reqMac, rssi };
 
     enum SendState {
         notConnected,

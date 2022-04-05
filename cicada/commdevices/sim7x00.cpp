@@ -183,7 +183,7 @@ void Sim7x00CommDevice::run()
         return;
 
     // When signal strength was requested, send the command to the modem
-    if (_rssi == UINT8_MAX && _stateBooleans & LINE_READ) {
+    if (_rssi == INT16_MAX && _stateBooleans & LINE_READ) {
         _replyState = csq;
         _waitForReply = _okStr;
         sendCommand("AT+CSQ");

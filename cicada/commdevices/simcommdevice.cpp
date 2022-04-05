@@ -173,7 +173,16 @@ bool SimCommDevice::parseCsq()
     if (strncmp(_lineBuffer, "+CSQ: ", 6) == 0) {
         unsigned int rssi;
         if (sscanf(_lineBuffer + 6, "%u", &rssi) == 1) {
-            _rssi = rssi;
+            // Convert raw rssi to dBm
+            if (rssi >= 0 && rssi <= 31) {
+                // Conversion according to 3GPP TS 27.007
+                _rssi = -113 + rssi * 2;
+            } else if (rssi > 99 && rssi <= 199) {
+                // Conversion for Simcom SIM7500/SIM7600 devices
+                _rssi = -116 + (rssi - 100);
+            } else {
+                _rssi = 0;
+            }
         }
         return true;
     }
@@ -279,16 +288,6 @@ bool SimCommDevice::sendIDRequest(const char* modemSpecificICCIDCommand)
         }
     }
     return false;
-}
-
-void SimCommDevice::requestRSSI()
-{
-    _rssi = UINT8_MAX;
-}
-
-uint8_t SimCommDevice::getRSSI()
-{
-    return _rssi;
 }
 
 void SimCommDevice::requestIDString(RequestIDType type)
