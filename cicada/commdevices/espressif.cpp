@@ -88,8 +88,8 @@ bool EspressifDevice::fillLineBuffer()
             char c = _serial.read();
             _lineBuffer[_lbFill++] = c;
             if (c == '\n' || c == '>'
-                || (_type == UDP && _replyState != waitCiprecvdata && _replyState != reqMac
-                       && c == ':')
+                || (_type != TCP && _replyState != waitCiprecvdata && _replyState != reqMac &&
+                       _replyState != rssi && c == ':')
                 || _lbFill == LINE_MAX_LENGTH) {
                 _lineBuffer[_lbFill] = '\0';
                 _lbFill = 0;
@@ -365,10 +365,10 @@ void EspressifDevice::run()
     case sendCiprecvmode:
         _waitForReply = _okStr;
         _sendState = sendCipmode;
-        if (_type == UDP) {
-            sendCommand("AT+CIPRECVMODE=0");
-        } else {
+        if (_type == TCP) {
             sendCommand("AT+CIPRECVMODE=1");
+        } else {
+            sendCommand("AT+CIPRECVMODE=0");
         }
         break;
 
@@ -383,10 +383,16 @@ void EspressifDevice::run()
         snprintf(portStr, sizeof(portStr), "%u", _port);
 
         _serial.write((const uint8_t*)"AT+CIPSTART");
-        if (_type == UDP) {
-            _serial.write((const uint8_t*)"=\"UDP\",\"");
-        } else {
+        switch(_type) {
+        case TCP:
             _serial.write((const uint8_t*)"=\"TCP\",\"");
+            break;
+        case UDP:
+            _serial.write((const uint8_t*)"=\"UDP\",\"");
+            break;
+        case SSL:
+            _serial.write((const uint8_t*)"=\"SSL\",\"");
+            break;
         }
         // TODO: Escape characters
         _serial.write((const uint8_t*)_host);

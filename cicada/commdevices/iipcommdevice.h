@@ -36,7 +36,8 @@ class IIPCommDevice : public IStatefulDevice
 
     enum ConnectionType {
       UDP = 0,
-      TCP
+      TCP,
+      SSL
     };
     /*!
      * Set parameters for IP connection.
