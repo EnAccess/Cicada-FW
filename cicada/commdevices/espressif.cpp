@@ -58,6 +58,7 @@ void EspressifDevice::resetStates()
     _bytesToRead = 0;
     _waitForReply = NULL;
     _stateBooleans = LINE_READ;
+    _rssi = 99;
 }
 
 void EspressifDevice::setSSID(const char* ssid)
@@ -209,16 +210,14 @@ void EspressifDevice::run()
         logStates(_sendState, _replyState);
 
         // Handle error states
-        if (strncmp(_lineBuffer, "ERROR", 5) == 0 || strncmp(_lineBuffer, "FAIL", 4) == 0
-            || (_sendState != finalizeDisconnect
-                   && strncmp(_lineBuffer, "WIFI DISCONNECT", 9) == 0)) {
+        if (strncmp(_lineBuffer, "ERROR", 5) == 0 || strncmp(_lineBuffer, "FAIL", 4) == 0) {
             _stateBooleans |= RESET_PENDING;
             _connectState = generalError;
             _waitForReply = NULL;
             return;
-        } else if (_sendState == connected && strncmp(_lineBuffer, "SEND FAIL", 9) == 0) {
+        }
+        else if (_sendState == connected && strncmp(_lineBuffer, "SEND FAIL", 9) == 0) {
             _connectState = generalError;
-            _sendState = connected;
             _waitForReply = NULL;
         }
 
@@ -266,6 +265,9 @@ void EspressifDevice::run()
                     }
                 }
                 _replyState = okReply;
+            } else if (strncmp(_lineBuffer, "No AP", 5) == 0) {
+                _rssi = 99;
+                _replyState = okReply;
             }
 
         default:
@@ -286,6 +288,9 @@ void EspressifDevice::run()
                 _stateBooleans |= DATA_PENDING;
             } else if (strncmp(_lineBuffer, "CLOSED", 6) == 0) {
                 _stateBooleans &= ~IP_CONNECTED;
+            } else if (strncmp(_lineBuffer, "WIFI DISCONNECT", 15) == 0) {
+                _sendState = finalizeDisconnect;
+                _waitForReply = NULL;
             }
         }
     }
@@ -434,7 +439,8 @@ void EspressifDevice::run()
                     setDelay(100);
                 }
             } else {
-                handleDisconnect(sendCwqap);
+                _stateBooleans &= ~DISCONNECT_PENDING;
+                _sendState = sendCwqap;
             }
         }
         break;
