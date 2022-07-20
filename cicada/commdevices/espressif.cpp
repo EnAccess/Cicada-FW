@@ -343,7 +343,7 @@ void EspressifDevice::run()
         break;
 
     case sendCwmode:
-        _serial.write((const uint8_t*)"AT+CWMODE=3");
+        _serial.write((const uint8_t*)"AT+CWMODE=1");
         _serial.write((const uint8_t*)_lineEndStr);
 
         _waitForReply = _okStr;
