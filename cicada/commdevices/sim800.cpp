@@ -315,6 +315,7 @@ void Sim800CommDevice::run()
         break;
 
     case sendCiprxget4:
+        setDelay(0);
         _waitForReply = _okStr;
         _sendState = sendCiprxget2;
         _replyState = ciprxget4;
@@ -350,6 +351,7 @@ void Sim800CommDevice::run()
         } else if (_bytesToReceive > 0) {
             _sendState = sendCiprxget2;
         } else {
+            setDelay(10);
             _sendState = sendCiprxget4;
         }
         break;
