@@ -70,7 +70,6 @@ void Sim800CommDevice::run()
         _waitForReply = NULL;
         _stateBooleans &= ~RESET_PENDING;
         if (_connectState >= intermediate) {
-            setDelay(2000);
             connect();
         }
     }
@@ -202,7 +201,6 @@ void Sim800CommDevice::run()
         break;
 
     case connecting:
-        setDelay(10);
         _connectState = IPCommDevice::intermediate;
         _stateBooleans |= LINE_READ;
         _waitForReply = _okStr;
@@ -282,7 +280,6 @@ void Sim800CommDevice::run()
     }
 
     case finalizeConnect:
-        setDelay(0);
         _connectState = IPCommDevice::connected;
         _replyState = okReply;
         _sendState = connected;

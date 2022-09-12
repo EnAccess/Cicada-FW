@@ -76,6 +76,7 @@ void ModemDetect::run()
 {
     if (_detectedModem) {
         _detectedModem->run();
+        _detectedModem->setLastRun(lastRun());
         setDelay(_detectedModem->delay());
         return;
     }
