@@ -201,6 +201,9 @@ bool SimCommDevice::parseIDReply()
     // For Sim7x00: "AT+CICCID" replys with "+ICCID: <ICCID>"
     if (strncmp(_lineBuffer, "+ICCID: ", 8) == 0) {
         src = _lineBuffer + 8;
+    // Avoid handling other messages from the modem here
+    } else if (strncmp(_lineBuffer, "+", 1) == 0) {
+        return false;
     }
 
     int copiedChars = 0;
@@ -292,7 +295,6 @@ bool SimCommDevice::sendIDRequest(const char* modemSpecificICCIDCommand)
 
 void SimCommDevice::requestIDString(RequestIDType type)
 {
-    _serial.flushReceiveBuffers();
     _idStringBuffer[0] = '\0';
     _idStringBuffer[1] = type;
 }
