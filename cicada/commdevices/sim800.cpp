@@ -70,6 +70,7 @@ void Sim800CommDevice::run()
         _waitForReply = NULL;
         _stateBooleans &= ~RESET_PENDING;
         if (_connectState >= intermediate) {
+            setDelay(2000);
             connect();
         }
     }
@@ -201,6 +202,7 @@ void Sim800CommDevice::run()
         break;
 
     case connecting:
+        setDelay(10);
         _connectState = IPCommDevice::intermediate;
         _stateBooleans |= LINE_READ;
         _waitForReply = _okStr;
@@ -280,6 +282,7 @@ void Sim800CommDevice::run()
     }
 
     case finalizeConnect:
+        setDelay(0);
         _connectState = IPCommDevice::connected;
         _replyState = okReply;
         _sendState = connected;
@@ -312,6 +315,7 @@ void Sim800CommDevice::run()
         break;
 
     case sendCiprxget4:
+        setDelay(0);
         _waitForReply = _okStr;
         _sendState = sendCiprxget2;
         _replyState = ciprxget4;
@@ -347,6 +351,7 @@ void Sim800CommDevice::run()
         } else if (_bytesToReceive > 0) {
             _sendState = sendCiprxget2;
         } else {
+            setDelay(10);
             _sendState = sendCiprxget4;
         }
         break;
