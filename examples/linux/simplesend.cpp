@@ -32,7 +32,7 @@ class SimpleSend : public Task
         printf("*** Connected! ***\n");
 
         for (m_i=0; m_i<10; m_i++) {
-            m_commDev.write((uint8_t*)m_str, sizeof(m_str));
+            m_commDev.write((uint8_t*)m_str, strlen(m_str));
             E_REENTER_COND(m_commDev.writeBufferProcessed());
         }
 

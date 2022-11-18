@@ -24,6 +24,7 @@
 #include "cicada/commdevices/rakrui3.h"
 #include <cstdio>
 #include <cstring>
+#include <cinttypes>
 
 using namespace Cicada;
 
@@ -37,6 +38,11 @@ using namespace Cicada;
 const char* RakDevice::_okStr = "OK";
 const char* RakDevice::_lineEndStr = "\r\n";
 //const char* RakDevice::_quoteEndStr = "\"\r\n";
+
+// LoRaWAN maximum packet payload for different data rates. Taken from table 3 at
+// https://lora-developers.semtech.com/documentation/tech-papers-and-guides/the-book/packet-size-considerations/
+const uint8_t RakDevice::_packetSizes[14] =
+    { 11, 51, 51, 115, 222, 222, 222, 222, 33, 109, 222, 222, 222, 222 };
 
 RakDevice::RakDevice(
     IBufferedSerial& serial, uint8_t* readBuffer, uint8_t* writeBuffer, Size bufferSize) :
@@ -59,6 +65,10 @@ RakDevice::RakDevice(IBufferedSerial& serial, uint8_t* readBuffer, uint8_t* writ
 void RakDevice::resetStates()
 {
     setPort(1);
+    _sendState = 0;
+    _replyState = 0;
+    _waitForReply = nullptr;
+    _currentPacketSize = _packetSizes[0];
 }
 
 void RakDevice::setDevEUI(const char* eui)
@@ -198,6 +208,29 @@ void RakDevice::run()
             }
         }
 
+        // Process incoming data which need special treatment
+        switch (_replyState) {
+        case dataRate:
+            if (strncmp(_lineBuffer, "AT+DR=", 6) == 0) {
+                char* src = _lineBuffer + 6;
+                if (*src == '?') {
+                    break;
+                }
+                uint8_t dr;
+                sscanf(src, "%" SCNu8, &dr);
+                if (dr < sizeof(_packetSizes)) {
+                    _currentPacketSize = _packetSizes[dr];
+                } else {
+                    _currentPacketSize = _packetSizes[0];
+                }
+                _replyState = okReply;
+            }
+            break;
+
+        default:
+            break;
+        }
+
         // In joined state, check for new data
         if (_sendState >= joined) {
             char* src = _lineBuffer + 6;
@@ -206,7 +239,6 @@ void RakDevice::run()
                 while(*src) {
                     if(*src++ == ':') {
                         if(++nColons == 5) {
-                            printf("Data: %s\n", src);
                             int b;
                             while(sscanf(src, "%02x", &b) == 1) {
                                 _readBuffer.push((uint8_t)b);
@@ -287,24 +319,33 @@ void RakDevice::run()
 
     case joined:
         if (_writeBuffer.bytesAvailable()) {
-            _waitForReply = "+EVT:SEND_CONFIRMED_OK";
-            //_waitForReply = _okStr;
-            _sendState = waitForSend;
-            _serial.write((const uint8_t*)"AT+SEND=");
-            _serial.write((const uint8_t*)_portStr);
-            _serial.write((const uint8_t*)":");
-            while (_writeBuffer.bytesAvailable()) {
-                char hexStr[3];
-                char c = _writeBuffer.pull();
-                sprintf(hexStr, "%02X", c);
-                _serial.write((const uint8_t*)hexStr);
-            }
-            _serial.write((const uint8_t*)_lineEndStr);
+            _waitForReply = _okStr;
+            _sendState = sendPacket;
+            _replyState = dataRate;
+            sendCommand("AT+DR=?");
         }
+        break;
+
+    case sendPacket:
+        _waitForReply = "+EVT:SEND_CONFIRMED_OK";
+        //_waitForReply = _okStr;
+        _sendState = waitForSend;
+        _serial.write((const uint8_t*)"AT+SEND=");
+        _serial.write((const uint8_t*)_portStr);
+        _serial.write((const uint8_t*)":");
+        int i;
+        for (i = 0; i < _currentPacketSize && _writeBuffer.bytesAvailable(); i++) {
+            char hexStr[3];
+            char c = _writeBuffer.pull();
+            sprintf(hexStr, "%02X", c);
+            _serial.write((const uint8_t*)hexStr);
+        }
+        _serial.write((const uint8_t*)_lineEndStr);
         break;
 
     case waitForSend:
         _sendState = joined;
+        break;
 
     default:
         break;

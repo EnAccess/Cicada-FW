@@ -119,7 +119,7 @@ class RakDevice : public IStatefulDevice, public Task
      */
     virtual void run();
 
-    enum ReplyState { okReply = 0 };
+    enum ReplyState { okReply = 0, dataRate };
 
     enum SendState {
         notConnected,
@@ -131,6 +131,7 @@ class RakDevice : public IStatefulDevice, public Task
         join,
         finalizeJoin,
         joined,
+        sendPacket,
         waitForSend,
         finalizeDisconnect
     };
@@ -159,6 +160,9 @@ class RakDevice : public IStatefulDevice, public Task
     static const char* _okStr;
     static const char* _lineEndStr;
     static const char* _quoteEndStr;
+
+    uint8_t _currentPacketSize = 0;
+    static const uint8_t _packetSizes[14];
 };
 }
 
