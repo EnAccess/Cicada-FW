@@ -119,7 +119,7 @@ class RakDevice : public IStatefulDevice, public Task
      */
     virtual void run();
 
-    enum ReplyState { okReply = 0, dataRate };
+    enum ReplyState { okReply = 0, dataRate, sendConfirm };
 
     enum SendState {
         notConnected,
@@ -146,6 +146,7 @@ class RakDevice : public IStatefulDevice, public Task
 
     CircularBuffer<uint8_t> _readBuffer;
     CircularBuffer<uint8_t> _writeBuffer;
+    Size _bytesToResend;
 
     const char* _devEui = nullptr;
     const char* _appEui = nullptr;

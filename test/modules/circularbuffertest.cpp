@@ -154,3 +154,46 @@ TEST(CircularBufferTest, ShouldReadNothingAfterFlushingTheBuffer)
     CHECK_EQUAL(0, readLen);
     STRNCMP_EQUAL(expectedDataOut, dataOut, MAX_BUFFER_SIZE);
 }
+
+TEST(CircularBufferTest, ReReadSameData)
+{
+    const uint8_t MAX_BUFFER_SIZE = 10;
+    char rawBuffer[MAX_BUFFER_SIZE];
+    CircularBuffer<char> buffer(rawBuffer, MAX_BUFFER_SIZE);
+
+    const uint8_t SIZE = 8;
+    char dataIn[SIZE] = "1234567";
+    char dataOut[SIZE];
+
+    buffer.push(dataIn, SIZE);
+    buffer.pull(dataOut, SIZE);
+    STRNCMP_EQUAL(dataIn, dataOut, SIZE);
+
+    buffer.rewindReadHead(4);
+    buffer.pull(dataOut, 4);
+    STRNCMP_EQUAL("567", dataOut, 4);
+}
+
+
+TEST(CircularBufferTest, ReReadSameDataWithWrapAround)
+{
+    const uint8_t MAX_BUFFER_SIZE = 10;
+    char rawBuffer[MAX_BUFFER_SIZE];
+    CircularBuffer<char> buffer(rawBuffer, MAX_BUFFER_SIZE);
+
+    const uint8_t SIZE = 8;
+    char dataIn[SIZE] = "1234567";
+    char dataOut[SIZE];
+
+    buffer.push(dataIn, SIZE);
+    buffer.pull(dataOut, SIZE);
+    STRNCMP_EQUAL(dataIn, dataOut, SIZE);
+
+    buffer.push(dataIn, SIZE);
+    buffer.pull(dataOut, SIZE);
+    STRNCMP_EQUAL(dataIn, dataOut, SIZE);
+
+    buffer.rewindReadHead(7);
+    buffer.pull(dataOut, 7);
+    STRNCMP_EQUAL("234567", dataOut, 7);
+}

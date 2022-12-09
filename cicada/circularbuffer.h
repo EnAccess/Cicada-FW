@@ -192,6 +192,21 @@ class CircularBuffer
         return _bufferSize;
     }
 
+    /*!
+     * Rewinds the read head.
+     * Useful to re-read old data which has been pulled before.
+     * \param num number of entries to rewind the read head
+     */
+    virtual void rewindReadHead(Size num)
+    {
+        if (num <= _readHead) {
+            _readHead -= num;
+        } else {
+            _readHead = _bufferSize + _readHead - num;
+        }
+        _availableData += num;
+    }
+
   private:
     Size _writeHead;
     Size _readHead;

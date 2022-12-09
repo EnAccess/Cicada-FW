@@ -175,7 +175,7 @@ void RakDevice::sendCommand(const char* cmd)
 
 void RakDevice::run()
 {
-    // If the serial device is net yet open, try to open it
+    // If the serial device is not yet open, try to open it
     if (!_serial.isOpen()) {
         if (!_serial.open()) {
             _sendState = serialError;
@@ -224,6 +224,15 @@ void RakDevice::run()
                     _currentPacketSize = _packetSizes[0];
                 }
                 _replyState = okReply;
+            }
+            break;
+
+        case sendConfirm:
+            if (strncmp(_lineBuffer, "+EVT:SEND_CONFIRMED_FAILED", 26) == 0 ||
+                strncmp(_lineBuffer, "AT_BUSY_ERROR", 13) == 0) {
+                _writeBuffer.rewindReadHead(_bytesToResend);
+                _replyState = okReply;
+                _waitForReply = NULL;
             }
             break;
 
@@ -327,9 +336,11 @@ void RakDevice::run()
         break;
 
     case sendPacket:
+    {
         _waitForReply = "+EVT:SEND_CONFIRMED_OK";
         //_waitForReply = _okStr;
         _sendState = waitForSend;
+        _replyState = sendConfirm;
         _serial.write((const uint8_t*)"AT+SEND=");
         _serial.write((const uint8_t*)_portStr);
         _serial.write((const uint8_t*)":");
@@ -340,8 +351,10 @@ void RakDevice::run()
             sprintf(hexStr, "%02X", c);
             _serial.write((const uint8_t*)hexStr);
         }
+        _bytesToResend = i;
         _serial.write((const uint8_t*)_lineEndStr);
         break;
+    }
 
     case waitForSend:
         _sendState = joined;
