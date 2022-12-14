@@ -311,6 +311,12 @@ void RakDevice::run()
     case sendClass:
         sendCommand("AT+CLASS=C");
         _waitForReply = _okStr;
+        _sendState = sendDR;
+        break;
+
+    case sendDR:
+        sendCommand("AT+DR=0");
+        _waitForReply = _okStr;
         _sendState = join;
         break;
 

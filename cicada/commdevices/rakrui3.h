@@ -128,6 +128,7 @@ class RakDevice : public IStatefulDevice, public Task
         sendAppEUI,
         sendAppKey,
         sendClass,
+        sendDR,
         join,
         finalizeJoin,
         joined,
