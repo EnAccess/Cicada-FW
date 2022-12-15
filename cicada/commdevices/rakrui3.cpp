@@ -244,7 +244,7 @@ void RakDevice::run()
         if (_sendState >= joined) {
             char* src = _lineBuffer + 6;
             int nColons = 0;
-            if (strncmp(_lineBuffer, "+EVT:RX,", 5) == 0) {
+            if (strncmp(_lineBuffer, "+EVT:RX", 7) == 0) {
                 while(*src) {
                     if(*src++ == ':') {
                         if(++nColons == 5) {
