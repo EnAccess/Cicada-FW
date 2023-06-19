@@ -24,17 +24,20 @@ using namespace Cicada;
 class AutodetectNtp : public Task
 {
   public:
-    AutodetectNtp(ModemDetect& detector, const char* apn, const char* ssid, const char* pw) :
+    AutodetectNtp(ModemDetect& detector, const char* apn, const char* ssid, const char* pw, const char* host, uint16_t port) :
         m_detector(detector),
         m_commDev(NULL),
         _apn(apn),
         _ssid(ssid),
-        _pw(pw) {}
+        _pw(pw),
+        _udpHost(host),
+        _udpPort(port) {}
 
     virtual void run()
     {
         SimCommDevice* simCommDev;
         EspressifDevice* espressifDev;
+        CC1352P7CommDevice* cc1352p7Dev;
 
         E_BEGIN_TASK
         printf("*** EOL Begin! ***\n");
@@ -57,12 +60,16 @@ class AutodetectNtp : public Task
             espressifDev->setSSID(_ssid);
             espressifDev->setPassword(_pw);
         }
-
+        cc1352p7Dev = dynamic_cast<CC1352P7CommDevice*>(m_commDev);
+        if (cc1352p7Dev) {
+            printf("*** CC1352P7CommDevice Detected ***\n");
+        }
 
         printf("*** Start NTP Update Test ***\n");
         memset(m_ntpPacket, 0, sizeof(m_ntpPacket));
 
-        m_commDev->setHostPort("pool.ntp.org", 123, IIPCommDevice::UDP);
+        printf("Set UDP host : \"%s\" and port : \"%d\"\n", _udpHost, _udpPort);
+        m_commDev->setHostPort(_udpHost, _udpPort, IIPCommDevice::UDP);
         m_commDev->connect();
 
         E_REENTER_COND_TIMEOUT(m_commDev->isConnected(), 60000); // timeout 60 seconds
@@ -112,6 +119,8 @@ class AutodetectNtp : public Task
     const char* _apn;
     const char* _ssid;
     const char* _pw;
+    const char* _udpHost;
+    uint16_t _udpPort;
     uint32_t m_ntpPacket[12];
 
     int arrivedcount = 0;
@@ -122,6 +131,8 @@ int main(int argc, char* argv[])
     const char* apn = "";
     const char* ssid = "";
     const char* pw = "";
+    const char* host = "pool.ntp.org";
+    uint16_t port = 123;
     for(uint8_t i = 1; i<argc; i++){
         if(strcmp(argv[i],"apn")==0){
             apn=argv[i+1];
@@ -132,6 +143,12 @@ int main(int argc, char* argv[])
         } else if(strcmp(argv[i],"pw")==0){
             pw=argv[i+1];
             i++;
+        } else if(strcmp(argv[i],"host")==0){
+            host=argv[i+1];
+            i++;
+        } else if(strcmp(argv[i],"port")==0){
+            sscanf(argv[i+1], "%hu", &port);
+            i++;
         }
     }
     const uint16_t serialBufferSize = 1504;
@@ -141,7 +158,7 @@ int main(int argc, char* argv[])
 
     ModemDetect detector(serial);
 
-    AutodetectNtp task(detector, apn, ssid, pw);
+    AutodetectNtp task(detector, apn, ssid, pw, host, port);
 
     Task* taskList[] = { &task, &detector, &serial, NULL };
 

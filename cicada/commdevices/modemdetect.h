@@ -29,6 +29,7 @@
 #include "cicada/commdevices/iipcommdevice.h"
 #include "cicada/commdevices/sim7x00.h"
 #include "cicada/commdevices/sim800.h"
+#include "cicada/commdevices/cc1352p7.h"
 
 namespace Cicada {
 
@@ -80,6 +81,7 @@ class ModemDetect : public Task
         Sim800CommDevice sim800;
         Sim7x00CommDevice sim7x00;
         EspressifDevice espressif;
+        CC1352P7CommDevice cc1352p7;
     } _md;
 
     IBufferedSerial& _serial;
@@ -94,7 +96,8 @@ class ModemDetect : public Task
         modemDetectedState,
         detectedSim800,
         detectedSim7x00,
-        detectedEspressif
+        detectedEspressif,
+        detectedCC1352P7,
     } _detectState;
 
     bool _startDetection;
