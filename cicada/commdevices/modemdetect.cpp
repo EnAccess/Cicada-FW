@@ -60,6 +60,10 @@ ATCommDevice* ModemDetect::getDetectedModem(
             EspressifDevice(_serial, readBuffer, writeBuffer, readBufferSize, writeBufferSize);
         _detectedModem = &_md.espressif;
         break;
+    case detectedCC1352P7:
+        new (&_md.cc1352p7)
+            CC1352P7CommDevice(_serial, readBuffer, writeBuffer, readBufferSize, writeBufferSize);
+        _detectedModem = &_md.cc1352p7;
     default:
         break;
     }
@@ -117,6 +121,8 @@ void ModemDetect::run()
                 _detectState = detectedSim800;
             } else if (strncmp("SIMCOM_SIM7600", readBuf, 14) == 0) {
                 _detectState = detectedSim7x00;
+            } else if (strncmp("CC1352P7", readBuf, 8) == 0) {
+                _detectState = detectedCC1352P7;
             } else if (strncmp("ERROR", readBuf, 5) == 0) {
                 _serial.write((const uint8_t*)"AT+GMR\r\n");
                 _detectState = gmrSent;
