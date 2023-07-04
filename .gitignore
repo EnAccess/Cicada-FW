@@ -5,6 +5,7 @@ build
 build_stm
 build_linux
 build_mbed
+dep
 
 # Ignore the Meson packagecache dir
 packagecache
@@ -12,5 +13,5 @@ packagecache
 # Except for the patch file which is used by Meson to setup the STM32F1 dependancy
 !*/packagecache/stm32_patch.zip
 
-# Ignore STM32F1 dependancy 
+# Ignore STM32F1 dependancy
 STM32Cube_FW_F1_V1.7.0

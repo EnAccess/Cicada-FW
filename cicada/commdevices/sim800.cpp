@@ -1,6 +1,6 @@
 /*
- * E-Lib
- * Copyright (C) 2019 EnAccess
+ * Cicada communication library
+ * Copyright (C) 2019-2923 EnAccess and Okrasolar
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -302,7 +302,12 @@ void Sim800CommDevice::run()
             _sendState = sendCiprxget4;
         } else {
             _connectState = IPCommDevice::connected;
-            handleDisconnect(sendCipclose);
+            if (_stateBooleans & IP_CONNECTED) {
+                handleDisconnect(sendCipclose);
+            } else {
+                _stateBooleans &= ~DISCONNECT_PENDING;
+                _sendState = sendCipshut;
+            }
         }
         break;
 
@@ -358,7 +363,6 @@ void Sim800CommDevice::run()
 
     case ipUnconnected:
         _connectState = IPCommDevice::intermediate;
-        // TODO: Should this be sendCipshut?
         if (handleDisconnect(finalizeDisconnect))
             break;
 

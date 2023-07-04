@@ -25,11 +25,11 @@
 #define MODEMDETECT_H
 
 #include "cicada/commdevices/atcommdevice.h"
+#include "cicada/commdevices/cc1352p7.h"
 #include "cicada/commdevices/espressif.h"
 #include "cicada/commdevices/iipcommdevice.h"
 #include "cicada/commdevices/sim7x00.h"
 #include "cicada/commdevices/sim800.h"
-#include "cicada/commdevices/cc1352p7.h"
 
 namespace Cicada {
 
@@ -70,7 +70,9 @@ class ModemDetect : public Task
     ATCommDevice* getDetectedModem();
 
     /*!
-     * Performs the actual modem detection task
+     * Performs the actual modem detection task. Once a modem has been detected,
+     * this function forwards the call to the modem's run() method. There is no
+     * need to call the modem's run() method directly.
      */
     virtual void run();
 
