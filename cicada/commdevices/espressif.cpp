@@ -153,7 +153,6 @@ bool EspressifDevice::parseCiprecvdata()
 
 void EspressifDevice::requestMac()
 {
-    _serial.flushReceiveBuffers();
     _macStringBuffer[0] = '\0';
     _macStringBuffer[1] = 0xFF;
 }
