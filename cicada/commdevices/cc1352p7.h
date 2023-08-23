@@ -92,7 +92,7 @@ class CC1352P7CommDevice : public ATCommDevice
      */
     virtual void run();
 
-    enum ReplyState { okReply = 0, parseStateCiprecvdata };
+    enum ReplyState { okReply = 0, parseStateCiprecvdata, csq };
 
     enum SendState {
         notConnected,
@@ -113,6 +113,7 @@ class CC1352P7CommDevice : public ATCommDevice
     bool fillLineBuffer();
     bool sendCiprcvdata();
     bool parseCiprecvdata();
+    bool parseCsq();
 };
 }
 
