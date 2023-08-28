@@ -123,11 +123,9 @@ bool CC1352P7CommDevice::parseCiprecvdata()
 bool CC1352P7CommDevice::parseCsq()
 {
     if (strncmp(_lineBuffer, "+CSQ:", 5) == 0) {
-        unsigned int rsl;
-        if (sscanf(_lineBuffer + 5, "%u", &rsl) == 1) {
-            // Convert raw rsl to dBm
-            // Conversion according EWMA specified by Wi-SUN
-            _rssi = -174 + rsl;
+        int rsl;
+        if (sscanf(_lineBuffer + 5, "%d", &rsl) == 1) {
+            _rssi = rsl;
         }
         return true;
     }
