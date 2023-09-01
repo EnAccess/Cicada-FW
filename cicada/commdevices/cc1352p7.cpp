@@ -60,6 +60,7 @@ void CC1352P7CommDevice::resetStates()
     _bytesToRead = 0;
     _waitForReply = NULL;
     _stateBooleans = LINE_READ;
+    _rssi = 255;
 }
 
 bool CC1352P7CommDevice::fillLineBuffer()
@@ -116,6 +117,18 @@ bool CC1352P7CommDevice::parseCiprecvdata()
         return true;
     }
 
+    return false;
+}
+
+bool CC1352P7CommDevice::parseCsq()
+{
+    if (strncmp(_lineBuffer, "+CSQ:", 5) == 0) {
+        int rsl;
+        if (sscanf(_lineBuffer + 5, "%d", &rsl) == 1) {
+            _rssi = rsl;
+        }
+        return true;
+    }
     return false;
 }
 
@@ -178,6 +191,11 @@ void CC1352P7CommDevice::run()
             }
             break;
 
+        case csq:
+            if (parseCsq()) {
+                _replyState = okReply;
+            }
+
         default:
             break;
         }
@@ -207,6 +225,14 @@ void CC1352P7CommDevice::run()
     // Don't go on if space in write buffer is low
     if (_serial.spaceAvailable() < 20)
         return;
+
+    // When signal strength was requested, send the command to the modem
+    if (_rssi == INT16_MAX && _stateBooleans & LINE_READ) {
+        _replyState = csq;
+        _waitForReply = _okStr;
+        sendCommand("AT+CSQ");
+        return;
+    }
 
     // Connection state machine
     switch (_sendState) {
