@@ -28,6 +28,8 @@
 #include "cicada/commdevices/atcommdevice.h"
 #include <stdint.h>
 
+#define MAC64STRING_MAX_LENGTH 24
+
 namespace Cicada {
 
 /*!
@@ -47,6 +49,23 @@ class CC1352P7CommDevice : public ATCommDevice
         Size readBufferSize, Size writeBufferSize);
 
     virtual void resetStates();
+
+        /*!
+     * Request one of the MAC address from the module. It can then be
+     * retreieved with getMACString();
+     * Note: This method flushes the recieve buffer.
+     */
+    void requestMac();
+
+    /*!
+     * Actually returns the MAC address string requested before
+     * with the requestMAC() method, or NULL if the string is
+     * not yet available. The string is 0-terminated. When returned,
+     * this points to the internal string buffer and stays unchanged until
+     * another request*() method is called. The buffer is valid during the
+     * lifetime of this class.
+     * */
+    char* getMacString();
 
     /*!
      * Actually performs communication with the wifi module.
@@ -92,7 +111,7 @@ class CC1352P7CommDevice : public ATCommDevice
      */
     virtual void run();
 
-    enum ReplyState { okReply = 0, parseStateCiprecvdata, csq };
+    enum ReplyState { okReply = 0, parseStateCiprecvdata, csq, reqMac };
 
     enum SendState {
         notConnected,
@@ -114,6 +133,8 @@ class CC1352P7CommDevice : public ATCommDevice
     bool sendCiprcvdata();
     bool parseCiprecvdata();
     bool parseCsq();
+
+    char _macStringBuffer[MAC64STRING_MAX_LENGTH];
 };
 }
 

@@ -132,6 +132,21 @@ bool CC1352P7CommDevice::parseCsq()
     return false;
 }
 
+void CC1352P7CommDevice::requestMac()
+{
+    _macStringBuffer[0] = '\0';
+    _macStringBuffer[1] = 0xFF;
+}
+
+char* CC1352P7CommDevice::getMacString()
+{
+    if (_waitForReply == NULL && _macStringBuffer[0] != '\0') {
+        return _macStringBuffer;
+    } else {
+        return NULL;
+    }
+}
+
 void CC1352P7CommDevice::run()
 {
     // If the serial device is net yet open, try to open it
@@ -196,6 +211,18 @@ void CC1352P7CommDevice::run()
                 _replyState = okReply;
             }
 
+        case reqMac:
+            if (strncmp(_lineBuffer, "+CIPSTAMAC:\"", 12) == 0) {
+                char* src = _lineBuffer + 12;
+                int copiedChars = 0;
+                while (*src != '\"' && copiedChars < MAC64STRING_MAX_LENGTH - 1) {
+                    _macStringBuffer[copiedChars++] = *src++;
+                }
+                _macStringBuffer[copiedChars] = '\0';
+                _replyState = okReply;
+            }
+            break;
+
         default:
             break;
         }
@@ -231,6 +258,15 @@ void CC1352P7CommDevice::run()
         _replyState = csq;
         _waitForReply = _okStr;
         sendCommand("AT+CSQ");
+        return;
+    }
+
+    // When mac address was requested, send the command to the modem
+    if (_macStringBuffer[1] == 0xFF && _macStringBuffer[0] == '\0' && _stateBooleans & LINE_READ) {
+        _macStringBuffer[1] = 0;
+        sendCommand("AT+CIPSTAMAC");
+        _replyState = reqMac;
+        _waitForReply = _okStr;
         return;
     }
 
