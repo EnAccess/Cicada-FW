@@ -65,7 +65,11 @@ void Sim800CommDevice::run()
         _bytesToRead = 0;
         _bytesToReceive = 0;
         _bytesToWrite = 0;
-        _sendState = sendCipshut;
+        if (_sendState < sendCiicr || _sendState > sendCipshut) {
+            _sendState = notConnected;
+        } else {
+            _sendState = sendCipshut;
+        }
         _replyState = okReply;
         _waitForReply = NULL;
         _stateBooleans &= ~RESET_PENDING;
