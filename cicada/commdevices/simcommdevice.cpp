@@ -206,13 +206,36 @@ bool SimCommDevice::parseIDReply()
         return false;
     }
 
-    int copiedChars = 0;
-    while (*src != '\r' && copiedChars < IDSTRING_MAX_LENGTH - 1) {
-        _idStringBuffer[copiedChars++] = *src++;
+    // Count number of digits in reply
+    int nDigits = 0;
+    while (src[nDigits] >= '0' && src[nDigits] <= '9') {
+        nDigits++;
     }
-    _idStringBuffer[copiedChars] = '\0';
 
-    return true;
+    // Calculate checksum with Luhn's algorithm
+    int nSum = 0;
+    bool isSecond = false;
+    for (int i = nDigits - 1; i >= 0; i--) {
+        int d = src[i] - '0';
+        if (isSecond == true)
+            d = d * 2;
+        nSum += d / 10;
+        nSum += d % 10;
+        isSecond = !isSecond;
+    }
+
+    // Check if reply is an ICCID and copy to buffer
+    if (nDigits >=18 && nDigits <= 22 && nSum % 10 == 0 && src[0] == '8' && src[1] == '9') {
+        int copiedChars = 0;
+        while (*src != '\r' && copiedChars < IDSTRING_MAX_LENGTH - 1) {
+            _idStringBuffer[copiedChars++] = *src++;
+        }
+        _idStringBuffer[copiedChars] = '\0';
+
+        return true;
+    }
+
+    return false;
 }
 
 bool SimCommDevice::sendDnsQuery()
