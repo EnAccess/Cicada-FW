@@ -206,26 +206,42 @@ bool SimCommDevice::parseIDReply()
         return false;
     }
 
-    // Count number of digits in reply
-    int nDigits = 0;
-    while (src[nDigits] >= '0' && src[nDigits] <= '9') {
-        nDigits++;
+    // Validation of reply
+    RequestIDType type = (RequestIDType)_idStringBuffer[2];
+    bool replyValid = false;
+
+    switch(type) {
+    case iccid: {
+        // Count number of digits in reply
+        int nDigits = 0;
+        while (src[nDigits] >= '0' && src[nDigits] <= '9') {
+            nDigits++;
+        }
+
+        // Calculate checksum with Luhn's algorithm
+        int nSum = 0;
+        bool isSecond = false;
+        for (int i = nDigits - 1; i >= 0; i--) {
+            int d = src[i] - '0';
+            if (isSecond == true)
+                d = d * 2;
+            nSum += d / 10;
+            nSum += d % 10;
+            isSecond = !isSecond;
+        }
+        replyValid = nDigits >=18 && nDigits <= 22 &&
+            nSum % 10 == 0 && src[0] == '8' && src[1] == '9';
+
+        break;
     }
 
-    // Calculate checksum with Luhn's algorithm
-    int nSum = 0;
-    bool isSecond = false;
-    for (int i = nDigits - 1; i >= 0; i--) {
-        int d = src[i] - '0';
-        if (isSecond == true)
-            d = d * 2;
-        nSum += d / 10;
-        nSum += d % 10;
-        isSecond = !isSecond;
+    default:
+        // TODO: Other replies are not yet validated
+        replyValid = true;
+        break;
     }
 
-    // Check if reply is an ICCID and copy to buffer
-    if (nDigits >=18 && nDigits <= 22 && nSum % 10 == 0 && src[0] == '8' && src[1] == '9') {
+    if (replyValid) {
         int copiedChars = 0;
         while (*src != '\r' && copiedChars < IDSTRING_MAX_LENGTH - 1) {
             _idStringBuffer[copiedChars++] = *src++;
@@ -320,6 +336,7 @@ void SimCommDevice::requestIDString(RequestIDType type)
 {
     _idStringBuffer[0] = '\0';
     _idStringBuffer[1] = type;
+    _idStringBuffer[2] = type;
 }
 
 char* SimCommDevice::getIDString()
