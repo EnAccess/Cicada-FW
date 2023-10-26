@@ -29,8 +29,7 @@ namespace Cicada {
 class EnaccessTicker : public Ticker
 {
   public:
-    EnaccessTicker() :
-        _millis(0)
+    EnaccessTicker() : _millis(0)
     {
         attach_us(mbed::callback(this, &EnaccessTicker::increase), 1000);
     }

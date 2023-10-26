@@ -24,18 +24,18 @@
 #ifndef MBEDSERIAL_H
 #define MBEDSERIAL_H
 
-#include "mbed.h"
 #include "bufferedserial.h"
+#include "mbed.h"
 
 namespace Cicada {
 
 class MbedSerial : public BufferedSerial
 {
   public:
-    MbedSerial(char* readBuffer, char* writeBuffer, Size bufferSize,
-               PinName tx = SERIAL_TX, PinName rx = SERIAL_RX);
+    MbedSerial(char* readBuffer, char* writeBuffer, Size bufferSize, PinName tx = SERIAL_TX,
+        PinName rx = SERIAL_RX);
     MbedSerial(char* readBuffer, char* writeBuffer, Size readBufferSize, Size writeBufferSize,
-               PinName tx = SERIAL_TX, PinName rx = SERIAL_RX);
+        PinName tx = SERIAL_TX, PinName rx = SERIAL_RX);
 
     virtual bool open() override;
     virtual bool isOpen() override;

@@ -88,8 +88,8 @@ bool EspressifDevice::fillLineBuffer()
             char c = _serial.read();
             _lineBuffer[_lbFill++] = c;
             if (c == '\n' || c == '>'
-                || (_type == UDP && _replyState != waitCiprecvdata
-                && _replyState != reqMac && c == ':')
+                || (_type == UDP && _replyState != waitCiprecvdata && _replyState != reqMac
+                    && c == ':')
                 || _lbFill == LINE_MAX_LENGTH) {
                 _lineBuffer[_lbFill] = '\0';
                 _lbFill = 0;
@@ -209,10 +209,9 @@ void EspressifDevice::run()
         logStates(_sendState, _replyState);
 
         // Handle error states
-        if (strncmp(_lineBuffer, "ERROR", 5) == 0
-            || strncmp(_lineBuffer, "FAIL", 4) == 0
+        if (strncmp(_lineBuffer, "ERROR", 5) == 0 || strncmp(_lineBuffer, "FAIL", 4) == 0
             || (_sendState != finalizeDisconnect
-            && strncmp(_lineBuffer, "WIFI DISCONNECT", 9) == 0)) {
+                && strncmp(_lineBuffer, "WIFI DISCONNECT", 9) == 0)) {
             _stateBooleans |= RESET_PENDING;
             _connectState = generalError;
             _waitForReply = NULL;

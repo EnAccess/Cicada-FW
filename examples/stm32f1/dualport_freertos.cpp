@@ -30,8 +30,7 @@ void serialTask(void* parameters)
     char readBuffer[bufferSize];
     char writeBuffer[bufferSize];
     Stm32Uart debug(readBufferDebug, writeBufferDebug, bufferSize);
-    Stm32Uart serial(readBuffer, writeBuffer, bufferSize,
-                     USART1, GPIOA, GPIO_PIN_9, GPIO_PIN_10);
+    Stm32Uart serial(readBuffer, writeBuffer, bufferSize, USART1, GPIOA, GPIO_PIN_9, GPIO_PIN_10);
 
     debug.open();
     serial.open();

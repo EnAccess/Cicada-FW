@@ -3,19 +3,18 @@
  */
 
 #define MQTTCLIENT_QOS2 1
+#include "cicada/commdevices/blockingcommdev.h"
+#include "cicada/commdevices/espressif.h"
 #include "cicada/commdevices/modemdetect.h"
+#include "cicada/mqttcountdown.h"
 #include "cicada/platform/linux/unixserial.h"
 #include "cicada/scheduler.h"
 #include "cicada/tick.h"
-#include "cicada/commdevices/blockingcommdev.h"
-#include "cicada/commdevices/espressif.h"
-#include "cicada/mqttcountdown.h"
 #include <arpa/inet.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdint.h>
-
 
 #include <MQTTClient.h>
 
@@ -25,11 +24,8 @@ class AutodetectNtp : public Task
 {
   public:
     AutodetectNtp(ModemDetect& detector, const char* apn, const char* ssid, const char* pw) :
-        m_detector(detector),
-        m_commDev(NULL),
-        _apn(apn),
-        _ssid(ssid),
-        _pw(pw) {}
+        m_detector(detector), m_commDev(NULL), _apn(apn), _ssid(ssid), _pw(pw)
+    {}
 
     virtual void run()
     {
@@ -43,7 +39,8 @@ class AutodetectNtp : public Task
 
         E_REENTER_COND_TIMEOUT(m_detector.modemDetected(), 30000);
         checkExitEol(m_detector.modemDetected(), "*** Failed Modem Detection ***");
-        m_commDev = m_detector.getDetectedModem(_commReadBuffer, _commWriteBuffer, _commBufferSize, _commBufferSize);
+        m_commDev = m_detector.getDetectedModem(
+            _commReadBuffer, _commWriteBuffer, _commBufferSize, _commBufferSize);
 
         simCommDev = dynamic_cast<SimCommDevice*>(m_commDev);
         if (simCommDev) {
@@ -58,14 +55,13 @@ class AutodetectNtp : public Task
             espressifDev->setPassword(_pw);
         }
 
-
         printf("*** Start NTP Update Test ***\n");
         memset(m_ntpPacket, 0, sizeof(m_ntpPacket));
 
         m_commDev->setHostPort("pool.ntp.org", 123, IIPCommDevice::UDP);
         m_commDev->connect();
 
-        E_REENTER_COND_TIMEOUT(m_commDev->isConnected(), 60000); // timeout 60 seconds
+        E_REENTER_COND_TIMEOUT(m_commDev->isConnected(), 60000);   // timeout 60 seconds
         checkExitEol(m_commDev->isConnected(), "*** Failed to connect! ***");
         printf("*** Connected! ***\n");
 
@@ -80,7 +76,7 @@ class AutodetectNtp : public Task
         {
             uint32_t epoch = ntohl(m_ntpPacket[10]) - 2208988800U;
             printf("Seconds since the Epoch: %u\n", epoch);
-            checkExitEol(epoch>1636647985, "*** Failed NTP Time Update ***");
+            checkExitEol(epoch > 1636647985, "*** Failed NTP Time Update ***");
         }
 
         m_commDev->disconnect();
@@ -95,8 +91,9 @@ class AutodetectNtp : public Task
         exit(EXIT_SUCCESS);
     }
 
-    void checkExitEol(bool condition, const char* message){
-        if(!condition){
+    void checkExitEol(bool condition, const char* message)
+    {
+        if (!condition) {
             printf("*** FAILED EOL TEST %s\n", message);
             exit(EXIT_FAILURE);
         }
@@ -122,15 +119,15 @@ int main(int argc, char* argv[])
     const char* apn = "";
     const char* ssid = "";
     const char* pw = "";
-    for(uint8_t i = 1; i<argc; i++){
-        if(strcmp(argv[i],"apn")==0){
-            apn=argv[i+1];
+    for (uint8_t i = 1; i < argc; i++) {
+        if (strcmp(argv[i], "apn") == 0) {
+            apn = argv[i + 1];
             i++;
-        } else if(strcmp(argv[i],"ssid")==0){
-            ssid=argv[i+1];
+        } else if (strcmp(argv[i], "ssid") == 0) {
+            ssid = argv[i + 1];
             i++;
-        } else if(strcmp(argv[i],"pw")==0){
-            pw=argv[i+1];
+        } else if (strcmp(argv[i], "pw") == 0) {
+            pw = argv[i + 1];
             i++;
         }
     }

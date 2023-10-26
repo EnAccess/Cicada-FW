@@ -72,8 +72,8 @@ void mqttTask(void* parameters)
 
     char readBufferSerial[serialBufferSize];
     char writeBufferSerial[serialBufferSize];
-    Stm32Uart serial(readBufferSerial, writeBufferSerial, serialBufferSize,
-                     USART1, GPIOA, GPIO_PIN_9, GPIO_PIN_10);
+    Stm32Uart serial(readBufferSerial, writeBufferSerial, serialBufferSize, USART1, GPIOA,
+        GPIO_PIN_9, GPIO_PIN_10);
 
     const uint16_t commBufferSize = 1200;
     uint8_t commReadBuffer[commBufferSize];

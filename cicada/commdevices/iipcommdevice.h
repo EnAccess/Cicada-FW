@@ -32,12 +32,9 @@ namespace Cicada {
 class IIPCommDevice : public IStatefulDevice
 {
   public:
-    virtual ~IIPCommDevice() { }
+    virtual ~IIPCommDevice() {}
 
-    enum ConnectionType {
-      UDP = 0,
-      TCP
-    };
+    enum ConnectionType { UDP = 0, TCP };
     /*!
      * Set parameters for IP connection.
      * Need to be set before connect() is called.

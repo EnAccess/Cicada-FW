@@ -15,10 +15,7 @@ using namespace Cicada;
 class IPCommTask : public Task
 {
   public:
-    IPCommTask(ModemDetect& detector) :
-        m_detector(detector),
-        m_commDev(NULL),
-        m_i(0) {}
+    IPCommTask(ModemDetect& detector) : m_detector(detector), m_commDev(NULL), m_i(0) {}
 
     virtual void run()
     {
@@ -30,7 +27,8 @@ class IPCommTask : public Task
         m_detector.startDetection();
 
         E_REENTER_COND(m_detector.modemDetected());
-        m_commDev = m_detector.getDetectedModem(_commReadBuffer, _commWriteBuffer, _commBufferSize, _commBufferSize);
+        m_commDev = m_detector.getDetectedModem(
+            _commReadBuffer, _commWriteBuffer, _commBufferSize, _commBufferSize);
 
         simCommDev = dynamic_cast<SimCommDevice*>(m_commDev);
         if (simCommDev) {
