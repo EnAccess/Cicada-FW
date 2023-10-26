@@ -1,3 +1,34 @@
+<p align="center">
+  <a href="https://github.com/EnAccess/Cicada-FW">
+    <img
+      src="https://enaccess.org/wp-content/uploads/2023/04/Cicada-graphic-GitHub-2240-%c3%97-800-.svg"
+      alt="Cicada GSM"
+      width="640"
+    >
+  </a>
+</p>
+<p align="center">
+    <em>IoT Communications Module for Energy Access. A quick way to get production ready, bi-directional communications for your IoT embedded device.</em>
+</p>
+<p align="center">
+  <img
+    alt="Project Status"
+    src="https://img.shields.io/badge/Project%20Status-stable-green"
+  >
+  <img
+    alt="GitHub Workflow Status"
+    src="https://img.shields.io/github/actions/workflow/status/EnAccess/Cicada-FW/check-generic.yaml"
+  >
+  <a href="https://github.com/EnAccess/Cicada-FW/blob/main/LICENSE" target="_blank">
+    <img
+      alt="License"
+      src="https://img.shields.io/github/license/EnAccess/Cicada-FW"
+    >
+  </a>
+</p>
+
+---
+
 # Cicada - IoT Communications Module for Energy Access
 
 An easy way to get production ready, bi-directional communications for your
@@ -16,12 +47,14 @@ It's easy to add support for a new microcontroller or embedded os. There is also
 support for Unix (Linux, OS X) to test code on a PC without the need of having
 access to actual microcontroller hardware.
 
-## Supported UARTs:
+## Supported UARTs
+
 - STM32F1
 - Mbed
 - Unix (Linux / OS X) termios
 
-## Supported communication modules:
+## Supported communication modules
+
 - Simcom SIM7x00 (3G/4G)
 - Simcom SIM800 (2G)
 - Espressif modules with AT Firmware V1.7 or V2.1 (Wifi)
@@ -29,38 +62,47 @@ access to actual microcontroller hardware.
 The source code for each of these modules can be found in the `cicada/commdevices` directory.
 
 ## Hardware
+
 This library is designed to be adapted to different hardware use cases, but Okra has also designed and manufactured PCBAs for all three supported communication modules, which can be used in conjunction with this library. See the [Cicada Wifi](https://github.com/EnAccess/Cicada-WiFi-HW) and [Cicada Cellular](https://github.com/EnAccess/Cicada-GSM-HW) repos for further details.
 
 ## Documentation
+
 [View the hosted Doxygen here](https://okrasolar.github.io/Cicada/doc/).
 
 ## Build and test
 
 ### Build toolchain
+
 - Meson + Ninja
 
 ### Unit tests
+
 - CppUnit
 
 ### Build setup
+
 To setup build dependencies, do:
 `git submodule init`
 `git submodule update`
 
-### Native build (for testing an a host PC):
+### Native build (for testing an a host PC)
+
 Run `meson <builddirectory>` to generate build files. Finally, change
 to the builddirectory and run `ninja`.
 
-### Cross build (for microcontrollers):
+### Cross build (for microcontrollers)
+
 Run `meson <builddirectory> --cross-file <crossfile>`
 
 Example:
 `meson stm32build --cross-file stm32.cross.build`
 
 ## Getting started
+
 The following code shows a simple example for STM32 which dials up the modem,
 connects to a host and sends an MQTT packet:
-```
+
+```c
 int main(int argc, char* argv[])
 {
     // System configuration for microcontroller
@@ -110,4 +152,5 @@ int main(int argc, char* argv[])
     }
 }
 ```
+
 See `examples/` directory for full example code.
