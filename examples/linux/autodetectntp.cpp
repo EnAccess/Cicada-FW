@@ -81,7 +81,7 @@ class AutodetectNtp : public Task
             uint32_t epoch = ntohl(m_ntpPacket[10]) - 2208988800U;
             printf("Seconds since the Epoch: %u\n", epoch);
             checkExitEol(epoch>1636647985, "*** Failed NTP Time Update ***");
-        }   
+        }
 
         m_commDev->disconnect();
         E_REENTER_COND_TIMEOUT(m_commDev->isIdle(), 30000);

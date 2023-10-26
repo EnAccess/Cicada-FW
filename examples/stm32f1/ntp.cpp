@@ -91,7 +91,7 @@ int main(int argc, char* argv[])
     uint8_t commWriteBuffer[commBufferSize];
     // Change this class to the modem driver you want
     Sim7x00CommDevice commDev(serial, commReadBuffer, commWriteBuffer, commBufferSize);
-    
+
     NTPTask task(commDev);
 
     Task* taskList[] = { &task, &commDev, NULL };
