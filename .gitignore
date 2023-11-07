@@ -15,3 +15,6 @@ packagecache
 
 # Ignore STM32F1 dependancy
 STM32Cube_FW_F1_V1.7.0
+
+# Doxygen output
+doc
