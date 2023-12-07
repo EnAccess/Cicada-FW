@@ -11,3 +11,8 @@ int main(int ac, char** av)
     printf("\r\n");
     return CommandLineTestRunner::RunAllTests(ac, av);
 }
+
+extern "C" void _putchar(char c)
+{
+    putchar(c);
+}

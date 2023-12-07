@@ -26,6 +26,7 @@
 #include <cstddef>
 #include <cstdio>
 #include <cstring>
+#include "printf.h"
 
 using namespace Cicada;
 
