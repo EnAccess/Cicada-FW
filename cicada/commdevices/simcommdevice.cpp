@@ -24,7 +24,7 @@
 #include "cicada/commdevices/simcommdevice.h"
 #include <cinttypes>
 #include <cstddef>
-#include <cstdio>
+#include <cstdlib>
 #include <cstring>
 #include "printf.h"
 
@@ -148,8 +148,7 @@ bool SimCommDevice::parseDnsReply()
 bool SimCommDevice::parseCiprxget4()
 {
     if (strncmp(_lineBuffer, "+CIPRXGET: 4,0,", 15) == 0) {
-        int bytesToReceive;
-        sscanf(_lineBuffer + 15, "%d", &bytesToReceive);
+        int bytesToReceive = strtol(_lineBuffer + 15, NULL, 10);
         _bytesToReceive += bytesToReceive;
         return true;
     }
@@ -159,8 +158,7 @@ bool SimCommDevice::parseCiprxget4()
 bool SimCommDevice::parseCiprxget2()
 {
     if (strncmp(_lineBuffer, "+CIPRXGET: 2,0,", 15) == 0) {
-        int bytesToReceive;
-        sscanf(_lineBuffer + 15, "%d", &bytesToReceive);
+        int bytesToReceive = strtol(_lineBuffer + 15, NULL, 10);
         _bytesToReceive -= bytesToReceive;
         _bytesToRead += bytesToReceive;
         _stateBooleans &= ~LINE_READ;
@@ -172,18 +170,16 @@ bool SimCommDevice::parseCiprxget2()
 bool SimCommDevice::parseCsq()
 {
     if (strncmp(_lineBuffer, "+CSQ: ", 6) == 0) {
-        unsigned int rssi;
-        if (sscanf(_lineBuffer + 6, "%u", &rssi) == 1) {
-            // Convert raw rssi to dBm
-            if (rssi >= 0 && rssi <= 31) {
-                // Conversion according to 3GPP TS 27.007
-                _rssi = -113 + rssi * 2;
-            } else if (rssi > 99 && rssi <= 199) {
-                // Conversion for Simcom SIM7500/SIM7600 devices
-                _rssi = -116 + (rssi - 100);
-            } else {
-                _rssi = 0;
-            }
+        unsigned int rssi = strtol(_lineBuffer + 6, NULL, 10);
+        // Convert raw rssi to dBm
+        if (rssi >= 0 && rssi <= 31) {
+            // Conversion according to 3GPP TS 27.007
+            _rssi = -113 + rssi * 2;
+        } else if (rssi > 99 && rssi <= 199) {
+            // Conversion for Simcom SIM7500/SIM7600 devices
+            _rssi = -116 + (rssi - 100);
+        } else {
+            _rssi = 0;
         }
         return true;
     }
