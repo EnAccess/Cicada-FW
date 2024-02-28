@@ -8,7 +8,7 @@
 #include "cicada/scheduler.h"
 #include "cicada/tick.h"
 #include <cstdint>
-#include <cstdio>
+#include "printf.h"
 
 using namespace Cicada;
 

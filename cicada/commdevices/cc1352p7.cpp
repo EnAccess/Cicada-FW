@@ -25,8 +25,9 @@
 #include "cicada/commdevices/atcommdevice.h"
 #include <cstddef>
 #include <cstdint>
-#include <cstdio>
+#include <cstdlib>
 #include <cstring>
+#include "printf.h"
 
 using namespace Cicada;
 
@@ -110,7 +111,7 @@ bool CC1352P7CommDevice::parseCiprecvdata()
 {
     if (strncmp(_lineBuffer, "+CIPRECVDATA", 12) == 0) {
         int bytesToRead;
-        sscanf(_lineBuffer + 13, "%d", &bytesToRead);
+        bytesToRead = strtol(_lineBuffer + 13, NULL, 10);
         _bytesToReceive -= bytesToRead;
         _bytesToRead += bytesToRead;
         _stateBooleans &= ~LINE_READ;
@@ -123,10 +124,7 @@ bool CC1352P7CommDevice::parseCiprecvdata()
 bool CC1352P7CommDevice::parseCsq()
 {
     if (strncmp(_lineBuffer, "+CSQ:", 5) == 0) {
-        int rsl;
-        if (sscanf(_lineBuffer + 5, "%d", &rsl) == 1) {
-            _rssi = rsl;
-        }
+        _rssi = strtol(_lineBuffer + 5, NULL, 10);
         return true;
     }
     return false;
@@ -230,9 +228,7 @@ void CC1352P7CommDevice::run()
         // In connected state, check for new data or IP connection close
         if (_sendState >= connected) {
             if (strncmp(_lineBuffer, "+IPD,", 4) == 0) {
-                int bytes;
-                sscanf(_lineBuffer + 5, "%d", &bytes);
-                _bytesToReceive = bytes;
+                _bytesToReceive = strtol(_lineBuffer + 5, NULL, 10);
                 _stateBooleans |= DATA_PENDING;
             } else if (strncmp(_lineBuffer, "CLOSED", 6) == 0) {
                 _stateBooleans &= ~IP_CONNECTED;

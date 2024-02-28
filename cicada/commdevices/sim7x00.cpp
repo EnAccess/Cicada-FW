@@ -25,8 +25,8 @@
 #include "cicada/commdevices/ipcommdevice.h"
 #include <cstddef>
 #include <cstdint>
-#include <cstdio>
 #include <cstring>
+#include "printf.h"
 
 using namespace Cicada;
 

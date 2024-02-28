@@ -3,7 +3,7 @@
 project(
     'printf',
     'c',
-    version : '3.1.4'
+    version : '4.0.0'
 )
 
 embedded_printf_inc = include_directories([

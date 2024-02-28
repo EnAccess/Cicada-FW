@@ -24,8 +24,8 @@
 #include "cicada/commdevices/sim800.h"
 #include <cstddef>
 #include <cstdint>
-#include <cstdio>
 #include <cstring>
+#include "printf.h"
 
 using namespace Cicada;
 

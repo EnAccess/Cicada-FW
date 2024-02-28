@@ -23,8 +23,9 @@
 
 #include "cicada/commdevices/espressif.h"
 #include "cicada/commdevices/ipcommdevice.h"
-#include <cstdio>
 #include <cstring>
+#include <cstdlib>
+#include "printf.h"
 
 using namespace Cicada;
 
@@ -140,8 +141,7 @@ bool EspressifDevice::sendCiprcvdata()
 bool EspressifDevice::parseCiprecvdata()
 {
     if (strncmp(_lineBuffer, "+CIPRECVDATA", 12) == 0) {
-        int bytesToRead;
-        sscanf(_lineBuffer + 13, "%d", &bytesToRead);
+        int bytesToRead = strtol(_lineBuffer + 13, NULL, 10);
         _bytesToReceive -= bytesToRead;
         _bytesToRead += bytesToRead;
         _stateBooleans &= ~LINE_READ;
@@ -255,10 +255,7 @@ void EspressifDevice::run()
                 while (*src) {
                     if (*src++ == ',') {
                         if (++nCommas == 3) {
-                            unsigned int rssi;
-                            if (sscanf(src, "%u", &rssi) == 1) {
-                                _rssi = rssi;
-                            }
+                            _rssi = strtol(src, NULL, 10);
                             break;
                         }
                     }
@@ -276,8 +273,7 @@ void EspressifDevice::run()
         // In connected state, check for new data or IP connection close
         if (_sendState >= connected) {
             if (strncmp(_lineBuffer, "+IPD,", 4) == 0) {
-                int bytes;
-                sscanf(_lineBuffer + 5, "%d", &bytes);
+                int bytes = strtol(_lineBuffer + 5, NULL, 10);
                 if (_type == IIPCommDevice::TCP) {
                     _bytesToReceive = bytes;
                 } else {
