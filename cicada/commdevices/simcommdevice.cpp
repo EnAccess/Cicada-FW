@@ -24,8 +24,9 @@
 #include "cicada/commdevices/simcommdevice.h"
 #include <cinttypes>
 #include <cstddef>
-#include <cstdio>
+#include <cstdlib>
 #include <cstring>
+#include "printf.h"
 
 using namespace Cicada;
 
@@ -147,8 +148,7 @@ bool SimCommDevice::parseDnsReply()
 bool SimCommDevice::parseCiprxget4()
 {
     if (strncmp(_lineBuffer, "+CIPRXGET: 4,0,", 15) == 0) {
-        int bytesToReceive;
-        sscanf(_lineBuffer + 15, "%d", &bytesToReceive);
+        int bytesToReceive = strtol(_lineBuffer + 15, NULL, 10);
         _bytesToReceive += bytesToReceive;
         return true;
     }
@@ -158,8 +158,7 @@ bool SimCommDevice::parseCiprxget4()
 bool SimCommDevice::parseCiprxget2()
 {
     if (strncmp(_lineBuffer, "+CIPRXGET: 2,0,", 15) == 0) {
-        int bytesToReceive;
-        sscanf(_lineBuffer + 15, "%d", &bytesToReceive);
+        int bytesToReceive = strtol(_lineBuffer + 15, NULL, 10);
         _bytesToReceive -= bytesToReceive;
         _bytesToRead += bytesToReceive;
         _stateBooleans &= ~LINE_READ;
@@ -171,18 +170,16 @@ bool SimCommDevice::parseCiprxget2()
 bool SimCommDevice::parseCsq()
 {
     if (strncmp(_lineBuffer, "+CSQ: ", 6) == 0) {
-        unsigned int rssi;
-        if (sscanf(_lineBuffer + 6, "%u", &rssi) == 1) {
-            // Convert raw rssi to dBm
-            if (rssi >= 0 && rssi <= 31) {
-                // Conversion according to 3GPP TS 27.007
-                _rssi = -113 + rssi * 2;
-            } else if (rssi > 99 && rssi <= 199) {
-                // Conversion for Simcom SIM7500/SIM7600 devices
-                _rssi = -116 + (rssi - 100);
-            } else {
-                _rssi = 0;
-            }
+        unsigned int rssi = strtol(_lineBuffer + 6, NULL, 10);
+        // Convert raw rssi to dBm
+        if (rssi >= 0 && rssi <= 31) {
+            // Conversion according to 3GPP TS 27.007
+            _rssi = -113 + rssi * 2;
+        } else if (rssi > 99 && rssi <= 199) {
+            // Conversion for Simcom SIM7500/SIM7600 devices
+            _rssi = -116 + (rssi - 100);
+        } else {
+            _rssi = 0;
         }
         return true;
     }
@@ -206,13 +203,52 @@ bool SimCommDevice::parseIDReply()
         return false;
     }
 
-    int copiedChars = 0;
-    while (*src != '\r' && copiedChars < IDSTRING_MAX_LENGTH - 1) {
-        _idStringBuffer[copiedChars++] = *src++;
-    }
-    _idStringBuffer[copiedChars] = '\0';
+    // Validation of reply
+    RequestIDType type = (RequestIDType)_idStringBuffer[2];
+    bool replyValid = false;
 
-    return true;
+    switch(type) {
+    case iccid: {
+        // Count number of digits in reply
+        int nDigits = 0;
+        while (src[nDigits] >= '0' && src[nDigits] <= '9') {
+            nDigits++;
+        }
+
+        // Calculate checksum with Luhn's algorithm
+        int nSum = 0;
+        bool isSecond = false;
+        for (int i = nDigits - 1; i >= 0; i--) {
+            int d = src[i] - '0';
+            if (isSecond == true)
+                d = d * 2;
+            nSum += d / 10;
+            nSum += d % 10;
+            isSecond = !isSecond;
+        }
+        replyValid = nDigits >=18 && nDigits <= 22 &&
+            nSum % 10 == 0 && src[0] == '8' && src[1] == '9';
+
+        break;
+    }
+
+    default:
+        // TODO: Other replies are not yet validated
+        replyValid = true;
+        break;
+    }
+
+    if (replyValid) {
+        int copiedChars = 0;
+        while (*src != '\r' && copiedChars < IDSTRING_MAX_LENGTH - 1) {
+            _idStringBuffer[copiedChars++] = *src++;
+        }
+        _idStringBuffer[copiedChars] = '\0';
+
+        return true;
+    }
+
+    return false;
 }
 
 bool SimCommDevice::sendDnsQuery()
@@ -297,6 +333,7 @@ void SimCommDevice::requestIDString(RequestIDType type)
 {
     _idStringBuffer[0] = '\0';
     _idStringBuffer[1] = type;
+    _idStringBuffer[2] = type;
 }
 
 char* SimCommDevice::getIDString()

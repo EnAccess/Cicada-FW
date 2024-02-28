@@ -5,6 +5,7 @@ examples_list = [
     'mqttsequence',
     'simplemqtt',
     'dualport_stm32',
+    'eventloop',
     'ipcommdevice_stm32',
     'blockingmqtt_stm32',
     'dualport_freertos',
