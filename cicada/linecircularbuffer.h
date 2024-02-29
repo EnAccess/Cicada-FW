@@ -39,9 +39,8 @@ class LineCircularBuffer : public CircularBuffer<char>
 {
   public:
     LineCircularBuffer(char* buffer, Size bufferSize) :
-        CircularBuffer(buffer, bufferSize),
-        _bufferedLines(0)
-    { }
+        CircularBuffer(buffer, bufferSize), _bufferedLines(0)
+    {}
 
     Size push(const char* data, Size size) override
     {

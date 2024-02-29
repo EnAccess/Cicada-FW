@@ -22,10 +22,10 @@
  */
 
 #include "cicada/commdevices/atcommdevice.h"
+#include "printf.h"
 #include <cinttypes>
 #include <cstddef>
 #include <cstring>
-#include "printf.h"
 
 #define MIN_SPACE_AVAILABLE 22
 

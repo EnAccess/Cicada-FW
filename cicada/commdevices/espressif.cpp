@@ -23,9 +23,9 @@
 
 #include "cicada/commdevices/espressif.h"
 #include "cicada/commdevices/ipcommdevice.h"
-#include <cstring>
-#include <cstdlib>
 #include "printf.h"
+#include <cstdlib>
+#include <cstring>
 
 using namespace Cicada;
 
@@ -90,8 +90,8 @@ bool EspressifDevice::fillLineBuffer()
             char c = _serial.read();
             _lineBuffer[_lbFill++] = c;
             if (c == '\n' || c == '>'
-                || (_type != TCP && _replyState != waitCiprecvdata && _replyState != reqMac &&
-                       _replyState != rssi && c == ':')
+                || (_type != TCP && _replyState != waitCiprecvdata && _replyState != reqMac
+                    && _replyState != rssi && c == ':')
                 || _lbFill == LINE_MAX_LENGTH) {
                 _lineBuffer[_lbFill] = '\0';
                 _lbFill = 0;
@@ -101,7 +101,7 @@ bool EspressifDevice::fillLineBuffer()
                 // AT 1.7.0 and AT 2.1.0 firmware compatibility
                 if (_lbFill > 14
                     && ((c == ':' && strncmp(_lineBuffer, "+CIPRECVDATA,", 13) == 0)
-                           || (c == ',' && strncmp(_lineBuffer, "+CIPRECVDATA:", 13) == 0))) {
+                        || (c == ',' && strncmp(_lineBuffer, "+CIPRECVDATA:", 13) == 0))) {
                     _replyState = parseStateCiprecvdata;
                     _lineBuffer[_lbFill] = '\0';
                     _lbFill = 0;
@@ -214,8 +214,7 @@ void EspressifDevice::run()
             _connectState = generalError;
             _waitForReply = NULL;
             return;
-        }
-        else if (_sendState == connected && strncmp(_lineBuffer, "SEND FAIL", 9) == 0) {
+        } else if (_sendState == connected && strncmp(_lineBuffer, "SEND FAIL", 9) == 0) {
             _connectState = generalError;
             _waitForReply = NULL;
         }
@@ -383,7 +382,7 @@ void EspressifDevice::run()
         snprintf(portStr, sizeof(portStr), "%u", _port);
 
         _serial.write((const uint8_t*)"AT+CIPSTART");
-        switch(_type) {
+        switch (_type) {
         case TCP:
             _serial.write((const uint8_t*)"=\"TCP\",\"");
             break;

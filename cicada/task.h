@@ -133,7 +133,7 @@
         if (!isTimeout(TIMEOUT) && !(COND)) {                                                      \
             return;                                                                                \
         };                                                                                         \
-        resetTimeout();                                                                            \
+        resetTimeout();
 
 /*!
  * \def E_REENTER_COND_TIMEOUT_DELAY(COND, TIMEOUT, DELAY)
@@ -145,7 +145,8 @@
  * \param DELAY Minimum delay after which the task scheduler
  * will call run() again.
  */
-#define E_REENTER_COND_TIMEOUT_DELAY(COND, TIMEOUT, DELAY) E_REENTER_COND_TIMEOUT_DELAY_ARG(__COUNTER__, COND, TIMEOUT, DELAY)
+#define E_REENTER_COND_TIMEOUT_DELAY(COND, TIMEOUT, DELAY)                                         \
+    E_REENTER_COND_TIMEOUT_DELAY_ARG(__COUNTER__, COND, TIMEOUT, DELAY)
 #define E_REENTER_COND_TIMEOUT_DELAY_ARG(ENTRY_POINT, COND, TIMEOUT, DELAY)                        \
     startTimeout();                                                                                \
     setDelay(DELAY);                                                                               \
@@ -154,7 +155,7 @@
         if (!isTimeout(TIMEOUT) && !(COND)) {                                                      \
             return;                                                                                \
         };                                                                                         \
-        resetTimeout();                                                                            \
+        resetTimeout();
 
 namespace Cicada {
 
@@ -250,7 +251,7 @@ class Task
      */
     inline void startTimeout()
     {
-        if(_isTimeoutRunning)
+        if (_isTimeoutRunning)
             return;
         _isTimeoutRunning = true;
         _timeout = _lastRun;
@@ -280,10 +281,10 @@ class Task
      */
     Task(const Task&);
 
-    uint16_t _delay;      /**< Time before the task will run again */
-    uint32_t _timeout;    /**< Time before the cond will timeout */
-    bool _isTimeoutRunning = false;  /**< Flag for timeout running */
-    E_TICK_TYPE _lastRun; /**< Stores the tick when the task last ran */
+    uint16_t _delay;                /**< Time before the task will run again */
+    uint32_t _timeout;              /**< Time before the cond will timeout */
+    bool _isTimeoutRunning = false; /**< Flag for timeout running */
+    E_TICK_TYPE _lastRun;           /**< Stores the tick when the task last ran */
 };
 }
 

@@ -50,7 +50,7 @@ class CC1352P7CommDevice : public ATCommDevice
 
     virtual void resetStates();
 
-        /*!
+    /*!
      * Request one of the MAC address from the module. It can then be
      * retreieved with getMACString();
      * Note: This method flushes the recieve buffer.

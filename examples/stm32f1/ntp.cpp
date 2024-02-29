@@ -53,8 +53,8 @@ class NTPTask : public Task
 
         m_commDev.read((uint8_t*)m_ntpPacket, sizeof(m_ntpPacket));
 
-        printf("Seconds since the Epoche: %" PRIu32 "\r\n",
-               byteSwap(m_ntpPacket[10]) - 2208988800U);
+        printf(
+            "Seconds since the Epoche: %" PRIu32 "\r\n", byteSwap(m_ntpPacket[10]) - 2208988800U);
 
         m_commDev.disconnect();
         E_REENTER_COND(m_commDev.isIdle());
@@ -83,8 +83,8 @@ int main(int argc, char* argv[])
     Stm32Uart debug(readBufferDebug, writeBufferDebug, serialBufferSize);
     char readBufferSerial[serialBufferSize];
     char writeBufferSerial[serialBufferSize];
-    Stm32Uart serial(readBufferSerial, writeBufferSerial, serialBufferSize,
-                     USART1, GPIOA, GPIO_PIN_9, GPIO_PIN_10);
+    Stm32Uart serial(readBufferSerial, writeBufferSerial, serialBufferSize, USART1, GPIOA,
+        GPIO_PIN_9, GPIO_PIN_10);
 
     const uint16_t commBufferSize = 1200;
     uint8_t commReadBuffer[commBufferSize];

@@ -35,8 +35,7 @@ namespace Cicada {
  * Implementation of a circular buffer.
  */
 
-template <typename T>
-class CircularBuffer
+template <typename T> class CircularBuffer
 {
   public:
     /*!
@@ -46,22 +45,17 @@ class CircularBuffer
      * \bufferSize Number of entries available in the buffer.
      */
     CircularBuffer(T* buffer, Size bufferSize) :
-        _writeHead(0),
-        _readHead(0),
-        _availableData(0),
-        _bufferSize(bufferSize),
-        _buffer(buffer)
-    { }
+        _writeHead(0), _readHead(0), _availableData(0), _bufferSize(bufferSize), _buffer(buffer)
+    {}
 
-    virtual ~CircularBuffer()
-    { }
+    virtual ~CircularBuffer() {}
 
     /*!
      * Push data into the buffer. Data is copied.
      * \param pointer to the data to be copied into the buffer
      * \param size number of elements in data
      */
-    //TODO: Check if virtual is appropriate
+    // TODO: Check if virtual is appropriate
     virtual Size push(const T* data, Size size)
     {
         if (size > spaceAvailable())

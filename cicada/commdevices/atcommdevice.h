@@ -45,7 +45,7 @@ class ATCommDevice : public IPCommDevice
         Size readBufferSize, Size writeBufferSize);
     virtual ~ATCommDevice() {}
 
-        /*!
+    /*!
      * The purpose of this function is to send custom AT commands to the modem.
      * To do so, first lock the serial device for the modem driver by calling
      * serialLock(). When serialLock() returns true, no data will be sent or

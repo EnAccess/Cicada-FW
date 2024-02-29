@@ -43,7 +43,7 @@ namespace Cicada {
 class ICommDevice
 {
   public:
-    virtual ~ICommDevice() { }
+    virtual ~ICommDevice() {}
 
     /*!
      * Number of bytes available for reading.

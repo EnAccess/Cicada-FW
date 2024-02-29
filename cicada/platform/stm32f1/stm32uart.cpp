@@ -216,8 +216,8 @@ const char* Stm32Uart::portName() const
 
 bool Stm32Uart::rawRead(uint8_t& data)
 {
-    if (__HAL_UART_GET_FLAG(&_handle, UART_FLAG_RXNE) ||
-        __HAL_UART_GET_FLAG(&_handle, UART_FLAG_ORE)) {
+    if (__HAL_UART_GET_FLAG(&_handle, UART_FLAG_RXNE)
+        || __HAL_UART_GET_FLAG(&_handle, UART_FLAG_ORE)) {
         data = (uint8_t)READ_REG(_handle.Instance->DR);
         return true;
     }

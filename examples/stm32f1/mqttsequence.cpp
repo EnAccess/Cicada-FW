@@ -42,8 +42,8 @@ int main(int argc, char* argv[])
     const uint16_t serialBufferSize = 1504;
     char serialReadBuffer[serialBufferSize];
     char serialWriteBuffer[serialBufferSize];
-    Stm32Uart serial(serialReadBuffer, serialWriteBuffer, serialBufferSize,
-                     USART1, GPIOA, GPIO_PIN_9, GPIO_PIN_10);
+    Stm32Uart serial(serialReadBuffer, serialWriteBuffer, serialBufferSize, USART1, GPIOA,
+        GPIO_PIN_9, GPIO_PIN_10);
     const uint16_t commBufferSize = 1200;
     uint8_t commReadBuffer[commBufferSize];
     uint8_t commWriteBuffer[commBufferSize];
