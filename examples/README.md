@@ -10,8 +10,14 @@ Fetches a website from a server with the blocking API wrapper.
 Connects to an MQTT broker using the blocking API wrapper
 and sends/receives different type of messages.
 
+* linux/eventloop.cpp
+Fetches a website from a server using the non-blocking API and
+a main loop.
+
 * linux/ipcommdevice.cpp
 Fetches a website from a server with the standard non-blocking API.
+Instead of a custom main loop, it makes use of Cicada's Task API
+and it's scheduler.
 
 * linux/scheduler.cpp
 Demonstration of the task scheduler.
@@ -43,12 +49,18 @@ uses FreeRTOS tasks and scheduler.
 Bare metal application which sends 'AT' to the USART1 and prints
 log messages on USART2.
 
+* stm32f1/eventloop.cpp
+Bare metal application, which fetches a website from a server using
+the non-blocking API and a main loop. This example is a recommended
+starting point for many microcontroller applications.
+
 * stm32f1/ipcommdevice_freertos.cpp
 Fetches a website from a server. For task scheduling,
 uses FreeRTOS tasks and scheduler.
 
 * stm32f1/ipcommdevice_stm32.cpp
 Bare metal application, which fetches a website from a server.
+It makes use of Cicada's Task API and scheduler.
 
 * stm32f1/mqttsequence.cpp
 Sends packets of pseudo-random data. This example is meant for

@@ -15,6 +15,8 @@ src_files = files([
     'commdevices/blockingcommdev.cpp',
     'commdevices/modemdetect.h',
     'commdevices/modemdetect.cpp',
+    'commdevices/cc1352p7.h',
+    'commdevices/cc1352p7.cpp',
     'bufferedserial.h',
     'bufferedserial.cpp',
     'defines.h',
