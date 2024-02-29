@@ -34,17 +34,17 @@ class EnaccessTicker : public Ticker
     {
         attach_us(mbed::callback(this, &EnaccessTicker::increase), 1000);
     }
- 
+
     void increase()
     {
         _millis++;
     }
- 
+
     E_TICK_TYPE read()
     {
         return _millis;
     }
- 
+
   private:
     E_TICK_TYPE _millis;
 };
