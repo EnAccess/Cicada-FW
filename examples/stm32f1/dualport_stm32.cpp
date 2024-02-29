@@ -26,8 +26,7 @@ class SerialTask : public Task
             {
                 const char* send_str = "AT\r\n";
                 printf("Sending command: %s", send_str);
-                int bytesWritten = m_serial.write((const uint8_t*)send_str,
-                    strlen(send_str));
+                int bytesWritten = m_serial.write((const uint8_t*)send_str, strlen(send_str));
                 printf("%d bytes written\r\n", bytesWritten);
             }
 
@@ -68,8 +67,7 @@ int main(int argc, char* argv[])
     char readBuffer[bufferSize];
     char writeBuffer[bufferSize];
     Stm32Uart debug(readBufferDebug, writeBufferDebug, bufferSize);
-    Stm32Uart serial(readBuffer, writeBuffer, bufferSize,
-                     USART1, GPIOA, GPIO_PIN_9, GPIO_PIN_10);
+    Stm32Uart serial(readBuffer, writeBuffer, bufferSize, USART1, GPIOA, GPIO_PIN_9, GPIO_PIN_10);
     SerialTask task(serial);
 
     Task* taskList[] = { &task, NULL };

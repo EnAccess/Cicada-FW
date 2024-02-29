@@ -23,11 +23,11 @@
 
 #include "cicada/commdevices/cc1352p7.h"
 #include "cicada/commdevices/atcommdevice.h"
+#include "printf.h"
 #include <cstddef>
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
-#include "printf.h"
 
 using namespace Cicada;
 

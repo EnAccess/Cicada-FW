@@ -47,7 +47,8 @@ int main(int argc, char* argv[])
 
         // Event: Modem has been detected
         if (!detectedFlag && detector.modemDetected()) {
-            commDevice = detector.getDetectedModem(commReadBuffer, commWriteBuffer, commBufferSize, commBufferSize);
+            commDevice = detector.getDetectedModem(
+                commReadBuffer, commWriteBuffer, commBufferSize, commBufferSize);
 
             // If the device is a SIMCom 2G/4G modem, set the APN
             SimCommDevice* simCommDev = dynamic_cast<SimCommDevice*>(commDevice);

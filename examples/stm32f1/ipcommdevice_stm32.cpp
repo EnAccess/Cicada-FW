@@ -19,10 +19,7 @@ static void SystemClock_Config(void);
 class IPCommTask : public Task
 {
   public:
-    IPCommTask(ModemDetect& detector) :
-        m_detector(detector),
-        m_commDev(NULL),
-        m_i(0) {}
+    IPCommTask(ModemDetect& detector) : m_detector(detector), m_commDev(NULL), m_i(0) {}
 
     virtual void run()
     {
@@ -33,7 +30,8 @@ class IPCommTask : public Task
         m_detector.startDetection();
 
         E_REENTER_COND(m_detector.modemDetected());
-        m_commDev = m_detector.getDetectedModem(_commReadBuffer, _commWriteBuffer, _commBufferSize, _commBufferSize);
+        m_commDev = m_detector.getDetectedModem(
+            _commReadBuffer, _commWriteBuffer, _commBufferSize, _commBufferSize);
 
         printf("Connecting ...\r\n");
 
@@ -104,8 +102,8 @@ int main(int argc, char* argv[])
     Stm32Uart debug(readBufferDebug, writeBufferDebug, serialBufferSize);
     char readBufferSerial[serialBufferSize];
     char writeBufferSerial[serialBufferSize];
-    Stm32Uart serial(readBufferSerial, writeBufferSerial, serialBufferSize,
-                     USART1, GPIOA, GPIO_PIN_9, GPIO_PIN_10);
+    Stm32Uart serial(readBufferSerial, writeBufferSerial, serialBufferSize, USART1, GPIOA,
+        GPIO_PIN_9, GPIO_PIN_10);
 
     ModemDetect detector(serial);
 

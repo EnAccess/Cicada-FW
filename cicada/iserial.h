@@ -37,7 +37,7 @@ namespace Cicada {
 class ISerial
 {
   public:
-    virtual ~ISerial() { }
+    virtual ~ISerial() {}
 
     /*!
      * Opens the serial device.

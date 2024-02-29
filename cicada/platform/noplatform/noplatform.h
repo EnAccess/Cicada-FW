@@ -53,7 +53,7 @@ class NoplatformSerial : public BufferedSerial
         return false;
     }
 
-    void close() { }
+    void close() {}
 
     const char* portName() const
     {

@@ -7,8 +7,8 @@
 #include "cicada/platform/linux/unixserial.h"
 #include "cicada/scheduler.h"
 #include "cicada/tick.h"
-#include <cstdint>
 #include "printf.h"
+#include <cstdint>
 
 using namespace Cicada;
 

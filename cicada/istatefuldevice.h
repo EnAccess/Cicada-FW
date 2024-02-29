@@ -38,7 +38,7 @@ namespace Cicada {
 class IStatefulDevice : public ICommDevice
 {
   public:
-    virtual ~IStatefulDevice() { }
+    virtual ~IStatefulDevice() {}
 
     /*!
      * Connects the device to the other side of the communication channel

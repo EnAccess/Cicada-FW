@@ -26,22 +26,19 @@
 
 using namespace Cicada;
 
-MbedSerial::MbedSerial(char* readBuffer, char* writeBuffer, Size bufferSize,
-                       PinName tx, PinName rx) :
-    BufferedSerial(readBuffer, writeBuffer, bufferSize),
-    _rawSerial(tx, rx, 115200)
+MbedSerial::MbedSerial(
+    char* readBuffer, char* writeBuffer, Size bufferSize, PinName tx, PinName rx) :
+    BufferedSerial(readBuffer, writeBuffer, bufferSize), _rawSerial(tx, rx, 115200)
 {
-    _rawSerial.attach(mbed::callback(this, &MbedSerial::handleInterrupt),
-                      RawSerial::RxIrq);
+    _rawSerial.attach(mbed::callback(this, &MbedSerial::handleInterrupt), RawSerial::RxIrq);
 }
 
-MbedSerial::MbedSerial(char* readBuffer, char* writeBuffer, Size readBufferSize, Size writeBufferSize,
-                       PinName tx, PinName rx) :
+MbedSerial::MbedSerial(char* readBuffer, char* writeBuffer, Size readBufferSize,
+    Size writeBufferSize, PinName tx, PinName rx) :
     BufferedSerial(readBuffer, writeBuffer, readBufferSize, writeBufferSize),
     _rawSerial(tx, rx, 115200)
 {
-    _rawSerial.attach(mbed::callback(this, &MbedSerial::handleInterrupt),
-                      RawSerial::RxIrq);
+    _rawSerial.attach(mbed::callback(this, &MbedSerial::handleInterrupt), RawSerial::RxIrq);
 }
 
 bool MbedSerial::open()
@@ -62,8 +59,7 @@ bool MbedSerial::setSerialConfig(uint32_t baudRate, uint8_t dataBits)
     return true;
 }
 
-void MbedSerial::close()
-{ }
+void MbedSerial::close() {}
 
 const char* MbedSerial::portName() const
 {
@@ -93,8 +89,7 @@ bool MbedSerial::rawWrite(uint8_t data)
 
 void MbedSerial::startTransmit()
 {
-    _rawSerial.attach(mbed::callback(this, &MbedSerial::handleInterrupt),
-                      RawSerial::TxIrq);
+    _rawSerial.attach(mbed::callback(this, &MbedSerial::handleInterrupt), RawSerial::TxIrq);
 }
 
 void MbedSerial::handleInterrupt()

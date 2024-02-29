@@ -21,8 +21,8 @@
  *
  */
 
-#include "mbed.h"
 #include "cicada/irq.h"
+#include "mbed.h"
 
 void eDisableInterrupts()
 {

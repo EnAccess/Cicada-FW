@@ -39,8 +39,7 @@ class SerialTask : public Task
             {
                 const char* send_str = "AT\r\n";
                 printf("Sending command: %s", send_str);
-                int bytesWritten = m_serial.write((const uint8_t*)send_str,
-                    strlen(send_str));
+                int bytesWritten = m_serial.write((const uint8_t*)send_str, strlen(send_str));
                 printf("%d bytes written\n", bytesWritten);
             }
 
