@@ -68,23 +68,6 @@ class SimCommDevice : public ATCommDevice
      */
     virtual void serialUnlock();
 
-    /*!
-     * Request the RSSI (signal strength) from the modem. It can then be
-     * retreieved with getRSSI();
-     */
-    void requestRSSI();
-
-    /*!
-     * Actually get the value for RSSI (signal strength), which has
-     * been requested by requestRSSI(). If the signal strength has been
-     * requested but not yet been retrieved, the returned value will
-     * be UINT8_MAX.
-     *
-     * \return RSSI value as returned by the modem, or UINT8_MAX if
-     * a request is still pending.
-     */
-    uint8_t getRSSI();
-
     enum RequestIDType { noRequest, manufacturer, model, imei, imsi, iccid };
 
     /*!
@@ -122,8 +105,6 @@ class SimCommDevice : public ATCommDevice
     char _ip[16];
 
     char _idStringBuffer[IDSTRING_MAX_LENGTH];
-
-    uint8_t _rssi;
 
     uint16_t _modemMaxReceiveSize;
 };

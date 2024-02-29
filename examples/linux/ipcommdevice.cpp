@@ -17,8 +17,7 @@ class IPCommTask : public Task
   public:
     IPCommTask(ModemDetect& detector) :
         m_detector(detector),
-        m_commDev(NULL),
-        m_i(0) {}
+        m_commDev(NULL) {}
 
     virtual void run()
     {
@@ -59,14 +58,14 @@ class IPCommTask : public Task
 
         E_REENTER_COND(m_commDev->bytesAvailable());
 
-        for (m_i = 0; m_i < 400; m_i++) {
+        while (m_commDev->isConnected()) {
             if (m_commDev->bytesAvailable()) {
                 char buf[41];
                 uint16_t bytesRead = m_commDev->read((uint8_t*)buf, 40);
                 buf[bytesRead] = '\0';
                 printf("%s", buf);
             } else {
-                E_REENTER_DELAY(10);
+                E_REENTER_COND(m_commDev->bytesAvailable() || !m_commDev->isConnected());
             }
         }
 
@@ -85,7 +84,6 @@ class IPCommTask : public Task
 
     ModemDetect& m_detector;
     IPCommDevice* m_commDev;
-    int m_i;
 };
 
 int main(int argc, char* argv[])

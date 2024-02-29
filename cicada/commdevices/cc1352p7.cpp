@@ -1,6 +1,6 @@
 /*
  * Cicada communication library
- * Copyright (C) 2021 Okrasolar
+ * Copyright (C) 2023 Okrasolar
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -21,30 +21,32 @@
  *
  */
 
-#include "cicada/commdevices/espressif.h"
-#include "cicada/commdevices/ipcommdevice.h"
+#include "cicada/commdevices/cc1352p7.h"
+#include "cicada/commdevices/atcommdevice.h"
+#include <cstddef>
+#include <cstdint>
 #include <cstdio>
 #include <cstring>
 
 using namespace Cicada;
 
-const uint16_t ESPRESSIF_MAX_RX = 2048;
+const uint16_t CC1352P7_MAX_RX = 1220;   // Match network buffer of the modem
 
-EspressifDevice::EspressifDevice(
+CC1352P7CommDevice::CC1352P7CommDevice(
     IBufferedSerial& serial, uint8_t* readBuffer, uint8_t* writeBuffer, Size bufferSize) :
     ATCommDevice(serial, readBuffer, writeBuffer, bufferSize)
 {
     resetStates();
 }
 
-EspressifDevice::EspressifDevice(IBufferedSerial& serial, uint8_t* readBuffer, uint8_t* writeBuffer,
-    Size readBufferSize, Size writeBufferSize) :
+CC1352P7CommDevice::CC1352P7CommDevice(IBufferedSerial& serial, uint8_t* readBuffer,
+    uint8_t* writeBuffer, Size readBufferSize, Size writeBufferSize) :
     ATCommDevice(serial, readBuffer, writeBuffer, readBufferSize, writeBufferSize)
 {
     resetStates();
 }
 
-void EspressifDevice::resetStates()
+void CC1352P7CommDevice::resetStates()
 {
     _serial.flushReceiveBuffers();
     _readBuffer.flush();
@@ -58,29 +60,9 @@ void EspressifDevice::resetStates()
     _bytesToRead = 0;
     _waitForReply = NULL;
     _stateBooleans = LINE_READ;
-    _rssi = 99;
 }
 
-void EspressifDevice::setSSID(const char* ssid)
-{
-    _ssid = ssid;
-}
-
-void EspressifDevice::setPassword(const char* passwd)
-{
-    _passwd = passwd;
-}
-
-bool EspressifDevice::connect()
-{
-    if (_ssid == NULL || _passwd == NULL || strlen(_ssid) == 0) {
-        return false;
-    }
-
-    return IPCommDevice::connect();
-}
-
-bool EspressifDevice::fillLineBuffer()
+bool CC1352P7CommDevice::fillLineBuffer()
 {
     // Buffer reply from modem in line buffer
     // Returns true when enough data to be parsed is available.
@@ -88,31 +70,17 @@ bool EspressifDevice::fillLineBuffer()
         while (_serial.bytesAvailable()) {
             char c = _serial.read();
             _lineBuffer[_lbFill++] = c;
-            if (c == '\n' || c == '>'
-                || (_type != TCP && _replyState != waitCiprecvdata && _replyState != reqMac &&
-                       _replyState != rssi && c == ':')
-                || _lbFill == LINE_MAX_LENGTH) {
+            if (c == '\n' || c == '>' || _lbFill == LINE_MAX_LENGTH) {
                 _lineBuffer[_lbFill] = '\0';
                 _lbFill = 0;
                 return true;
-            }
-            if (_replyState == waitCiprecvdata) {
-                // AT 1.7.0 and AT 2.1.0 firmware compatibility
-                if (_lbFill > 14
-                    && ((c == ':' && strncmp(_lineBuffer, "+CIPRECVDATA,", 13) == 0)
-                           || (c == ',' && strncmp(_lineBuffer, "+CIPRECVDATA:", 13) == 0))) {
-                    _replyState = parseStateCiprecvdata;
-                    _lineBuffer[_lbFill] = '\0';
-                    _lbFill = 0;
-                    return true;
-                }
             }
         }
     }
     return false;
 }
 
-bool EspressifDevice::sendCiprcvdata()
+bool CC1352P7CommDevice::sendCiprcvdata()
 {
     if (_serial.readBufferSize() - _serial.bytesAvailable() > 30
         && _readBuffer.spaceAvailable() > 0) {
@@ -123,8 +91,8 @@ bool EspressifDevice::sendCiprcvdata()
         // Make sure there is enough space in the local device buffer
         if (bytesToReceive > _readBuffer.spaceAvailable())
             bytesToReceive = _readBuffer.spaceAvailable();
-        if (bytesToReceive > ESPRESSIF_MAX_RX)
-            bytesToReceive = ESPRESSIF_MAX_RX;
+        if (bytesToReceive > CC1352P7_MAX_RX)
+            bytesToReceive = CC1352P7_MAX_RX;
 
         char sizeStr[6];
         sprintf(sizeStr, "%u", (unsigned int)bytesToReceive);
@@ -137,7 +105,7 @@ bool EspressifDevice::sendCiprcvdata()
     }
 }
 
-bool EspressifDevice::parseCiprecvdata()
+bool CC1352P7CommDevice::parseCiprecvdata()
 {
     if (strncmp(_lineBuffer, "+CIPRECVDATA", 12) == 0) {
         int bytesToRead;
@@ -151,22 +119,7 @@ bool EspressifDevice::parseCiprecvdata()
     return false;
 }
 
-void EspressifDevice::requestMac()
-{
-    _macStringBuffer[0] = '\0';
-    _macStringBuffer[1] = 0xFF;
-}
-
-char* EspressifDevice::getMacString()
-{
-    if (_waitForReply == NULL && _macStringBuffer[0] != '\0') {
-        return _macStringBuffer;
-    } else {
-        return NULL;
-    }
-}
-
-void EspressifDevice::run()
+void CC1352P7CommDevice::run()
 {
     // If the serial device is net yet open, try to open it
     if (!_serial.isOpen()) {
@@ -179,24 +132,16 @@ void EspressifDevice::run()
     // If a modem reset is pending, handle it
     if (_stateBooleans & RESET_PENDING) {
         _serial.flushReceiveBuffers();
-        if (_sendState >= connecting && _sendState <= receiving
-            && !(_stateBooleans & DISCONNECT_PENDING)) {
-            _sendState = connecting;
-        } else {
-            _sendState = notConnected;
-        }
-        _stateBooleans = LINE_READ;
         _bytesToRead = 0;
         _bytesToReceive = 0;
         _bytesToWrite = 0;
-        _serial.write((const uint8_t*)"AT+RST");
-        _serial.write((const uint8_t*)_lineEndStr);
+        _sendState = sendCipclose;
         _replyState = okReply;
-        _waitForReply = "ready";
-
-        setDelay(10);
-
-        return;
+        _waitForReply = NULL;
+        _stateBooleans &= ~RESET_PENDING;
+        if (_connectState >= intermediate) {
+            connect();
+        }
     }
 
     // Buffer data from the modem
@@ -209,15 +154,12 @@ void EspressifDevice::run()
         logStates(_sendState, _replyState);
 
         // Handle error states
-        if (strncmp(_lineBuffer, "ERROR", 5) == 0 || strncmp(_lineBuffer, "FAIL", 4) == 0) {
+        if (strncmp(_lineBuffer, "ERROR", 5) == 0
+            || (_sendState >= connected && strncmp(_lineBuffer, "SEND FAIL", 9) == 0)) {
             _stateBooleans |= RESET_PENDING;
             _connectState = generalError;
             _waitForReply = NULL;
             return;
-        }
-        else if (_sendState == connected && strncmp(_lineBuffer, "SEND FAIL", 9) == 0) {
-            _connectState = generalError;
-            _waitForReply = NULL;
         }
 
         // If sent a command, process standard reply
@@ -236,39 +178,6 @@ void EspressifDevice::run()
             }
             break;
 
-        case reqMac:
-            if (strncmp(_lineBuffer, "+CIPSTAMAC:\"", 12) == 0) {
-                char* src = _lineBuffer + 12;
-                int copiedChars = 0;
-                while (*src != '\"' && copiedChars < MACSTRING_MAX_LENGTH - 1) {
-                    _macStringBuffer[copiedChars++] = *src++;
-                }
-                _macStringBuffer[copiedChars] = '\0';
-                _replyState = okReply;
-            }
-            break;
-
-        case rssi:
-            if (strncmp(_lineBuffer, "+CWJAP:", 7) == 0) {
-                char* src = _lineBuffer + 7;
-                int nCommas = 0;
-                while (*src) {
-                    if (*src++ == ',') {
-                        if (++nCommas == 3) {
-                            unsigned int rssi;
-                            if (sscanf(src, "%u", &rssi) == 1) {
-                                _rssi = rssi;
-                            }
-                            break;
-                        }
-                    }
-                }
-                _replyState = okReply;
-            } else if (strncmp(_lineBuffer, "No AP", 5) == 0) {
-                _rssi = 99;
-                _replyState = okReply;
-            }
-
         default:
             break;
         }
@@ -278,18 +187,10 @@ void EspressifDevice::run()
             if (strncmp(_lineBuffer, "+IPD,", 4) == 0) {
                 int bytes;
                 sscanf(_lineBuffer + 5, "%d", &bytes);
-                if (_type == IIPCommDevice::TCP) {
-                    _bytesToReceive = bytes;
-                } else {
-                    _bytesToRead += bytes;
-                    _stateBooleans &= ~LINE_READ;
-                }
+                _bytesToReceive = bytes;
                 _stateBooleans |= DATA_PENDING;
             } else if (strncmp(_lineBuffer, "CLOSED", 6) == 0) {
                 _stateBooleans &= ~IP_CONNECTED;
-            } else if (strncmp(_lineBuffer, "WIFI DISCONNECT", 15) == 0) {
-                _sendState = finalizeDisconnect;
-                _waitForReply = NULL;
             }
         }
     }
@@ -307,79 +208,19 @@ void EspressifDevice::run()
     if (_serial.spaceAvailable() < 20)
         return;
 
-    // When signal strength was requested, send the command to the modem
-    if (_rssi == INT16_MAX && _stateBooleans & LINE_READ) {
-        _replyState = rssi;
-        _waitForReply = _okStr;
-        sendCommand("AT+CWJAP?");
-        return;
-    }
-
-    // When mac address was requested, send the command to the modem
-    if (_macStringBuffer[1] == 0xFF && _macStringBuffer[0] == '\0' && _stateBooleans & LINE_READ) {
-        _macStringBuffer[1] = 0;
-        sendCommand("AT+CIPSTAMAC?");
-        _replyState = reqMac;
-        _waitForReply = _okStr;
-        return;
-    }
-
     // Connection state machine
     switch (_sendState) {
     case notConnected:
-        setDelay(10);
         _connectState = IPCommDevice::notConnected;
         handleConnect(connecting);
         break;
 
     case connecting:
-        setDelay(10);
         _connectState = IPCommDevice::intermediate;
         _stateBooleans |= LINE_READ;
-        sendCommand("ATE0");
-        _waitForReply = _okStr;
-        _sendState = sendCwmode;
-        break;
-
-    case sendCwmode:
-        _serial.write((const uint8_t*)"AT+CWMODE=1");
-        _serial.write((const uint8_t*)_lineEndStr);
-
-        _waitForReply = _okStr;
-        _sendState = sendCwjap;
-        break;
-
-    case sendCwjap:
-        _serial.write((const uint8_t*)"AT+CWJAP=\"");
-        _serial.write((const uint8_t*)_ssid, strlen(_ssid));
-        _serial.write((const uint8_t*)"\",\"");
-        _serial.write((const uint8_t*)_passwd, strlen(_passwd));
-        _serial.write((const uint8_t*)_quoteEndStr);
-
-        _waitForReply = _okStr;
-        _sendState = sendCipmux;
-        break;
-
-    case sendCipmux:
-        _waitForReply = _okStr;
-        _sendState = sendCiprecvmode;
-        sendCommand("AT+CIPMUX=0");
-        break;
-
-    case sendCiprecvmode:
-        _waitForReply = _okStr;
-        _sendState = sendCipmode;
-        if (_type == TCP) {
-            sendCommand("AT+CIPRECVMODE=1");
-        } else {
-            sendCommand("AT+CIPRECVMODE=0");
-        }
-        break;
-
-    case sendCipmode:
         _waitForReply = _okStr;
         _sendState = sendCipstart;
-        sendCommand("AT+CIPMODE=0");
+        sendCommand("ATE0");
         break;
 
     case sendCipstart: {
@@ -387,16 +228,10 @@ void EspressifDevice::run()
         snprintf(portStr, sizeof(portStr), "%u", _port);
 
         _serial.write((const uint8_t*)"AT+CIPSTART");
-        switch(_type) {
-        case TCP:
-            _serial.write((const uint8_t*)"=\"TCP\",\"");
-            break;
-        case UDP:
+        if (_type == UDP) {
             _serial.write((const uint8_t*)"=\"UDP\",\"");
-            break;
-        case SSL:
-            _serial.write((const uint8_t*)"=\"SSL\",\"");
-            break;
+        } else {
+            _serial.write((const uint8_t*)"=\"TCP\",\"");
         }
         // TODO: Escape characters
         _serial.write((const uint8_t*)_host);
@@ -410,7 +245,6 @@ void EspressifDevice::run()
     }
 
     case finalizeConnect:
-        setDelay(0);
         _connectState = IPCommDevice::connected;
         _sendState = connected;
         _stateBooleans |= IP_CONNECTED;
@@ -426,20 +260,15 @@ void EspressifDevice::run()
         } else if (_stateBooleans & DATA_PENDING) {
             _stateBooleans &= ~DATA_PENDING;
             _connectState = IPCommDevice::receiving;
-            if (_type == IIPCommDevice::TCP) {
-                _sendState = sendCiprecvdata;
-            } else {
-                _sendState = receiving;
-            }
+            _sendState = sendCiprecvdata;
         } else {
             _connectState = IPCommDevice::connected;
             if (_stateBooleans & IP_CONNECTED) {
                 if (handleDisconnect(sendCipclose)) {
-                    setDelay(100);
                 }
             } else {
                 _stateBooleans &= ~DISCONNECT_PENDING;
-                _sendState = sendCwqap;
+                _sendState = finalizeDisconnect;
             }
         }
         break;
@@ -448,20 +277,19 @@ void EspressifDevice::run()
 
     case sendDataState:
         sendData();
-        _waitForReply = "SEND OK";
+        _waitForReply = _okStr;
         _sendState = connected;
         break;
 
     case sendCiprecvdata:
         if (handleDisconnect(sendCipclose)) {
-            setDelay(100);
             break;
         }
 
         if (_bytesToReceive > 0) {
             if (sendCiprcvdata()) {
                 _sendState = waitReceive;
-                _replyState = waitCiprecvdata;
+                _replyState = parseStateCiprecvdata;
             }
         } else {
             _sendState = connected;
@@ -474,7 +302,7 @@ void EspressifDevice::run()
 
     case receiving:
         if (_bytesToRead > 0) {
-            if (receive() && _type == IIPCommDevice::TCP) {
+            if (receive()) {
                 _replyState = okReply;
                 _waitForReply = _okStr;
             }
@@ -486,20 +314,10 @@ void EspressifDevice::run()
         break;
 
     case sendCipclose:
-        setDelay(0);
         _connectState = IPCommDevice::intermediate;
-        if (_stateBooleans & IP_CONNECTED) {
-            _waitForReply = _okStr;
-            sendCommand("AT+CIPCLOSE");
-        }
-        _sendState = sendCwqap;
-        break;
-
-    case sendCwqap:
-        _connectState = IPCommDevice::intermediate;
-        _waitForReply = "WIFI DISCONNECT";
+        _waitForReply = _okStr;
         _sendState = finalizeDisconnect;
-        sendCommand("AT+CWQAP");
+        sendCommand("AT+CIPCLOSE");
         break;
 
     case finalizeDisconnect:

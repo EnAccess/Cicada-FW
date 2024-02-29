@@ -1,6 +1,6 @@
 /*
- * E-Lib
- * Copyright (C) 2019 EnAccess
+ * Cicada communication library
+ * Copyright (C) 2019-2923 EnAccess and Okrasolar
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -179,7 +179,7 @@ void Sim800CommDevice::run()
         return;
 
     // When signal strength was requested, send the command to the modem
-    if (_rssi == UINT8_MAX && _stateBooleans & LINE_READ) {
+    if (_rssi == INT16_MAX && _stateBooleans & LINE_READ) {
         _replyState = csq;
         _waitForReply = _okStr;
         sendCommand("AT+CSQ");
@@ -302,7 +302,12 @@ void Sim800CommDevice::run()
             _sendState = sendCiprxget4;
         } else {
             _connectState = IPCommDevice::connected;
-            handleDisconnect(sendCipclose);
+            if (_stateBooleans & IP_CONNECTED) {
+                handleDisconnect(sendCipclose);
+            } else {
+                _stateBooleans &= ~DISCONNECT_PENDING;
+                _sendState = sendCipshut;
+            }
         }
         break;
 
@@ -315,6 +320,7 @@ void Sim800CommDevice::run()
         break;
 
     case sendCiprxget4:
+        setDelay(0);
         _waitForReply = _okStr;
         _sendState = sendCiprxget2;
         _replyState = ciprxget4;
@@ -350,13 +356,13 @@ void Sim800CommDevice::run()
         } else if (_bytesToReceive > 0) {
             _sendState = sendCiprxget2;
         } else {
+            setDelay(10);
             _sendState = sendCiprxget4;
         }
         break;
 
     case ipUnconnected:
         _connectState = IPCommDevice::intermediate;
-        // TODO: Should this be sendCipshut?
         if (handleDisconnect(finalizeDisconnect))
             break;
 

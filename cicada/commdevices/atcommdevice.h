@@ -70,6 +70,22 @@ class ATCommDevice : public IPCommDevice
      */
     virtual Size serialRead(char* data, Size maxSize);
 
+    /*!
+     * Request the RSSI (signal strength) from the modem. It can then be
+     * retreieved with getRSSI();
+     */
+    void requestRSSI();
+
+    /*!
+     * Actually get the value for RSSI (signal strength), which has
+     * been requested by requestRSSI(). If the signal strength has been
+     * requested but not yet been retrieved, the returned value will
+     * be INT16_MAX.
+     *
+     * \return RSSI value in dBm, or INT16_MAX if a request is still pending.
+     */
+    int16_t getRSSI();
+
   protected:
     void logStates(int8_t sendState, int8_t replyState);
     bool handleDisconnect(int8_t nextState);
@@ -90,6 +106,8 @@ class ATCommDevice : public IPCommDevice
     Size _bytesToWrite;
     Size _bytesToReceive;
     Size _bytesToRead;
+
+    int16_t _rssi;
 
     static const char* _okStr;
     static const char* _lineEndStr;
