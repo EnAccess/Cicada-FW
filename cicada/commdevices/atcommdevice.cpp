@@ -24,8 +24,8 @@
 #include "cicada/commdevices/atcommdevice.h"
 #include <cinttypes>
 #include <cstddef>
-#include <cstdio>
 #include <cstring>
+#include "printf.h"
 
 #define MIN_SPACE_AVAILABLE 22
 
@@ -168,4 +168,14 @@ Size ATCommDevice::serialRead(char* data, Size maxSize)
     }
 
     return 0;
+}
+
+void ATCommDevice::requestRSSI()
+{
+    _rssi = INT16_MAX;
+}
+
+int16_t ATCommDevice::getRSSI()
+{
+    return _rssi;
 }

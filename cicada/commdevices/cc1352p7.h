@@ -1,6 +1,6 @@
 /*
- * Cicada communication library
- * Copyright (C) 2021 Okrasolar
+ * E-Lib
+ * Copyright (C) 2019 EnAccess
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -21,53 +21,36 @@
  *
  */
 
-#ifndef ESPRESSIFDEVICE_H
-#define ESPRESSIFDEVICE_H
+#ifndef E_CC1352P7_H
+#define E_CC1352P7_H
 
 #include "cicada/bufferedserial.h"
 #include "cicada/commdevices/atcommdevice.h"
 #include <stdint.h>
 
-#define MACSTRING_MAX_LENGTH 18
+#define MAC64STRING_MAX_LENGTH 24
 
 namespace Cicada {
 
 /*!
- * Driver for Wifi modules based on Espressif chip with Firware NonOS_AT v1.7 or v2.1
- * is required to work with the driver.
+ * Driver for the CC1352P7-1 WiSUN.
  */
-class EspressifDevice : public ATCommDevice
+
+class CC1352P7CommDevice : public ATCommDevice
 {
   public:
-    EspressifDevice(
-        IBufferedSerial& serial, uint8_t* readBuffer, uint8_t* writeBuffer, Size bufferSize);
-    EspressifDevice(IBufferedSerial& serial, uint8_t* readBuffer, uint8_t* writeBuffer,
-        Size readBufferSize, Size writeBufferSize);
-    virtual ~EspressifDevice() {}
-
     /*!
-     * Resets the drivers states. The internal states will be initialized
-     * with default values as they are right after construction. This method
-     * should be called if the modem hardware is reset, and thus the driver state
-     * is not consistent with the modem state anymore.
+     * \param serial Serial driver for the port the modem is connected to.
      */
+    CC1352P7CommDevice(
+        IBufferedSerial& serial, uint8_t* readBuffer, uint8_t* writeBuffer, Size bufferSize);
+
+    CC1352P7CommDevice(IBufferedSerial& serial, uint8_t* readBuffer, uint8_t* writeBuffer,
+        Size readBufferSize, Size writeBufferSize);
+
     virtual void resetStates();
 
-    /*!
-     * Set's the wifi network SSID.
-     * \param ssid The network SSID
-     */
-    virtual void setSSID(const char* ssid);
-
-    /*!
-     * Set's the wifi passwd.
-     * \param ssid The wifi password
-     */
-    virtual void setPassword(const char* passwd);
-
-    virtual bool connect();
-
-    /*!
+        /*!
      * Request one of the MAC address from the module. It can then be
      * retreieved with getMACString();
      * Note: This method flushes the recieve buffer.
@@ -99,15 +82,7 @@ class EspressifDevice : public ATCommDevice
      * [*] --> notConnected
      * notConnected --> notConnected
      * notConnected --> connecting : connection request via API
-     * connecting --> sendCwjap
-     * connecting : ""ATE0""
-     * sendCwjap --> sendCiprecvmode
-     * sendCwjap --> finalizeDisconnect : connection close via API
-     * sendCwjap : ""AT+CWJAP="<ssid>","<password>"""
-     * sendCiprecvmode --> sendCipmode
-     * sendCiprecvmode : ""AT+CIPRECVMODE=1""
-     * sendCipmode --> sendCipstart
-     * sendCipmode : ""AT+CIPMODE=0""
+     * connecting --> sendCipstart
      * sendCipstart --> finalizeConnect
      * sendCipstart : ""AT+CIPSTART="UDP",<host>,<port>""
      * sendCipstart : ""AT+CIPSTART="TCP",<host>,<port>""
@@ -116,7 +91,6 @@ class EspressifDevice : public ATCommDevice
      * connected --> sendCiprecvdata : incoming data pending & TCP
      * connected --> receiving : incoming data pending & UDP
      * connected --> sendCipclose : connection closed via API
-     * connected --> sendCwqap : connection closed by peer
      * connected --> connected
      * connected : bytes in write buffer: ""AT+CIPSEND=<numOfBytes>""
      * sendDataState --> connected
@@ -130,26 +104,19 @@ class EspressifDevice : public ATCommDevice
      * receiving --> receiving : bytesToRead > 0
      * receiving --> sendCiprecvdata : bytesToReceive > 0
      * receiving --> connected : no bytes to receive/read
-     * sendCipclose --> sendCwqap
+     * sendCipclose --> finalizeDisconnect
      * sendCipclose : ""AT+CIPCLOSE""
-     * sendCwqap --> finalizeDisconnect
-     * sendCwqap : ""AT+CWQAP""
      * finalizeDisconnect --> notConnected
      * \enduml
      */
     virtual void run();
 
-    enum ReplyState { okReply = 0, waitCiprecvdata, parseStateCiprecvdata, reqMac, rssi };
+    enum ReplyState { okReply = 0, parseStateCiprecvdata, csq, reqMac };
 
     enum SendState {
         notConnected,
         serialError,
         connecting,
-        sendCwmode,
-        sendCwjap,
-        sendCiprecvmode,
-        sendCipmux,
-        sendCipmode,
         sendCipstart,
         finalizeConnect,
         connected,
@@ -158,7 +125,6 @@ class EspressifDevice : public ATCommDevice
         waitReceive,
         receiving,
         sendCipclose,
-        sendCwqap,
         finalizeDisconnect
     };
 
@@ -166,11 +132,9 @@ class EspressifDevice : public ATCommDevice
     bool fillLineBuffer();
     bool sendCiprcvdata();
     bool parseCiprecvdata();
+    bool parseCsq();
 
-    const char* _ssid;
-    const char* _passwd;
-
-    char _macStringBuffer[MACSTRING_MAX_LENGTH];
+    char _macStringBuffer[MAC64STRING_MAX_LENGTH];
 };
 }
 

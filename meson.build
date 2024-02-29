@@ -1,6 +1,6 @@
 project(
     'Cicada - IoT Comms Library',
-    'cpp',
+    'c', 'cpp',
     version: '0.0.1',
     subproject_dir: 'dep'
 )
@@ -39,6 +39,10 @@ else
     cicada_build_target = meson.get_cross_property('cicada_build_target')
 endif
 
+## Add printf dependancy
+embedded_printf       = subproject('printf')
+embedded_printf_dep   = embedded_printf.get_variable('embedded_printf_dep')
+
 # Add mqtt dependancy
 eclipse_paho_mqtt     = subproject('paho.mqtt.embedded-c')
 eclipse_paho_mqtt_dep = eclipse_paho_mqtt.get_variable('eclipse_paho_mqtt_dep')
@@ -53,7 +57,7 @@ cicada_lib = static_library(
     'Cicada',
     [ src_files, platform_src_files ],
     include_directories : [ target_inc  ],
-    dependencies        : [ eclipse_paho_mqtt_dep ],
+    dependencies        : [ embedded_printf_dep, eclipse_paho_mqtt_dep ],
     c_args              : [ mcu_args, target_c_args, debug_args ],
     cpp_args            : [ mcu_args, target_cpp_args, debug_args ],
     link_args           : [ mcu_args, target_link_args ],
@@ -90,7 +94,7 @@ if (meson.is_subproject() != true)
         'run_tests',
         [ test_src_files, src_files, './test/main.cpp' ],
         include_directories : [ test_src_inc ],
-        dependencies        : [ cpputest_dep ],
+        dependencies        : [ embedded_printf_dep, cpputest_dep ],
         c_args              : [ '-std=c11', test_args ],
         cpp_args            : [ '-std=c++11', test_args ],
         native              : true,

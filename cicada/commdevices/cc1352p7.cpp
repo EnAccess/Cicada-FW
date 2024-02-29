@@ -1,6 +1,6 @@
 /*
  * Cicada communication library
- * Copyright (C) 2019-2923 EnAccess and Okrasolar
+ * Copyright (C) 2023 Okrasolar
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -21,31 +21,131 @@
  *
  */
 
-#include "cicada/commdevices/sim800.h"
+#include "cicada/commdevices/cc1352p7.h"
+#include "cicada/commdevices/atcommdevice.h"
 #include <cstddef>
 #include <cstdint>
+#include <cstdlib>
 #include <cstring>
 #include "printf.h"
 
 using namespace Cicada;
 
-const uint16_t SIM800_MAX_RX = 1460;
+const uint16_t CC1352P7_MAX_RX = 1220;   // Match network buffer of the modem
 
-Sim800CommDevice::Sim800CommDevice(
+CC1352P7CommDevice::CC1352P7CommDevice(
     IBufferedSerial& serial, uint8_t* readBuffer, uint8_t* writeBuffer, Size bufferSize) :
-    SimCommDevice(serial, readBuffer, writeBuffer, bufferSize)
+    ATCommDevice(serial, readBuffer, writeBuffer, bufferSize)
 {
-    _modemMaxReceiveSize = SIM800_MAX_RX;
+    resetStates();
 }
 
-Sim800CommDevice::Sim800CommDevice(IBufferedSerial& serial, uint8_t* readBuffer,
+CC1352P7CommDevice::CC1352P7CommDevice(IBufferedSerial& serial, uint8_t* readBuffer,
     uint8_t* writeBuffer, Size readBufferSize, Size writeBufferSize) :
-    SimCommDevice(serial, readBuffer, writeBuffer, readBufferSize, writeBufferSize)
+    ATCommDevice(serial, readBuffer, writeBuffer, readBufferSize, writeBufferSize)
 {
-    _modemMaxReceiveSize = SIM800_MAX_RX;
+    resetStates();
 }
 
-void Sim800CommDevice::run()
+void CC1352P7CommDevice::resetStates()
+{
+    _serial.flushReceiveBuffers();
+    _readBuffer.flush();
+    _writeBuffer.flush();
+    _lbFill = 0;
+    _sendState = 0;
+    _replyState = 0;
+    _connectState = IPCommDevice::notConnected;
+    _bytesToWrite = 0;
+    _bytesToReceive = 0;
+    _bytesToRead = 0;
+    _waitForReply = NULL;
+    _stateBooleans = LINE_READ;
+    _rssi = 255;
+}
+
+bool CC1352P7CommDevice::fillLineBuffer()
+{
+    // Buffer reply from modem in line buffer
+    // Returns true when enough data to be parsed is available.
+    if (_stateBooleans & LINE_READ) {
+        while (_serial.bytesAvailable()) {
+            char c = _serial.read();
+            _lineBuffer[_lbFill++] = c;
+            if (c == '\n' || c == '>' || _lbFill == LINE_MAX_LENGTH) {
+                _lineBuffer[_lbFill] = '\0';
+                _lbFill = 0;
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+bool CC1352P7CommDevice::sendCiprcvdata()
+{
+    if (_serial.readBufferSize() - _serial.bytesAvailable() > 30
+        && _readBuffer.spaceAvailable() > 0) {
+        // Make sure there is enough space in the serial buffer for the reply
+        Size bytesToReceive = _serial.readBufferSize() - _serial.bytesAvailable() - 30;
+        if (bytesToReceive > _bytesToReceive)
+            bytesToReceive = _bytesToReceive;
+        // Make sure there is enough space in the local device buffer
+        if (bytesToReceive > _readBuffer.spaceAvailable())
+            bytesToReceive = _readBuffer.spaceAvailable();
+        if (bytesToReceive > CC1352P7_MAX_RX)
+            bytesToReceive = CC1352P7_MAX_RX;
+
+        char sizeStr[6];
+        sprintf(sizeStr, "%u", (unsigned int)bytesToReceive);
+        _serial.write((const uint8_t*)"AT+CIPRECVDATA=");
+        _serial.write((const uint8_t*)sizeStr);
+        _serial.write((const uint8_t*)_lineEndStr);
+        return true;
+    } else {
+        return false;
+    }
+}
+
+bool CC1352P7CommDevice::parseCiprecvdata()
+{
+    if (strncmp(_lineBuffer, "+CIPRECVDATA", 12) == 0) {
+        int bytesToRead;
+        bytesToRead = strtol(_lineBuffer + 13, NULL, 10);
+        _bytesToReceive -= bytesToRead;
+        _bytesToRead += bytesToRead;
+        _stateBooleans &= ~LINE_READ;
+        return true;
+    }
+
+    return false;
+}
+
+bool CC1352P7CommDevice::parseCsq()
+{
+    if (strncmp(_lineBuffer, "+CSQ:", 5) == 0) {
+        _rssi = strtol(_lineBuffer + 5, NULL, 10);
+        return true;
+    }
+    return false;
+}
+
+void CC1352P7CommDevice::requestMac()
+{
+    _macStringBuffer[0] = '\0';
+    _macStringBuffer[1] = 0xFF;
+}
+
+char* CC1352P7CommDevice::getMacString()
+{
+    if (_waitForReply == NULL && _macStringBuffer[0] != '\0') {
+        return _macStringBuffer;
+    } else {
+        return NULL;
+    }
+}
+
+void CC1352P7CommDevice::run()
 {
     // If the serial device is net yet open, try to open it
     if (!_serial.isOpen()) {
@@ -55,42 +155,33 @@ void Sim800CommDevice::run()
         return;
     }
 
-    // If the serial device is locked, don't go on
-    if (_stateBooleans & SERIAL_LOCKED)
-        return;
-
     // If a modem reset is pending, handle it
     if (_stateBooleans & RESET_PENDING) {
         _serial.flushReceiveBuffers();
         _bytesToRead = 0;
         _bytesToReceive = 0;
         _bytesToWrite = 0;
-        if (_sendState < sendCiicr || _sendState > sendCipshut) {
-            _sendState = notConnected;
-        } else {
-            _sendState = sendCipshut;
-        }
+        _sendState = sendCipclose;
         _replyState = okReply;
         _waitForReply = NULL;
         _stateBooleans &= ~RESET_PENDING;
         if (_connectState >= intermediate) {
-            setDelay(2000);
             connect();
         }
     }
 
-    // Buffer reply from the modem
+    // Buffer data from the modem
     bool parseLine = fillLineBuffer();
 
-    // Parse reply from the modem
+    // Check if there is data from the modem
     if (parseLine) {
+
         // Log the current modem states
         logStates(_sendState, _replyState);
 
-        // Handle deactivated or error states
-        if (strncmp(_lineBuffer, "+PDP: DEACT", 11) == 0
-            || strncmp(_lineBuffer, "+CME ERROR", 10) == 0
-            || strncmp(_lineBuffer, "ERROR", 5) == 0) {
+        // Handle error states
+        if (strncmp(_lineBuffer, "ERROR", 5) == 0
+            || (_sendState >= connected && strncmp(_lineBuffer, "SEND FAIL", 9) == 0)) {
             _stateBooleans |= RESET_PENDING;
             _connectState = generalError;
             _waitForReply = NULL;
@@ -104,45 +195,10 @@ void Sim800CommDevice::run()
             }
         }
 
-        // Process replies which need special treatment
+        // Process incoming data which need special treatment
         switch (_replyState) {
-        case cifsr: {
-            // Validate IP address by checking for three dots
-            uint8_t i = 0, p = 0;
-            while (_lineBuffer[i]) {
-                if (_lineBuffer[i++] == '.')
-                    p++;
-            }
-            if (p == 3) {
-                _replyState = okReply;
-            }
-        } break;
-
-        case cdnsgip:
-            if (parseDnsReply()) {
-                _replyState = okReply;
-            }
-            break;
-
-        case cipstart:
-            if (handleDisconnect(sendCipshut)) {
-                _replyState = okReply;
-            } else if (_waitForReply == NULL) {
-                _replyState = okReply;
-            } else if (strncmp(_lineBuffer, "0, CONNECT FAIL", 15) == 0) {
-                _stateBooleans |= RESET_PENDING;
-                _connectState = generalError;
-            }
-            break;
-
-        case ciprxget4:
-            if (parseCiprxget4()) {
-                _replyState = okReply;
-            }
-            break;
-
-        case ciprxget2:
-            if (parseCiprxget2()) {
+        case parseStateCiprecvdata:
+            if (parseCiprecvdata()) {
                 _replyState = okReply;
                 _sendState = receiving;
             }
@@ -153,8 +209,14 @@ void Sim800CommDevice::run()
                 _replyState = okReply;
             }
 
-        case requestID:
-            if (parseIDReply()) {
+        case reqMac:
+            if (strncmp(_lineBuffer, "+CIPSTAMAC:\"", 12) == 0) {
+                char* src = _lineBuffer + 12;
+                int copiedChars = 0;
+                while (*src != '\"' && copiedChars < MAC64STRING_MAX_LENGTH - 1) {
+                    _macStringBuffer[copiedChars++] = *src++;
+                }
+                _macStringBuffer[copiedChars] = '\0';
                 _replyState = okReply;
             }
             break;
@@ -165,11 +227,16 @@ void Sim800CommDevice::run()
 
         // In connected state, check for new data or IP connection close
         if (_sendState >= connected) {
-            checkConnectionState("0, CLOSED");
+            if (strncmp(_lineBuffer, "+IPD,", 4) == 0) {
+                _bytesToReceive = strtol(_lineBuffer + 5, NULL, 10);
+                _stateBooleans |= DATA_PENDING;
+            } else if (strncmp(_lineBuffer, "CLOSED", 6) == 0) {
+                _stateBooleans &= ~IP_CONNECTED;
+            }
         }
     }
 
-    // When disconnecting was requested, flush read buffer
+    // When disconnecting was requested, flush read buffer first
     else if ((_stateBooleans & DISCONNECT_PENDING) && _sendState == receiving) {
         flushReadBuffer();
     }
@@ -190,9 +257,11 @@ void Sim800CommDevice::run()
         return;
     }
 
-    // When one of the identifications was requested, send the command to the modem
-    if (sendIDRequest(iccidCommand)) {
-        _replyState = requestID;
+    // When mac address was requested, send the command to the modem
+    if (_macStringBuffer[1] == 0xFF && _macStringBuffer[0] == '\0' && _stateBooleans & LINE_READ) {
+        _macStringBuffer[1] = 0;
+        sendCommand("AT+CIPSTAMAC");
+        _replyState = reqMac;
         _waitForReply = _okStr;
         return;
     }
@@ -200,68 +269,16 @@ void Sim800CommDevice::run()
     // Connection state machine
     switch (_sendState) {
     case notConnected:
-        setDelay(10);
         _connectState = IPCommDevice::notConnected;
         handleConnect(connecting);
         break;
 
     case connecting:
-        setDelay(10);
         _connectState = IPCommDevice::intermediate;
         _stateBooleans |= LINE_READ;
         _waitForReply = _okStr;
-        _sendState = sendCiprxget;
+        _sendState = sendCipstart;
         sendCommand("ATE0");
-        break;
-
-    case sendCiprxget:
-        _waitForReply = _okStr;
-        _sendState = sendCipmux;
-        sendCommand("AT+CIPRXGET=1");
-        break;
-
-    case sendCipmux:
-        _waitForReply = _okStr;
-        _sendState = sendCstt;
-        sendCommand("AT+CIPMUX=1");
-        break;
-
-    case sendCstt: {
-        const char str[] = "AT+CSTT=\"";
-        _serial.write((const uint8_t*)str, sizeof(str) - 1);
-        _serial.write((const uint8_t*)_apn);
-        _serial.write((const uint8_t*)_quoteEndStr);
-
-        _waitForReply = _okStr;
-        _sendState = sendCiicr;
-        break;
-    }
-
-    case sendCiicr:
-        _waitForReply = _okStr;
-        _sendState = sendCifsr;
-        sendCommand("AT+CIICR");
-        break;
-
-    case sendCifsr: {
-        if (handleDisconnect(sendCipshut))
-            break;
-
-        const char str[] = "AT+CIFSR";
-        _serial.write((const uint8_t*)str, sizeof(str) - 1);
-        _serial.write((const uint8_t*)_lineEndStr);
-
-        _replyState = cifsr;
-        _sendState = sendDnsQuery;
-        break;
-    }
-
-    case sendDnsQuery:
-        if (SimCommDevice::sendDnsQuery()) {
-            _replyState = cdnsgip;
-            _waitForReply = _okStr;
-            _sendState = sendCipstart;
-        }
         break;
 
     case sendCipstart: {
@@ -270,80 +287,70 @@ void Sim800CommDevice::run()
 
         _serial.write((const uint8_t*)"AT+CIPSTART");
         if (_type == UDP) {
-            _serial.write((const uint8_t*)"=0,\"UDP\",\"");
+            _serial.write((const uint8_t*)"=\"UDP\",\"");
         } else {
-            _serial.write((const uint8_t*)"=0,\"TCP\",\"");
+            _serial.write((const uint8_t*)"=\"TCP\",\"");
         }
-        _serial.write((const uint8_t*)_ip);
+        // TODO: Escape characters
+        _serial.write((const uint8_t*)_host);
         _serial.write((const uint8_t*)"\",");
         _serial.write((const uint8_t*)portStr);
         _serial.write((const uint8_t*)_lineEndStr);
 
-        _replyState = cipstart;
-        _waitForReply = "0, CONNECT OK";
+        _waitForReply = _okStr;
         _sendState = finalizeConnect;
         break;
     }
 
     case finalizeConnect:
-        setDelay(0);
         _connectState = IPCommDevice::connected;
-        _replyState = okReply;
         _sendState = connected;
         _stateBooleans |= IP_CONNECTED;
         break;
 
     case connected:
         if (_writeBuffer.bytesAvailable()) {
-            if (prepareSending(true)) {
+            if (prepareSending(false)) {
                 _serial.write((const uint8_t*)_lineEndStr);
                 _connectState = IPCommDevice::transmitting;
-                _sendState = sendData;
+                _sendState = sendDataState;
             }
         } else if (_stateBooleans & DATA_PENDING) {
             _stateBooleans &= ~DATA_PENDING;
             _connectState = IPCommDevice::receiving;
-            _sendState = sendCiprxget4;
+            _sendState = sendCiprecvdata;
         } else {
             _connectState = IPCommDevice::connected;
             if (_stateBooleans & IP_CONNECTED) {
-                handleDisconnect(sendCipclose);
+                if (handleDisconnect(sendCipclose)) {
+                }
             } else {
                 _stateBooleans &= ~DISCONNECT_PENDING;
-                _sendState = sendCipshut;
+                _sendState = finalizeDisconnect;
             }
         }
         break;
 
         // States after connecting
 
-    case sendData:
-        SimCommDevice::sendData();
-        _waitForReply = "0, SEND OK";
+    case sendDataState:
+        sendData();
+        _waitForReply = _okStr;
         _sendState = connected;
         break;
 
-    case sendCiprxget4:
-        setDelay(0);
-        _waitForReply = _okStr;
-        _sendState = sendCiprxget2;
-        _replyState = ciprxget4;
-        sendCommand("AT+CIPRXGET=4,0");
-        break;
-
-    case sendCiprxget2:
-        if (handleDisconnect(sendCipclose))
+    case sendCiprecvdata:
+        if (handleDisconnect(sendCipclose)) {
             break;
+        }
 
         if (_bytesToReceive > 0) {
-            if (SimCommDevice::sendCiprxget2()) {
+            if (sendCiprcvdata()) {
                 _sendState = waitReceive;
-                _replyState = ciprxget2;
+                _replyState = parseStateCiprecvdata;
             }
-        } else if (_stateBooleans & IP_CONNECTED) {
-            _sendState = connected;
         } else {
-            _sendState = ipUnconnected;
+            _sendState = connected;
         }
 
         break;
@@ -358,37 +365,17 @@ void Sim800CommDevice::run()
                 _waitForReply = _okStr;
             }
         } else if (_bytesToReceive > 0) {
-            _sendState = sendCiprxget2;
+            _sendState = sendCiprecvdata;
         } else {
-            setDelay(10);
-            _sendState = sendCiprxget4;
+            _sendState = connected;
         }
-        break;
-
-    case ipUnconnected:
-        _connectState = IPCommDevice::intermediate;
-        if (handleDisconnect(finalizeDisconnect))
-            break;
-
-        handleConnect(sendCipstart);
         break;
 
     case sendCipclose:
         _connectState = IPCommDevice::intermediate;
-        if (_stateBooleans & IP_CONNECTED) {
-            _waitForReply = "0, CLOSE OK";
-            _sendState = sendCipshut;
-            sendCommand("AT+CIPCLOSE=0");
-        } else {
-            _sendState = sendCipshut;
-        }
-        break;
-
-    case sendCipshut:
-        _connectState = IPCommDevice::intermediate;
-        _waitForReply = "SHUT OK";
+        _waitForReply = _okStr;
         _sendState = finalizeDisconnect;
-        sendCommand("AT+CIPSHUT");
+        sendCommand("AT+CIPCLOSE");
         break;
 
     case finalizeDisconnect:
