@@ -1,0 +1,21 @@
+# Project-specific checks to ease collaboration:
+# - language or project specific linters and linting rules
+# - unit or integration tests
+name: Check
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  clang-format:
+    name: Lint clang-format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run clang-format lint
+        run: find . \( -name '*.[ch]pp' -o -name '*.h' \) | xargs clang-format --verbose --style=file -n --Werror
