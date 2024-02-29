@@ -23,10 +23,10 @@
 
 #include "cicada/commdevices/sim7x00.h"
 #include "cicada/commdevices/ipcommdevice.h"
+#include "printf.h"
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
-#include "printf.h"
 
 using namespace Cicada;
 

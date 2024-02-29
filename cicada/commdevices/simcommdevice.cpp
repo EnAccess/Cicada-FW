@@ -22,11 +22,11 @@
  */
 
 #include "cicada/commdevices/simcommdevice.h"
+#include "printf.h"
 #include <cinttypes>
 #include <cstddef>
 #include <cstdlib>
 #include <cstring>
-#include "printf.h"
 
 using namespace Cicada;
 
@@ -198,7 +198,7 @@ bool SimCommDevice::parseIDReply()
     // For Sim7x00: "AT+CICCID" replys with "+ICCID: <ICCID>"
     if (strncmp(_lineBuffer, "+ICCID: ", 8) == 0) {
         src = _lineBuffer + 8;
-    // Avoid handling other messages from the modem here
+        // Avoid handling other messages from the modem here
     } else if (strncmp(_lineBuffer, "+", 1) == 0) {
         return false;
     }
@@ -207,7 +207,7 @@ bool SimCommDevice::parseIDReply()
     RequestIDType type = (RequestIDType)_idStringBuffer[2];
     bool replyValid = false;
 
-    switch(type) {
+    switch (type) {
     case iccid: {
         // Count number of digits in reply
         int nDigits = 0;
@@ -226,8 +226,8 @@ bool SimCommDevice::parseIDReply()
             nSum += d % 10;
             isSecond = !isSecond;
         }
-        replyValid = nDigits >=18 && nDigits <= 22 &&
-            nSum % 10 == 0 && src[0] == '8' && src[1] == '9';
+        replyValid
+            = nDigits >= 18 && nDigits <= 22 && nSum % 10 == 0 && src[0] == '8' && src[1] == '9';
 
         break;
     }

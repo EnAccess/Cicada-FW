@@ -24,8 +24,8 @@
 #ifndef ETICK_H
 #define ETICK_H
 
-#include <cstdint>
 #include "cicada/defines.h"
+#include <cstdint>
 
 E_TICK_TYPE eTickFunction();
 

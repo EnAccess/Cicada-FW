@@ -58,8 +58,8 @@ int main(int argc, char* argv[])
     const uint16_t serialBufferSize = 1504;
     char serialReadBuffer[serialBufferSize];
     char serialWriteBuffer[serialBufferSize];
-    Stm32Uart serial(serialReadBuffer, serialWriteBuffer, serialBufferSize,
-                     USART1, GPIOA, GPIO_PIN_9, GPIO_PIN_10);
+    Stm32Uart serial(serialReadBuffer, serialWriteBuffer, serialBufferSize, USART1, GPIOA,
+        GPIO_PIN_9, GPIO_PIN_10);
 
     // Set up modem driver connected to serial port
     const uint16_t commBufferSize = 1200;

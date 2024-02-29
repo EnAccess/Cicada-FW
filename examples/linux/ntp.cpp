@@ -17,10 +17,7 @@ using namespace Cicada;
 class NTPTask : public Task
 {
   public:
-    NTPTask(ModemDetect& detector) :
-        m_detector(detector),
-        m_commDev(NULL)
-        {}
+    NTPTask(ModemDetect& detector) : m_detector(detector), m_commDev(NULL) {}
 
     virtual void run()
     {
@@ -32,7 +29,8 @@ class NTPTask : public Task
         m_detector.startDetection();
 
         E_REENTER_COND(m_detector.modemDetected());
-        m_commDev = m_detector.getDetectedModem(_commReadBuffer, _commWriteBuffer, _commBufferSize, _commBufferSize);
+        m_commDev = m_detector.getDetectedModem(
+            _commReadBuffer, _commWriteBuffer, _commBufferSize, _commBufferSize);
 
         simCommDev = dynamic_cast<SimCommDevice*>(m_commDev);
         if (simCommDev) {

@@ -39,7 +39,7 @@ namespace Cicada {
 class IBufferedSerial : public ICommDevice, public ISerial
 {
   public:
-    virtual ~IBufferedSerial() { }
+    virtual ~IBufferedSerial() {}
 
     virtual Size read(uint8_t* data, Size maxSize) override = 0;
     virtual Size write(const uint8_t* data, Size size) override = 0;

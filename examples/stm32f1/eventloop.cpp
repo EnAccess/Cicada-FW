@@ -46,8 +46,8 @@ int main(int argc, char* argv[])
 
     // Driver objects
     Stm32Uart debug(debugReadBuffer, debugWriteBuffer, serialBufferSize);
-    Stm32Uart serial(serialReadBuffer, serialWriteBuffer, serialBufferSize,
-                     USART1, GPIOA, GPIO_PIN_9, GPIO_PIN_10);
+    Stm32Uart serial(serialReadBuffer, serialWriteBuffer, serialBufferSize, USART1, GPIOA,
+        GPIO_PIN_9, GPIO_PIN_10);
     ModemDetect detector(serial);
 
     // Cicada scheduler to run internal tasks
@@ -66,7 +66,8 @@ int main(int argc, char* argv[])
 
         // Event: Modem has been detected
         if (!detectedFlag && detector.modemDetected()) {
-            commDevice = detector.getDetectedModem(commReadBuffer, commWriteBuffer, commBufferSize, commBufferSize);
+            commDevice = detector.getDetectedModem(
+                commReadBuffer, commWriteBuffer, commBufferSize, commBufferSize);
 
             // If the device is a SIMCom 2G/4G modem, set the APN
             SimCommDevice* simCommDev = dynamic_cast<SimCommDevice*>(commDevice);
@@ -128,7 +129,8 @@ int main(int argc, char* argv[])
     }
 
     // Wait until reset by user
-    while(true);
+    while (true)
+        ;
 }
 
 /* Following code is to setup micro controller and handle interrupts */
