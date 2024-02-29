@@ -5,6 +5,7 @@ build
 build_stm
 build_linux
 build_mbed
+dep
 
 # Ignore the Meson packagecache dir
 packagecache

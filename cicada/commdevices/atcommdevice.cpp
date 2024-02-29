@@ -169,3 +169,13 @@ Size ATCommDevice::serialRead(char* data, Size maxSize)
 
     return 0;
 }
+
+void ATCommDevice::requestRSSI()
+{
+    _rssi = INT16_MAX;
+}
+
+int16_t ATCommDevice::getRSSI()
+{
+    return _rssi;
+}
