@@ -214,6 +214,7 @@ bool SimCommDevice::parseIDReply()
         while (src[nDigits] >= '0' && src[nDigits] <= '9') {
             nDigits++;
         }
+        src[nDigits] = '\r';
 
         // Calculate checksum with Luhn's algorithm
         int nSum = 0;
