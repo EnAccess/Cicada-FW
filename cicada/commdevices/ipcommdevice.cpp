@@ -59,6 +59,7 @@ bool IPCommDevice::connect()
     if (_host == NULL || _port == 0)
         return false;
 
+    _stateBooleans &= ~DISCONNECT_PENDING;
     _stateBooleans |= CONNECT_PENDING;
 
     return true;
@@ -69,6 +70,7 @@ void IPCommDevice::disconnect()
     if (isIdle())
         return;
 
+    _stateBooleans &= ~CONNECT_PENDING;
     _stateBooleans |= DISCONNECT_PENDING;
 }
 

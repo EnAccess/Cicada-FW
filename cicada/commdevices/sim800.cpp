@@ -73,10 +73,6 @@ void Sim800CommDevice::run()
         _replyState = okReply;
         _waitForReply = NULL;
         _stateBooleans &= ~RESET_PENDING;
-        if (_connectState >= intermediate) {
-            setDelay(2000);
-            connect();
-        }
     }
 
     // Buffer reply from the modem
@@ -206,6 +202,8 @@ void Sim800CommDevice::run()
         break;
 
     case connecting:
+        if (handleDisconnect(notConnected))
+            break;
         setDelay(10);
         _connectState = IPCommDevice::intermediate;
         _stateBooleans |= LINE_READ;

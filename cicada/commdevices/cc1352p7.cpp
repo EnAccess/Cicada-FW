@@ -165,9 +165,6 @@ void CC1352P7CommDevice::run()
         _replyState = okReply;
         _waitForReply = NULL;
         _stateBooleans &= ~RESET_PENDING;
-        if (_connectState >= intermediate) {
-            connect();
-        }
     }
 
     // Buffer data from the modem
@@ -274,6 +271,8 @@ void CC1352P7CommDevice::run()
         break;
 
     case connecting:
+        if (handleDisconnect(notConnected))
+            break;
         _connectState = IPCommDevice::intermediate;
         _stateBooleans |= LINE_READ;
         _waitForReply = _okStr;
