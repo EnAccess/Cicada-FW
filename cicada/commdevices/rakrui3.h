@@ -35,6 +35,7 @@ namespace Cicada {
 /*!
  * Driver for LoRaWAN modules based on RAKwireless Unified Interface V3 (RUI3).
  * Tested with RAK3172 module.
+ * NOTE: This driver is preliminary and not well tested!
  */
 class RakDevice : public IStatefulDevice, public Task
 {
