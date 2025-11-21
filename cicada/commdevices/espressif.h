@@ -55,7 +55,8 @@ class EspressifDevice : public ATCommDevice
 
     /*!
      * Set's the wifi network SSID.
-     * \param ssid The network SSID
+     * \param ssid The network SSID Note: The ssid is *not* copied, the string
+     * needs to be valid during the lifetime of EspressifDevice object!
      */
     virtual void setSSID(const char* ssid);
 

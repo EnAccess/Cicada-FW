@@ -11,6 +11,8 @@ src_files = files([
     'commdevices/sim800.cpp',
     'commdevices/espressif.cpp',
     'commdevices/espressif.h',
+    'commdevices/rakrui3.cpp',
+    'commdevices/rakrui3.h',
     'commdevices/blockingcommdev.h',
     'commdevices/blockingcommdev.cpp',
     'commdevices/modemdetect.h',
