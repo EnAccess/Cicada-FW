@@ -40,8 +40,7 @@ namespace Cicada {
 class RakDevice : public IStatefulDevice, public Task
 {
   public:
-    RakDevice(
-        IBufferedSerial& serial, uint8_t* readBuffer, uint8_t* writeBuffer, Size bufferSize);
+    RakDevice(IBufferedSerial& serial, uint8_t* readBuffer, uint8_t* writeBuffer, Size bufferSize);
     RakDevice(IBufferedSerial& serial, uint8_t* readBuffer, uint8_t* writeBuffer,
         Size readBufferSize, Size writeBufferSize);
     virtual ~RakDevice() {}

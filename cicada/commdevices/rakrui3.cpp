@@ -22,9 +22,9 @@
  */
 
 #include "cicada/commdevices/rakrui3.h"
+#include <cinttypes>
 #include <cstdio>
 #include <cstring>
-#include <cinttypes>
 
 using namespace Cicada;
 
@@ -37,18 +37,16 @@ using namespace Cicada;
 
 const char* RakDevice::_okStr = "OK";
 const char* RakDevice::_lineEndStr = "\r\n";
-//const char* RakDevice::_quoteEndStr = "\"\r\n";
+// const char* RakDevice::_quoteEndStr = "\"\r\n";
 
 // LoRaWAN maximum packet payload for different data rates. Taken from table 3 at
 // https://lora-developers.semtech.com/documentation/tech-papers-and-guides/the-book/packet-size-considerations/
-const uint8_t RakDevice::_packetSizes[14] =
-    { 11, 51, 51, 115, 222, 222, 222, 222, 33, 109, 222, 222, 222, 222 };
+const uint8_t RakDevice::_packetSizes[14]
+    = { 11, 51, 51, 115, 222, 222, 222, 222, 33, 109, 222, 222, 222, 222 };
 
 RakDevice::RakDevice(
     IBufferedSerial& serial, uint8_t* readBuffer, uint8_t* writeBuffer, Size bufferSize) :
-    _serial(serial),
-    _readBuffer(readBuffer, bufferSize),
-    _writeBuffer(writeBuffer, bufferSize)
+    _serial(serial), _readBuffer(readBuffer, bufferSize), _writeBuffer(writeBuffer, bufferSize)
 {
     resetStates();
 }
@@ -193,11 +191,11 @@ void RakDevice::run()
 #ifdef CICADA_DEBUG
         if (_waitForReply)
             printf("_sendState=%d, _replyState=%d, "
-                "_waitForReply=\"%s\", data: %s\n",
+                   "_waitForReply=\"%s\", data: %s\n",
                 _sendState, _replyState, _waitForReply, _lineBuffer);
         else
             printf("_sendState=%d, _replyState=%d, "
-                "_waitForReply=NULL, data: %s\n",
+                   "_waitForReply=NULL, data: %s\n",
                 _sendState, _replyState, _lineBuffer);
 #endif
 
@@ -228,8 +226,8 @@ void RakDevice::run()
             break;
 
         case sendConfirm:
-            if (strncmp(_lineBuffer, "+EVT:SEND_CONFIRMED_FAILED", 26) == 0 ||
-                strncmp(_lineBuffer, "AT_BUSY_ERROR", 13) == 0) {
+            if (strncmp(_lineBuffer, "+EVT:SEND_CONFIRMED_FAILED", 26) == 0
+                || strncmp(_lineBuffer, "AT_BUSY_ERROR", 13) == 0) {
                 _writeBuffer.rewindReadHead(_bytesToResend);
                 _replyState = okReply;
                 _waitForReply = NULL;
@@ -245,11 +243,11 @@ void RakDevice::run()
             char* src = _lineBuffer + 6;
             int nColons = 0;
             if (strncmp(_lineBuffer, "+EVT:RX", 7) == 0) {
-                while(*src) {
-                    if(*src++ == ':') {
-                        if(++nColons == 5) {
+                while (*src) {
+                    if (*src++ == ':') {
+                        if (++nColons == 5) {
                             int b;
-                            while(sscanf(src, "%02x", &b) == 1) {
+                            while (sscanf(src, "%02x", &b) == 1) {
                                 _readBuffer.push((uint8_t)b);
                                 src += 2;
                             }
@@ -261,7 +259,7 @@ void RakDevice::run()
     }
 
     // Don't go on when waiting for a reply
-    if (_waitForReply) // || _replyState != okReply)
+    if (_waitForReply)   // || _replyState != okReply)
         return;
 
     // Don't go on if space in write buffer is low
@@ -341,8 +339,7 @@ void RakDevice::run()
         }
         break;
 
-    case sendPacket:
-    {
+    case sendPacket: {
         _waitForReply = "+EVT:SEND_CONFIRMED_OK";
         //_waitForReply = _okStr;
         _sendState = waitForSend;
