@@ -176,7 +176,7 @@ void CC1352P7CommDevice::run()
         logStates(_sendState, _replyState);
 
         // Handle error states
-        if (strncmp(_lineBuffer, "ERROR", 5) == 0 ) {
+        if (strncmp(_lineBuffer, "ERROR", 5) == 0) {
             _stateBooleans |= RESET_PENDING;
             _connectState = generalError;
             _waitForReply = NULL;
@@ -225,8 +225,8 @@ void CC1352P7CommDevice::run()
             if (strncmp(_lineBuffer, "+IPD,", 4) == 0) {
                 _bytesToReceive = strtol(_lineBuffer + 5, NULL, 10);
                 _stateBooleans |= DATA_PENDING;
-            } else if (strncmp(_lineBuffer, "CLOSED", 6) == 0 ||
-                       strncmp(_lineBuffer, "SEND FAIL", 9) == 0) {
+            } else if (strncmp(_lineBuffer, "CLOSED", 6) == 0
+                || strncmp(_lineBuffer, "SEND FAIL", 9) == 0) {
                 _stateBooleans &= ~IP_CONNECTED;
             }
         }

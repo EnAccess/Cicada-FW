@@ -174,7 +174,6 @@ TEST(CircularBufferTest, ReReadSameData)
     STRNCMP_EQUAL("567", dataOut, 4);
 }
 
-
 TEST(CircularBufferTest, ReReadSameDataWithWrapAround)
 {
     const uint8_t MAX_BUFFER_SIZE = 10;
