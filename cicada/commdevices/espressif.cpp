@@ -179,12 +179,7 @@ void EspressifDevice::run()
     // If a modem reset is pending, handle it
     if (_stateBooleans & RESET_PENDING) {
         _serial.flushReceiveBuffers();
-        if (_sendState >= connecting && _sendState <= receiving
-            && !(_stateBooleans & DISCONNECT_PENDING)) {
-            _sendState = connecting;
-        } else {
-            _sendState = notConnected;
-        }
+        _sendState = notConnected;
         _stateBooleans = LINE_READ;
         _bytesToRead = 0;
         _bytesToReceive = 0;
@@ -328,6 +323,8 @@ void EspressifDevice::run()
         break;
 
     case connecting:
+        if (handleDisconnect(notConnected))
+            break;
         setDelay(10);
         _connectState = IPCommDevice::intermediate;
         _stateBooleans |= LINE_READ;

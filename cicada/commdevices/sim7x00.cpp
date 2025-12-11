@@ -67,10 +67,7 @@ void Sim7x00CommDevice::run()
         _bytesToRead = 0;
         _bytesToReceive = 0;
         _bytesToWrite = 0;
-        if (_sendState >= connecting && _sendState <= receiving)
-            _sendState = connecting;
-        else
-            _sendState = notConnected;
+        _sendState = notConnected;
         const char str[] = "AT+CRESET";
         _serial.write((const uint8_t*)str, sizeof(str) - 1);
         _serial.write((const uint8_t*)_lineEndStr);
@@ -206,6 +203,8 @@ void Sim7x00CommDevice::run()
         break;
 
     case connecting:
+        if (handleDisconnect(notConnected))
+            break;
         setDelay(10);
         _connectState = IPCommDevice::intermediate;
         _stateBooleans |= LINE_READ;
